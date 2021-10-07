@@ -603,5 +603,5 @@ else()
 endif()
 
 if(USE_ANTICHEAT)
-  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Anticheat/WardenAnticheat/WardenModules/ DESTINATION ${BIN_DIR}/warden_modules)
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Anticheat/WardenModules/ DESTINATION ${BIN_DIR}/warden_modules)
 endif()
