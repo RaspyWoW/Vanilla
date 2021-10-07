@@ -211,7 +211,7 @@ void AccountMgr::Load()
 {
     m_accountSecurity.clear();
 
-    std::unique_ptr<QueryResult> result(LoginDatabase.PQuery("SELECT `id`, `gmlevel` FROM `account_access` WHERE (`RealmID` = '%u' OR `RealmID`='-1')", realmID));
+    std::unique_ptr<QueryResult> result(LoginDatabase.PQuery("SELECT `id`, `gmlevel` FROM `account_access` WHERE `RealmID`='-1'"));
 
     if (!result)
     {
@@ -250,7 +250,7 @@ void AccountMgr::Load()
     } while (result->NextRow());
 
     sLog.outString();
-    sLog.outString(">> %u GM ranks loaded for realm %u", m_accountSecurity.size(), realmID);
+    sLog.outString(">> %u GM ranks loaded", m_accountSecurity.size());
     sLog.outString();
     LoadAccountBanList();
     LoadIPBanList();
@@ -267,8 +267,8 @@ AccountTypes AccountMgr::GetSecurity(uint32 acc_id)
 void AccountMgr::SetSecurity(uint32 accId, AccountTypes sec)
 {
     m_accountSecurity[accId] = sec;
-    LoginDatabase.PExecute("DELETE FROM `account_access` WHERE `RealmID`=%u AND `id`=%u", realmID, accId);
-    LoginDatabase.PExecute("INSERT INTO `account_access` SET `RealmID`=%u, `id`=%u, `gmlevel`=%u", realmID, accId, sec);
+    LoginDatabase.PExecute("DELETE FROM `account_access` WHERE `id`=%u", accId);
+    LoginDatabase.PExecute("INSERT INTO `account_access` SET `RealmID`='-1', `id`=%u, `gmlevel`=%u", accId, sec);
 }
 
 bool AccountMgr::GetName(uint32 acc_id, std::string &name)

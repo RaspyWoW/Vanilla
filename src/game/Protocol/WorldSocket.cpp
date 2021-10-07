@@ -298,9 +298,9 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     stmt.PExecute(address.c_str(), account.c_str());
 
     ClientOSType clientOs;
-    if (os == "niW")
+    if (os == "Win")
         clientOs = CLIENT_OS_WIN;
-    else if (os == "XSO")
+    else if (os == "OSX")
         clientOs = CLIENT_OS_MAC;
     else
     {

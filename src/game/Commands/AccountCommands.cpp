@@ -82,8 +82,8 @@ bool ChatHandler::HandleAccountSetGmLevelCommand(char* args)
     if (GetAccountId() == targetAccountId)
         return false;
 
-    int32 gm;
-    if (!ExtractInt32(&args, gm))
+    uint32 gm;
+    if (!ExtractUInt32(&args, gm))
         return false;
 
     if (gm < SEC_PLAYER || gm > SEC_ADMINISTRATOR)
@@ -115,6 +115,7 @@ bool ChatHandler::HandleAccountSetGmLevelCommand(char* args)
 
     PSendSysMessage(LANG_YOU_CHANGE_SECURITY, targetAccountName.c_str(), gm);
     sAccountMgr.SetSecurity(targetAccountId, AccountTypes(gm));
+    LoginDatabase.PExecute("UPDATE `account` SET `gmlevel` = '%u' WHERE `id` = '%u'", gm, targetAccountId);
 
     return true;
 }
