@@ -2328,6 +2328,8 @@ Visibility.ForceActiveObjects      = 1
 #    Rate.XP.Explore
 #    Rate.XP.Personal.Min
 #    Rate.XP.Personal.Max
+#    Rate.XP.Personal.Bonus
+#    Rate.XP.Personal.Bonus.Min.Lvl
 #        XP rates
 #        Default: 1
 #
@@ -2494,6 +2496,8 @@ Rate.XP.Quest   = 1
 Rate.XP.Explore = 1
 Rate.XP.Personal.Min = 1
 Rate.XP.Personal.Max = 1
+Rate.XP.Personal.Bonus = 1
+Rate.XP.Personal.Bonus.Min.Lvl = 60
 Rate.Rest.InGame = 1
 Rate.Rest.Offline.InTavernOrCity = 1
 Rate.Rest.Offline.InWilderness = 1

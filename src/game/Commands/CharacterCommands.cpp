@@ -70,24 +70,34 @@ bool ChatHandler::HandleModifyXpRateCommand(char* args)
         return false;
     }
 
-    float xp;
-    if (!ExtractFloat(&args, xp))
+    float fXP;
+    float fMinXPRate = sWorld.getConfig(CONFIG_FLOAT_RATE_XP_PERSONAL_MIN);
+    float fMaxXPRate = sWorld.getConfig(CONFIG_FLOAT_RATE_XP_PERSONAL_MAX);
+
+    if (!ExtractFloat(&args, fXP))
         return false;
 
-    if (xp < sWorld.getConfig(CONFIG_FLOAT_RATE_XP_PERSONAL_MIN))
+    if (fXP < fMinXPRate)
     {
-        PSendSysMessage(LANG_XP_RATE_MIN, sWorld.getConfig(CONFIG_FLOAT_RATE_XP_PERSONAL_MIN));
+        PSendSysMessage(LANG_XP_RATE_MIN, fMinXPRate);
         return false;
     }
 
-    if ((xp > sWorld.getConfig(CONFIG_FLOAT_RATE_XP_PERSONAL_MAX)) && (m_session->GetSecurity() < SEC_GAMEMASTER))
+    if (pPlayer->GetSession()->GetAccountMaxLevel() >= sWorld.getConfig(CONFIG_UINT32_XP_PERSONAL_BONUS_REQ_ACCOUNT_LEVEL)) // If player already got a lvl 60 on current acc ...
+        fMaxXPRate += sWorld.getConfig(CONFIG_FLOAT_RATE_XP_PERSONAL_BONUS); // ... increment highest possible CONFIG_FLOAT_RATE_XP_PERSONAL_MAX + CONFIG_FLOAT_RATE_XP_PERSONAL_BONUS
+
+    if ((fXP > fMaxXPRate))
     {
-        PSendSysMessage(LANG_XP_RATE_MAX, sWorld.getConfig(CONFIG_FLOAT_RATE_XP_PERSONAL_MAX));
+        PSendSysMessage(LANG_XP_RATE_MAX, fMaxXPRate);
         return false;
     }
 
-    pPlayer->SetPersonalXpRate(xp);
-    PSendSysMessage(LANG_XP_RATE_SET, (pPlayer != m_session->GetPlayer() ? (std::string(pPlayer->GetName()) + std::string("'s")).c_str() : "your"), xp);
+    pPlayer->SetPersonalXpRate(fXP);
+    PSendSysMessage(LANG_XP_RATE_SET, (pPlayer != m_session->GetPlayer() ? (std::string(pPlayer->GetName()) + std::string("'s")).c_str() : "your"), fXP);
+
+    if (fXP > 1.0f) // If player is using a higher XP rate then x1 ...
+        pPlayer->ForbidToExportToon(); // ... forbid the export of this toon
+
     return true;
 }
 

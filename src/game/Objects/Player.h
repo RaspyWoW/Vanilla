@@ -2164,6 +2164,7 @@ class Player final: public Unit
         bool m_repopAtGraveyardPending;
         ObjectGuid m_selectedGobj; // For GM commands
         ObjectGuid m_escortingGuid;
+        bool m_bIsAllowedToExportToon;
 
         void SendMountResult(UnitMountResult result) const;
         void SendDismountResult(UnitDismountResult result) const;
@@ -2241,6 +2242,9 @@ class Player final: public Unit
         uint32 GetDeathTimer() const { return m_deathTimer; }
         uint32 GetCorpseReclaimDelay(bool pvp) const;
         void SendCorpseReclaimDelay(bool load = false) const;
+
+        void ForbidToExportToon();
+        bool IsAllowToExportToon() const { return m_bIsAllowedToExportToon; }
 
         /*********************************************************/
         /***                    CHAT SYSTEM                    ***/

@@ -548,7 +548,7 @@ void TradeData::SetAccepted(bool state, bool crosssend /*= false*/)
 Player::Player(WorldSession* session) : Unit(),
     m_mover(this), m_camera(this), m_reputationMgr(this),
     m_enableInstanceSwitch(true), m_currentTicketCounter(0), m_castingSpell(0), m_repopAtGraveyardPending(false),
-    m_honorMgr(this), m_bNextRelocationsIgnored(0), m_personalXpRate(-1.0f), m_isStandUpScheduled(false), m_foodEmoteTimer(0)
+    m_honorMgr(this), m_bNextRelocationsIgnored(0), m_personalXpRate(-1.0f), m_isStandUpScheduled(false), m_foodEmoteTimer(0), m_bIsAllowedToExportToon(false)
 {
     m_objectType |= TYPEMASK_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
@@ -14682,8 +14682,8 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     //"honor_rank_points, honor_highest_rank, honor_standing, honor_last_week_hk, honor_last_week_cp, honor_stored_hk, honor_stored_dk,"
     // 49                50     51      52      53      54      55      56      57              58               59       60
     //"watched_faction,  drunk, health, power1, power2, power3, power4, power5, explored_zones, equipment_cache, ammo_id, action_bars,"
-    // 61                62
-    //"world_phase_mask, create_time FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
+    // 61                62           63
+    //"world_phase_mask, create_time, allow_export FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
 
     QueryResult* result = holder->GetResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
@@ -15243,6 +15243,9 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
 
     if (sWorld.GetWowPatch() >= WOW_PATCH_112)
         UpdateOldRidingSkillToNew(hasEpicMount);
+
+    if (fields[63].GetUInt8() == 1) // If character is allowed to export
+        m_bIsAllowedToExportToon = true;
 
     return true;
 }
@@ -16455,7 +16458,7 @@ void Player::SaveToDB(bool online, bool force)
                               "`extra_flags`, `stable_slots`, `at_login_flags`, `zone`, `death_expire_time`,"
                               "`honor_rank_points`, `honor_highest_rank`, `honor_standing`, `honor_last_week_hk`, `honor_last_week_cp`, `honor_stored_hk`, `honor_stored_dk`, "
                               "`watched_faction`, `drunk`, `health`, `power1`, `power2`, `power3`, `power4`, `power5`, "
-                              "`explored_zones`, `equipment_cache`, `ammo_id`, `action_bars`, `world_phase_mask`, `create_time`) "
+                              "`explored_zones`, `equipment_cache`, `ammo_id`, `action_bars`, `world_phase_mask`, `create_time`, `allow_export`) "
                               "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                               "?, ?, ?, ?, ?, "
                                "?, ?, ?, ?, ?, "
@@ -16464,7 +16467,7 @@ void Player::SaveToDB(bool online, bool force)
                               "?, ?, ?, ?, ?, "
                               "?, ?, ?, ?, ?, ?, ?, "
                               "?, ?, ?, ?, ?, ?, ?, ?, "
-                              "?, ?, ?, ?, ?, ?)");
+                              "?, ?, ?, ?, ?, ?, ?)");
 
     uberInsert.addUInt32(GetGUIDLow());
     uberInsert.addUInt32(GetSession()->GetAccountId());
@@ -16593,6 +16596,7 @@ void Player::SaveToDB(bool online, bool force)
     uberInsert.addUInt32(uint32(GetByteValue(PLAYER_FIELD_BYTES, 2)));
     uberInsert.addUInt32(GetWorldMask());
     uberInsert.addUInt64(uint64(m_createTime));
+    uberInsert.addUInt8(uint8(m_bIsAllowedToExportToon));
     uberInsert.Execute();
 
     _SaveBGData();
@@ -20035,6 +20039,13 @@ void Player::SendCorpseReclaimDelay(bool load) const
     WorldPacket data(SMSG_CORPSE_RECLAIM_DELAY, 4);
     data << uint32(delay * IN_MILLISECONDS);
     GetSession()->SendPacket(&data);
+}
+
+void Player::ForbidToExportToon()
+{
+    CharacterDatabase.PExecute("UPDATE `characters` SET `allow_export` = '0' WHERE `guid` = '%u'", GetGUIDLow()); // Temporary storage.. `characters` table will get overwritten on Player::SaveToDB
+    ChatHandler(this).PSendSysMessage("You are no longer allowed to export your character.");
+    m_bIsAllowedToExportToon = false;
 }
 
 Player* Player::GetNextRandomRaidMember(float radius)
