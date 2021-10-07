@@ -42,16 +42,16 @@ struct PINData
 
 enum LockFlag
 {
-    NONE            = 0x00,
-    IP_LOCK         = 0x01,
-    FIXED_PIN       = 0x02,
-    TOTP            = 0x04,
-    ALWAYS_ENFORCE  = 0x08,
-    GEO_COUNTRY     = 0x10,
-    GEO_CITY        = 0x20
+    NONE           = 0x00,
+    IP_LOCK        = 0x01,
+    FIXED_PIN      = 0x02,
+    TOTP           = 0x04,
+    ALWAYS_ENFORCE = 0x08,
+    GEO_COUNTRY    = 0x10,
+    GEO_CITY       = 0x20
 };
 
-/// Handle login commands
+// Handle login commands
 class AuthSocket: public BufferedSocket
 {
     public:
@@ -60,8 +60,8 @@ class AuthSocket: public BufferedSocket
         AuthSocket();
         ~AuthSocket();
 
-        void OnAccept();
-        void OnRead();
+        void OnAccept() override;
+        void OnRead() override;
         void SendProof(Sha1Hash sha);
         void LoadRealmlist(ByteBuffer &pkt);
         bool VerifyPinData(uint32 pin, const PINData& clientData);
@@ -72,8 +72,8 @@ class AuthSocket: public BufferedSocket
         bool _HandleReconnectChallenge();
         bool _HandleReconnectProof();
         bool _HandleRealmList();
-        //data transfer handle for patch
 
+        // Data transfer handle for patch
         bool _HandleXferResume();
         bool _HandleXferCancel();
         bool _HandleXferAccept();
@@ -84,7 +84,7 @@ class AuthSocket: public BufferedSocket
             STATUS_CHALLENGE,
             STATUS_LOGON_PROOF,
             STATUS_RECON_PROOF,
-            STATUS_PATCH,      // unused in CMaNGOS
+            STATUS_PATCH,
             STATUS_AUTHED,
             STATUS_CLOSED
         };
@@ -103,6 +103,7 @@ class AuthSocket: public BufferedSocket
         std::string securityInfo;
         std::string _lastIP;
         std::string _email;
+        std::string m_os;
 
         BigNumber serverSecuritySalt;
         LockFlag lockFlags;
@@ -115,13 +116,12 @@ class AuthSocket: public BufferedSocket
         static constexpr uint32 X86 = 'x86';
         static constexpr uint32 PPC = 'PPC';
 
-        uint32 _os;
         uint32 _platform;
         uint32 _accountId;
         uint32 _lastRealmListRequest;
 
-        // Since GetLocaleByName() is _NOT_ bijective, we have to store the locale as a string. Otherwise we can't differ
-        // between enUS and enGB, which is important for the patch system
+        // Since GetLocaleByName() is _NOT_ bijective, we have to store the locale as a string
+        // Otherwise we can't differ between enUS and enGB, which is important for the patch system
         std::string _localizationName;
         uint16 _build;
 
