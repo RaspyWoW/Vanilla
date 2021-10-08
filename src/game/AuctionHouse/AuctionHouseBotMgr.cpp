@@ -67,7 +67,7 @@ void AuctionHouseBotMgr::Load()
     m_config             = std::make_unique<AuctionHouseBotConfig>();
     m_config->enable     = sConfig.GetBoolDefault("AHBot.Enable", false);
     m_config->ahid       = sConfig.GetIntDefault("AHBot.ah.id", 7);
-    m_config->botaccount = sConfig.GetIntDefault("AHBot.bot.account", 1);
+    m_config->botaccount = sConfig.GetIntDefault("AHBot.bot.account", 0);
     m_config->ahfid      = sConfig.GetIntDefault("AHBot.ah.fid", 120);
     m_config->itemcount  = sConfig.GetIntDefault("AHBot.itemcount", 1);
 

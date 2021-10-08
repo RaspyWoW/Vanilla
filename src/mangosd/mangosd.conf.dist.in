@@ -3174,7 +3174,7 @@ AHBot.itemcount = 1
 #    AHBot.bot.account
 #        Specifies what account ID should be used to list items in the AH.
 
-AHBot.bot.account = 1
+AHBot.bot.account = 0
 
 #
 ###################################################################################################################
