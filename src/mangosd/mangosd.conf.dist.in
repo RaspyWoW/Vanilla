@@ -39,10 +39,10 @@ HonorDir = ""
 #    LogsDatabase.Info
 #        Database connection settings for the world server.
 
-LoginDatabase.Info     = "127.0.0.1;3306;mangos;mangos;realmd"
-WorldDatabase.Info     = "127.0.0.1;3306;mangos;mangos;mangos"
-CharacterDatabase.Info = "127.0.0.1;3306;mangos;mangos;characters"
-LogsDatabase.Info      = "127.0.0.1;3306;mangos;mangos;logs"
+LoginDatabase.Info     = "127.0.0.1;3306;user;password;auth"
+WorldDatabase.Info     = "127.0.0.1;3306;user;password;world"
+CharacterDatabase.Info = "127.0.0.1;3306;user;password;chars"
+LogsDatabase.Info      = "127.0.0.1;3306;user;password;logs"
 
 #
 #	LoginDatabase.Connections
