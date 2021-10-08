@@ -64,13 +64,12 @@ void AuctionHouseBotMgr::Load()
     sLog.outString(">> Loaded %u AuctionHouseBot items", count);
 
     /* CONFIG */
-    m_config                 = std::make_unique<AuctionHouseBotConfig>();
-    m_config->enable         = sConfig.GetBoolDefault("AHBot.Enable", false);
-    m_config->ahid           = sConfig.GetIntDefault("AHBot.ah.id", 7);
-    m_config->botguid        = sConfig.GetIntDefault("AHBot.bot.guid", 1123);
-    m_config->botaccount     = sConfig.GetIntDefault("AHBot.bot.account", 32377);
-    m_config->ahfid          = sConfig.GetIntDefault("AHBot.ah.fid", 120);
-    m_config->itemcount      = sConfig.GetIntDefault("AHBot.itemcount", 2);
+    m_config             = std::make_unique<AuctionHouseBotConfig>();
+    m_config->enable     = sConfig.GetBoolDefault("AHBot.Enable", false);
+    m_config->ahid       = sConfig.GetIntDefault("AHBot.ah.id", 7);
+    m_config->botaccount = sConfig.GetIntDefault("AHBot.bot.account", 0);
+    m_config->ahfid      = sConfig.GetIntDefault("AHBot.ah.fid", 120);
+    m_config->itemcount  = sConfig.GetIntDefault("AHBot.itemcount", 1);
 
     m_auctionHouseEntry = sAuctionMgr.GetAuctionHouseEntry(m_config->ahfid);
     if (!m_auctionHouseEntry)
@@ -92,7 +91,7 @@ void AuctionHouseBotMgr::Update(bool force /* = false */)
     if (!(m_config->enable || force))
         return;
 
-    if (m_items.empty() ||  /*m_config->botguid==0 ||*/ m_config->botaccount == 0)
+    if (m_items.empty() || m_config->botaccount == 0)
     {
         sLog.outError("AHBot::Update() : Bad config or empty table.");
         return;
