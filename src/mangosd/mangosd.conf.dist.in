@@ -45,11 +45,11 @@ CharacterDatabase.Info = "127.0.0.1;3306;user;password;chars"
 LogsDatabase.Info      = "127.0.0.1;3306;user;password;logs"
 
 #
-#	LoginDatabase.Connections
-#	WorldDatabase.Connections
-#	CharacterDatabase.Connections
-#   LogsDatabase.Connections
-#		 Amount of connections to database which will be used for SELECT queries. Maximum 16 connections per database.
+#    LoginDatabase.Connections
+#    WorldDatabase.Connections
+#    CharacterDatabase.Connections
+#    LogsDatabase.Connections
+#        Amount of connections to database which will be used for SELECT queries. Maximum 16 connections per database.
 
 LoginDatabase.Connections = 1
 WorldDatabase.Connections = 1
@@ -57,10 +57,10 @@ CharacterDatabase.Connections = 1
 LogsDatabase.Connections = 1
 
 #
-#   LoginDatabase.WorkerThreads
-#   WorldDatabase.WorkerThreads
-#   CharacterDatabase.WorkerThreads
-#   LogsDatabase.WorkerThreads
+#    LoginDatabase.WorkerThreads
+#    WorldDatabase.WorkerThreads
+#    CharacterDatabase.WorkerThreads
+#    LogsDatabase.WorkerThreads
 #        Amount of async threads (with dedicated connection) which will be used for async SELECT, executes, and transactions.
 
 LoginDatabase.WorkerThreads = 1
@@ -564,7 +564,7 @@ LogTime = 0
 #    LogFile
 #        Logfile name.
 
-LogFile = "Server.log"
+LogFile = "server.log"
 
 #
 #    LogTimestamp
@@ -665,7 +665,7 @@ WorldLogTimestamp = 0
 #    DBErrorLogFile
 #        Log file of DB errors detected at server run.
 
-DBErrorLogFile = "DBErrors.log"
+DBErrorLogFile = "dberrors.log"
 
 #
 #    DBErrorFixFile
@@ -677,7 +677,7 @@ DBErrorFixFile = ""
 #    CharLogFile
 #        Character operations logfile name.
 
-CharLogFile = "Char.log"
+CharLogFile = "char.log"
 
 #
 #    CharLogTimestamp
@@ -697,7 +697,7 @@ CharLogDump = 0
 #    ChatLogEnable
 #        Enable or disable logging of player chat.
 
-ChatLogFile = "Chat.log"
+ChatLogFile = "chat.log"
 
 #
 #    ChatLogFile
@@ -754,11 +754,13 @@ CriticalCommandsLogFile = "gm_critical.log"
 
 ExploitsLogFile = ""
 
+#
 #    ClientIdsLogFile
 #        Log file for client traffic.
 
 ClientIdsLogFile = "client.log"
 
+#
 #    LootsLogFile
 #        Log file for loot.
 
@@ -2280,6 +2282,7 @@ Anticheat.SelfRoot.Reject = 1
 
 Anticheat.SelfRoot.Threshold = 1
 
+#
 #    Anticheat.SelfRoot.Penalty
 #        Action to take upon failing this check.
 
