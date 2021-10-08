@@ -15,34 +15,32 @@ LoginDatabaseInfo = "127.0.0.1;3306;user;password;realmd"
 
 #
 #    LogsDir
-#         Logs directory setting.
-#         Logs direction must exists, or all logs be disabled.
+#         If this string is empty, no logs will be stored.
 
 LogsDir = ""
 
 #
 #    PatchesDir
 #         Folder to serve client patches.
-#         Patches dir must contain mpq files like this: <build><lang>.mpq e.g. 65535enGB.mpq
+#         (Patches dir must contain mpq files like: <build><lang>.mpq e.g. 65535enGB.mpq)
 
 PatchesDir = "./patches"
 
 #
 #    MaxPingTime
-#         Settings for maximum database-ping interval. (Minutes between pings)
+#         Database ping interval. (Minutes)
 
 MaxPingTime = 30
 
 #
 #    RealmServerPort
-#         Port on which the server will listen.
 
 RealmServerPort = 3724
 
 #
 #    BindIP
-#         Bind Realm Server to IP/hostname.
-#         This option is useful for running multiple worldd/realmd instances on different IP addresses using default ports.
+#        Bind Realmd Server to a certain IP-Address.
+#        This option is useful for running multiple mangosd or realmd instances on different IP addresses using default port
 
 BindIP = "0.0.0.0"
 
@@ -55,7 +53,7 @@ PidFile = ""
 #
 #    LogLevel
 #        Server console level of logging.
-#        0 = Minimum 1 = Error 2 = Detail 3 = Full/Debug
+#        0 = Minimum; 1 = Error; 2 = Detail; 3 = Full/Debug
 
 LogLevel = 0
 
@@ -68,7 +66,6 @@ LogTime = 0
 #
 #    LogFile
 #        Logfile name.
-#        Default: "Realmd.log"
 
 LogFile = "Realmd.log"
 
@@ -81,13 +78,13 @@ LogTimestamp = 0
 #
 #    LogFileLevel
 #        Server file level of logging.
-#        0 = Minimum 1 = Error 2 = Detail 3 = Full/Debug
+#        0 = Minimum; 1 = Error; 2 = Detail; 3 = Full/Debug
 
 LogFileLevel = 0
 
 #
 #    LogColors
-#        Color for messages. (format "normal_color details_color debug_color error_color)
+#        Color for messages. (Format "normal_color details_color debug_color error_color)
 #        Colors: 0 - BLACK, 1 - RED, 2 - GREEN,  3 - BROWN, 4 - BLUE, 5 - MAGENTA, 6 -  CYAN, 7 - GREY,
 #                8 - YELLOW, 9 - LRED, 10 - LGREEN, 11 - LBLUE, 12 - LMAGENTA, 13 - LCYAN, 14 - WHITE
 
@@ -107,19 +104,20 @@ ProcessPriority = 0
 
 #
 #    WaitAtStartupError
-#        After startup error report wait <Enter> or some time before continue. (and possible close console window)
+#        After startup error report console will pause until pressing <Enter> or specified time before continue. (Seconds)
 
 WaitAtStartupError = 0
 
 #
 #    MinRealmListDelay
-#        Minimum amount of time, in seconds, that must pass before a second realm list request is considered legitimate.
+#        Minimum amount of time, that must pass before a second realm list request is considered legitimate. (Seconds)
 
 MinRealmListDelay = 1
 
 #
 #    RealmsStateUpdateDelay
-#        Realm list update delay (updated at realm list request if delay expired).
+#        Realm list update delay.
+#        Uupdated at realm list request if delay expired.)
 
 RealmsStateUpdateDelay = 20
 
@@ -131,7 +129,8 @@ WrongPass.MaxCount = 5
 
 #
 #    WrongPass.BanTime
-#        Duration of the ban in seconds. (0 means permanent ban)
+#        Duration of the ban. (Seconds)
+#        (0 Perma ban)
 
 WrongPass.BanTime = 300
 
@@ -167,7 +166,8 @@ StrictVersionCheck = 1
 
 #
 #    SendMail
-#        Whether the realmd is allowed to send emails. (The server must have been compiled with USE_SENDGRID)
+#        Whether the realmd is allowed to send emails.
+#        (The server must have been compiled with -DUSE_SENDGRID.)
 
 SendMail = 0
 
@@ -186,7 +186,7 @@ MailCertChecks = 1
 #
 #    SendGridKey
 #        If SendGrid is being used for emailing, specify your API key here.
-#        This option must be set if SendGrid is enabled.
+#        (This option must be set if SendGrid is enabled.)
 
 SendGridKey = ""
 
