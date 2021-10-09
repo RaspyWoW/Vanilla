@@ -68,7 +68,7 @@ bool ChatHandler::HandleSpellEffectsCommand(char *args)
     SpellEntry const* pSpell = sSpellMgr.GetSpellEntry(spellId);
     if (!pSpell)
     {
-        PSendSysMessage("Sort %u inexistant dans les DBCs.", spellId);
+        PSendSysMessage("%u does not exist in DBCs.", spellId);
         SetSentErrorMessage(true);
         return false;
     }
@@ -78,7 +78,7 @@ bool ChatHandler::HandleSpellEffectsCommand(char *args)
     {
         if (pSpell->Effect[i] == 0)
         {
-            PSendSysMessage("[*] Pas d'effet %u", i);
+            PSendSysMessage("[*] No effect %u", i);
             continue;
         }
         PSendSysMessage("[*] Effect[%u] = %u", i, pSpell->Effect[i]);
@@ -107,13 +107,13 @@ bool ChatHandler::HandleSpellEffectsCommand(char *args)
                     PSendSysMessage("** %u [type`%u`|amount`%u`|spellid`%u`]", type_idx, pEnchant->type[type_idx], pEnchant->amount[type_idx], pEnchant->spellid[type_idx]);
             }
             else
-                PSendSysMessage("* Enchantement invalide (id %u)", pSpell->EffectMiscValue[i]);
+                PSendSysMessage("* Enchantement invalid (id %u)", pSpell->EffectMiscValue[i]);
         }
 
         if (SpellEntry const* pTriggered = sSpellMgr.GetSpellEntry(pSpell->EffectTriggerSpell[i]))
             ShowSpellListHelper(nullptr, pTriggered, loc);
         else
-            PSendSysMessage("(existe pas)");
+            PSendSysMessage("(Does not exist)");
     }
     return true;
 }
@@ -335,7 +335,6 @@ bool ChatHandler::HandleDebugSendMailErrorCommand(char* args)
     if (!ExtractUInt32(&args, mailError))
         return false;
 
-    uint8 msg = atoi(args);
     m_session->SendMailResult(mailId, MailResponseType(mailAction), MailResponseResult(mailError));
     return true;
 }
@@ -2032,7 +2031,7 @@ bool ChatHandler::HandleFactionChangeItemsCommand(char* c)
                     }
 
 
-            PSendSysMessage("Item %u not handled ! Similar item : %u", proto1->ItemId, similar ? similar->ItemId : 0);
+            PSendSysMessage("Item %u not handled! Similar item : %u", proto1->ItemId, similar ? similar->ItemId : 0);
         }
     }
     return true;
@@ -2047,7 +2046,7 @@ bool ChatHandler::HandleVideoTurn(char*)
     float const angleBegin = 0.0f;
     float const angleEnd = 10 * M_PI_F;
     float const moveSpeed = 30.0f;
-    std::list<Creature*> targets;
+
     Unit* selection = GetSelectedUnit();
     if (!selection)
     {
@@ -2066,11 +2065,13 @@ bool ChatHandler::HandleVideoTurn(char*)
         sLog.outString("%f %f %f", angle, d, z);
         a.push_back(Vector3(x + d * cos(angle), y + d * sin(angle), posZ));
     }
+
     Movement::MoveSplineInit init(*m_session->GetPlayer());
     init.MovebyPath(a);
     init.SetFly();
     init.SetVelocity(moveSpeed);
     init.Launch();
+
     return true;
 }
 
@@ -2429,7 +2430,7 @@ bool ChatHandler::HandleMmap(char* args)
     }
 
     on = sWorld.getConfig(CONFIG_BOOL_MMAP_ENABLED);
-    PSendSysMessage("mmaps are %sabled", on ? "en" : "dis");
+    PSendSysMessage("MMaps are %sabled", on ? "en" : "dis");
 
     return true;
 }
@@ -2536,6 +2537,9 @@ bool ChatHandler::HandleMmapTestArea(char* args)
 bool ChatHandler::HandleMmapPathCommand(char* args)
 {
     Player* player = m_session->GetPlayer();
+    if (!player)
+        return true;
+
     if (GenericTransport* transport = player->GetTransport())
     {
         if (!MMAP::MMapFactory::createOrGetMMapManager()->GetGONavMesh(transport->GetDisplayId()))
@@ -2557,7 +2561,7 @@ bool ChatHandler::HandleMmapPathCommand(char* args)
 
     // units
     Unit* target = GetSelectedUnit();
-    if (!player || !target)
+    if (!target)
     {
         PSendSysMessage("Invalid target/source selection.");
         return true;

@@ -233,21 +233,20 @@ void AccountMgr::Load()
         AccountTypes secu = AccountTypes(fields[1].GetUInt32());
         switch (secu)
         {
-        case SEC_PLAYER:
-            break;
-        case SEC_MODERATOR:
-        case SEC_TICKETMASTER:
-        case SEC_GAMEMASTER:
-        case SEC_BASIC_ADMIN:
-        case SEC_DEVELOPER:
-        case SEC_ADMINISTRATOR:
-            // Peut etre deja dans la liste ? On prend le plus haut gmlevel.
-            if (m_accountSecurity.find(accountId) == m_accountSecurity.end() ||
-                m_accountSecurity[accountId] < secu)
-                m_accountSecurity[accountId] = secu;
-            break;
+            case SEC_PLAYER:
+                break;
+            case SEC_MODERATOR:
+            case SEC_GAMEMASTER:
+            case SEC_ADMINISTRATOR:
+            {
+                // Maybe already in the list? We take the highest gmlevel.
+                if (m_accountSecurity.find(accountId) == m_accountSecurity.end() || m_accountSecurity[accountId] < secu)
+                    m_accountSecurity[accountId] = secu;
+                break;
+            }
         }
-    } while (result->NextRow());
+    }
+    while (result->NextRow());
 
     sLog.outString();
     sLog.outString(">> %u GM ranks loaded", m_accountSecurity.size());

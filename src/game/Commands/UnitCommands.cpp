@@ -1698,22 +1698,13 @@ bool ChatHandler::HandleModifyFactionCommand(char* args)
 
     if (!*args)
     {
-        if (chr)
-        {
-            uint32 factionid = chr->GetFactionTemplateId();
-            uint32 flag      = chr->GetUInt32Value(UNIT_FIELD_FLAGS);
-            uint32 npcflag   = chr->GetUInt32Value(UNIT_NPC_FLAGS);
-            uint32 dyflag    = chr->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
-            PSendSysMessage(LANG_CURRENT_FACTION, chr->GetGUIDLow(), factionid, flag, npcflag, dyflag);
-        }
-        return true;
-    }
+        uint32 factionid = chr->GetFactionTemplateId();
+        uint32 flag      = chr->GetUInt32Value(UNIT_FIELD_FLAGS);
+        uint32 npcflag   = chr->GetUInt32Value(UNIT_NPC_FLAGS);
+        uint32 dyflag    = chr->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
+        PSendSysMessage(LANG_CURRENT_FACTION, chr->GetGUIDLow(), factionid, flag, npcflag, dyflag);
 
-    if (!chr)
-    {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
-        SetSentErrorMessage(true);
-        return false;
+        return true;
     }
 
     uint32 factionid;
@@ -1756,7 +1747,7 @@ bool ChatHandler::HandleModifyASpeedCommand(char* args)
 
     float modSpeed = (float)atof(args);
 
-    if (modSpeed > 4.0f && GetAccessLevel() < SEC_BASIC_ADMIN)
+    if (modSpeed > 4.0f && GetAccessLevel() < SEC_ADMINISTRATOR)
         modSpeed = 4.0f;
 
     if (modSpeed > 100 || modSpeed < 0)
