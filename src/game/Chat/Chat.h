@@ -882,8 +882,8 @@ class ChatHandler
         bool HandleDismountCommand(char* args);
         bool HandleSaveCommand(char* args);
 
-        bool HandleNamegoCommand(char* args);
-        bool HandleGonameCommand(char* args);
+        bool HandleSummonCommand(char* args);
+        bool HandleGoToCommand(char* args);
         bool HandleGroupgoCommand(char* args);
         bool HandleGocorpseCommand(char* args);
         bool HandleRecallCommand(char* args);
@@ -932,7 +932,7 @@ class ChatHandler
         bool HandleNearGraveCommand(char* args);
         bool HandleExploreCheatCommand(char* args);
         bool HandleHoverCommand(char* args);
-        bool HandleModifyXpRateCommand(char* args);
+        bool HandleXpRateCommand(char* args);
         bool HandleLevelUpCommand(char* args);
         bool HandleShowAreaCommand(char* args);
         bool HandleHideAreaCommand(char* args);
