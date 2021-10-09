@@ -58,7 +58,7 @@ bool ChatHandler::HandleCharacterAIInfoCommand(char* /*args*/)
     return true;
 }
 
-bool ChatHandler::HandleModifyXpRateCommand(char* args)
+bool ChatHandler::HandleXpRateCommand(char* args)
 {
     // Only a GM can modify another player's rates.
     Player* pPlayer = (m_session->GetSecurity() < SEC_GAMEMASTER) ? m_session->GetPlayer() : GetSelectedPlayer();
