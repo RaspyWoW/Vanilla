@@ -523,8 +523,6 @@ bool ChatHandler::HandleGuildRenameCommand(char* args)
     if (!currentName)
         return false;
 
-    std::string current(currentName);
-
     char* newName = ExtractQuotedArg(&args);
     if (!newName)
         return false;
@@ -539,7 +537,8 @@ bool ChatHandler::HandleGuildRenameCommand(char* args)
         return false;
     }
 
-    if (Guild* existing = sGuildMgr.GetGuildByName(newn))
+    Guild* existing = sGuildMgr.GetGuildByName(newn);
+    if (existing)
     {
         PSendSysMessage("A guild with the name '%s' already exists", newName);
         SetSentErrorMessage(true);
@@ -660,8 +659,8 @@ bool ChatHandler::HandleInstanceListBindsCommand(char* /*args*/)
     if (!player) player = m_session->GetPlayer();
     uint32 counter = 0;
 
-    Player::BoundInstancesMap &binds = player->GetBoundInstances();
-    for (const auto& bind : binds)
+    Player::BoundInstancesMap &binds0 = player->GetBoundInstances();
+    for (const auto& bind : binds0)
     {
         DungeonPersistentState* state = bind.second.state;
         std::string timeleft;
@@ -686,8 +685,8 @@ bool ChatHandler::HandleInstanceListBindsCommand(char* /*args*/)
 
     if (Group* group = player->GetGroup())
     {
-        Group::BoundInstancesMap &binds = group->GetBoundInstances();
-        for (const auto& bind : binds)
+        Group::BoundInstancesMap &binds1 = group->GetBoundInstances();
+        for (const auto& bind : binds1)
         {
             DungeonPersistentState* state = bind.second.state;
             std::string timeleft;
@@ -754,7 +753,7 @@ bool ChatHandler::HandleInstanceUnbindCommand(char* args)
         return false;
 
     Player* player = GetSelectedPlayer();
-    if (!player || GetAccessLevel() < SEC_BASIC_ADMIN)
+    if (!player || GetAccessLevel() < SEC_ADMINISTRATOR)
         player = m_session->GetPlayer();
    
     uint32 mapid = 0;
@@ -779,7 +778,7 @@ bool ChatHandler::HandleInstanceGroupUnbindCommand(char* args)
     if (!*args)
         return false;
 
-    Player* player = player = GetSelectedPlayer();
+    Player* player = GetSelectedPlayer();
     if (!player || player->InBattleGround())
         return false;
 
@@ -836,9 +835,9 @@ bool ChatHandler::HandleInstanceStatsCommand(char* /*args*/)
 
 bool ChatHandler::HandleInstanceSaveDataCommand(char* /*args*/)
 {
-    Player* pl = m_session->GetPlayer();
+    Player* player = m_session->GetPlayer();
 
-    Map* map = pl->GetMap();
+    Map* map = player->GetMap();
 
     InstanceData* iData = map->GetInstanceData();
     if (!iData)
@@ -1473,7 +1472,7 @@ bool ChatHandler::HandleTriggerCommand(char* args)
 
         float dist2 = MAP_SIZE * MAP_SIZE;
 
-        Player* pl = m_session->GetPlayer();
+        Player* player = m_session->GetPlayer();
 
         // Search triggers
         for (auto const& itr : sObjectMgr.GetAreaTriggersMap())
@@ -1485,8 +1484,8 @@ bool ChatHandler::HandleTriggerCommand(char* args)
             if (atTestEntry->mapid != m_session->GetPlayer()->GetMapId())
                 continue;
 
-            float dx = atTestEntry->x - pl->GetPositionX();
-            float dy = atTestEntry->y - pl->GetPositionY();
+            float dx = atTestEntry->x - player->GetPositionX();
+            float dy = atTestEntry->y - player->GetPositionY();
 
             float test_dist2 = dx * dx + dy * dy;
 
@@ -1615,7 +1614,7 @@ bool ChatHandler::HandleCinematicAddWpCommand(char *args)
     uint32 timer = 0;
     char comment[100];
 
-    sscanf(args, "%u %u %s", &cinematic_id, &timer, comment);
+    sscanf(args, "%u %u %99s", &cinematic_id, &timer, comment);
 
     Player* me = m_session->GetPlayer();
     WorldDatabase.PExecute(
@@ -1844,10 +1843,11 @@ bool ChatHandler::HandleBGStartCommand(char *args)
     BattleGround* pBg = chr->GetBattleGround();
     if (!pBg)
     {
-        SendSysMessage("Vous devez etre dans un champs de bataille pour utiliser cette commande.");
+        SendSysMessage("You have to be in a battleground to use this command.");
         SetSentErrorMessage(true);
         return false;
     }
+
     pBg->SetStartDelayTime(0);
     PSendSysMessage("BG commence [%s][%u]", pBg->GetName(), pBg->GetInstanceID());
     return true;

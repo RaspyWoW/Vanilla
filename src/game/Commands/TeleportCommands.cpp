@@ -1124,7 +1124,7 @@ bool ChatHandler::HandleRecallCommand(char* args)
 
 
 //Summon Player
-bool ChatHandler::HandleNamegoCommand(char* args)
+bool ChatHandler::HandleSummonCommand(char* args)
 {
     Player* pTarget;
     ObjectGuid target_guid;
@@ -1204,8 +1204,8 @@ bool ChatHandler::HandleNamegoCommand(char* args)
     return true;
 }
 
-//Teleport to Player
-bool ChatHandler::HandleGonameCommand(char* args)
+// Teleport to Player
+bool ChatHandler::HandleGoToCommand(char* args)
 {
     Player* pTarget;
     ObjectGuid target_guid;

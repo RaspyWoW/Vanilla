@@ -58,7 +58,7 @@ bool ChatHandler::HandleCharacterAIInfoCommand(char* /*args*/)
     return true;
 }
 
-bool ChatHandler::HandleModifyXpRateCommand(char* args)
+bool ChatHandler::HandleXpRateCommand(char* args)
 {
     // Only a GM can modify another player's rates.
     Player* pPlayer = (m_session->GetSecurity() < SEC_GAMEMASTER) ? m_session->GetPlayer() : GetSelectedPlayer();
@@ -3093,10 +3093,11 @@ bool ChatHandler::HandleAddItemCommand(char* args)
         // Is the item actually?
         if (!plTarget->HasItemCount(itemId, -count, true))
         {
-            PSendSysMessage("Le joueur a l'objet %ux%u. Ne peut en retirer %u. Banque inclue.", itemId, plTarget->GetItemCount(itemId, true), -count);
+            PSendSysMessage("Player has item %u, %u times. Cannot remove %u pieces. Bank included.", itemId, plTarget->GetItemCount(itemId, true), -count);
             SetSentErrorMessage(true);
             return false;
         }
+
         plTarget->DestroyItemCount(itemId, -count, true, false);
         PSendSysMessage(LANG_REMOVEITEM, itemId, -count, GetNameLink(plTarget).c_str());
         return true;
@@ -4370,7 +4371,7 @@ bool ChatHandler::HandleModifySpeedCommand(char* args)
 
     float modSpeed = (float)atof(args);
 
-    if (modSpeed > 4.0f && GetAccessLevel() < SEC_BASIC_ADMIN)
+    if (modSpeed > 4.0f && GetAccessLevel() < SEC_ADMINISTRATOR)
         modSpeed = 4.0f;
 
     if (m_session->IsReplaying())
@@ -4432,7 +4433,7 @@ bool ChatHandler::HandleModifySwimCommand(char* args)
 
     float modSpeed = (float)atof(args);
 
-    if (modSpeed > 4.0f && GetAccessLevel() < SEC_BASIC_ADMIN)
+    if (modSpeed > 4.0f && GetAccessLevel() < SEC_ADMINISTRATOR)
         modSpeed = 4.0f;
 
     if (m_session->IsReplaying())
@@ -4494,7 +4495,7 @@ bool ChatHandler::HandleModifyBWalkCommand(char* args)
 
     float modSpeed = (float)atof(args);
 
-    if (modSpeed > 4.0f && GetAccessLevel() < SEC_BASIC_ADMIN)
+    if (modSpeed > 4.0f && GetAccessLevel() < SEC_ADMINISTRATOR)
         modSpeed = 4.0f;
 
     if (modSpeed > 100.0f || modSpeed < 0.1f)
