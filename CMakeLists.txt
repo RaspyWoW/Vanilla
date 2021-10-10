@@ -33,7 +33,7 @@ set(CMAKE_MODULE_PATH
 set(SUPPORTED_CLIENT_BUILD "CLIENT_BUILD_1_12_1" CACHE STRING "Client version the core will support")
 option(USE_STD_MALLOC "Use standard malloc instead of TBB" OFF)
 option(TBB_DEBUG "Use TBB debug librairies" OFF)
-option(USE_ANTICHEAT "Use anticheat" OFF)
+option(USE_ANTICHEAT "Use anticheat" ON)
 option(USE_SCRIPTS "Compile scripts" ON)
 option(USE_EXTRACTORS "Compile extractors" OFF)
 option(USE_LIBCURL "Compile with libcurl for email support" OFF)
