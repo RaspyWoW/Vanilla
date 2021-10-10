@@ -337,18 +337,19 @@ struct boss_gothikAI : public ScriptedAI
 
     bool IsAllPlayersOneSide()
     {
-        MapRefManager const&  lPlayers = m_pInstance->GetMap()->GetPlayers();
+        MapRefManager const& lPlayers = m_pInstance->GetMap()->GetPlayers();
         uint32 num_left = 0;
         uint32 num_right = 0;
         for (auto& playerRef : lPlayers)
         {
             if (Player const* p = playerRef.getSource())
             {
-                // Don't count dead players, except those feigned
-                if (p->IsDead() && !p->HasAura(SPELL_AURA_FEIGN_DEATH))
+                // Don't count dead players, including those that are feigned
+                // Otherwise we could have a bunch of feigned players sitting on one side
+                if (p->IsDead())
                     continue;
 
-                if(m_pInstance->IsInRightSideGothArea(p))
+                if (m_pInstance->IsInRightSideGothArea(p))
                     ++num_right;
                 else
                     ++num_left;
@@ -358,7 +359,7 @@ struct boss_gothikAI : public ScriptedAI
         // "everyone is on the same side". That to avoid the whole raid afking on spectral
         // side, waiting for gothik to TP down, in which case they have 40 sec to kill him
         // before the gates would ordinarily open.
-        return (num_left < 1 || num_right < 1);
+        return (num_left <= 1 || num_right <= 1);
     }
 
     void UpdateAI(uint32 const uiDiff) override
