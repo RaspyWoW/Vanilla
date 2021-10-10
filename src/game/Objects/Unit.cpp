@@ -1077,11 +1077,11 @@ void Unit::Kill(Unit* pVictim, SpellEntry const* spellProto, bool durabilityLoss
                     break;
                 }
             }
-        }
 
-        // Already applied spirit of redemption. Fix stuck in ANGEL form.
-        if (!spiritOfRedemtionTalentImmune && HasAura(27827))
-            return;
+            // Already applied spirit of redemption. Fix stuck in ANGEL form.
+            if (!spiritOfRedemtionTalentImmune && HasAura(27827))
+                return;
+        }
     }
 
     if (!spiritOfRedemtionTalentImmune)
