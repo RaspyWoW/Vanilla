@@ -33,6 +33,7 @@
 #include "Item.h"
 #include "GossipDef.h"
 #include "Chat/AbstractPlayer.h"
+#include "WhisperTargetLimits.h"
 
 struct ItemPrototype;
 struct AuctionEntry;
@@ -457,6 +458,8 @@ class WorldSession
         uint32 getDialogStatus(Player* pPlayer, Object* questgiver, uint32 defstatus);
         uint32 GetAccountMaxLevel() const { return _characterMaxLevel; }
         void SetAccountMaxLevel(uint32 l) { _characterMaxLevel = l; }
+
+        WhisperTargetLimits& GetWhisperTargets() { return _whisper_targets; }
 
         // Public chat cooldown restriction functionality
         // Intentionally session-based to avoid login/logout hijinks
@@ -907,6 +910,8 @@ class WorldSession
 
         AccountTypes _security;
         uint32 _accountId;
+
+        WhisperTargetLimits _whisper_targets;
 
         time_t _logoutTime;
         bool m_inQueue;                                     // session wait in auth.queue
