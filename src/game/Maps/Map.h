@@ -594,6 +594,7 @@ class Map : public GridRefManager<NGridType>
         GameObject* SummonGameObject(uint32 entry, float x, float y, float z, float ang, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime, uint32 worldMask);
 
         bool ShouldUpdateMap(uint32 now, uint32 inactiveTimeLimit);
+        uint32 GetLastMapUpdate() const { return _lastMapUpdate; }
         void RemoveBones(Corpse* corpse);
 
     private:

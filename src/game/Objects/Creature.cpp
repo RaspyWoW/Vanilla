@@ -841,7 +841,7 @@ void Creature::Update(uint32 update_diff, uint32 diff)
                     ResetCombatTime(true);
                 }
 
-                if (WorldTimer::tickTime() % 3000 <= update_diff)
+                if (GetMap()->GetLastMapUpdate() % 3000 <= update_diff)
                 {
                     // Prevent mobs from evading while under crowd control.
                     if (HasUnitState(UNIT_STAT_NO_FREE_MOVE))
