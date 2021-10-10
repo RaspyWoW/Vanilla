@@ -288,7 +288,7 @@ class ObjectGuidGenerator
 
     public:                                                 // modifiers
         void Set(uint32 val) { m_nextGuid = val; }
-        uint32 Generate();
+        uint32 Generate(bool nothrow = true);
         void GenerateRange(uint32& first, uint32& last);
 
     public:                                                 // accessors
