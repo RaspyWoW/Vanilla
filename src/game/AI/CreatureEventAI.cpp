@@ -378,6 +378,19 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
             break;
     }
 
+    // If command is flee and caster is casting
+    for (const auto& action : pHolder.Event.action) // scriptmap - multimap<uint32, ScriptInfo>  0-3 action
+    {
+        if (action)
+        {
+            for (const auto& x : *action)
+            {
+                if ((x.second.command == SCRIPT_COMMAND_FLEE) && (m_creature->IsNonMeleeSpellCasted(false,false,false)))
+                    return false;
+            }
+        }
+    }
+
     //Disable non-repeatable events
     if (!(pHolder.Event.event_flags & EFLAG_REPEATABLE))
         pHolder.Enabled = false;
