@@ -110,7 +110,8 @@ void WaypointManager::Load()
             if (!cData)
             {
                 if (!sObjectMgr.IsExistingCreatureGuid(id))
-                    sLog.outErrorDb("Table creature_movement contain path for creature guid %u, but this creature guid does not exist. Skipping.", id);
+                    DEBUG_LOG("Table creature_movement contain path for creature guid %u, but this creature guid does not exist. Skipping.", id);
+
                 continue;
             }
 

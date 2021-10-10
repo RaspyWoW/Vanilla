@@ -106,7 +106,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         }
         default:
         {
-            sLog.outError("%s is unsupported for looting. (%s)", lguid.GetString().c_str(), player->GetObjectGuid().GetString().c_str());
+            DEBUG_LOG("%s is unsupported for looting. (%s)", lguid.GetString().c_str(), player->GetObjectGuid().GetString().c_str());
             return;
         }
     }
@@ -533,7 +533,7 @@ void WorldSession::DoLootRelease(ObjectGuid lguid)
         }
         default:
         {
-            sLog.outError("%s is unsupported for looting.", lguid.GetString().c_str());
+            DEBUG_LOG("%s is unsupported for looting.", lguid.GetString().c_str());
             return;
         }
     }
