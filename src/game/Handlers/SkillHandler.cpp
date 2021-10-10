@@ -31,6 +31,12 @@
 
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 {
+    if (!_player->IsAlive())
+    {
+        _player->SendEquipError(EQUIP_ERR_YOU_ARE_DEAD, nullptr, nullptr);
+        return;
+    }
+
     uint32 talent_id, requested_rank;
     recv_data >> talent_id >> requested_rank;
 
