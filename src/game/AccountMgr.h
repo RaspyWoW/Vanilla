@@ -109,6 +109,11 @@ class AccountMgr
         bool CheckInstanceCount(uint32 accountId, uint32 instanceId, uint32 maxCount);
         void AddInstanceEnterTime(uint32 accountId, uint32 instanceId, time_t enterTime);
 
+        bool IsPlayerAccount(uint32 gmlevel);
+        bool IsGMAccount(uint32 gmlevel);
+        bool IsAdminAccount(uint32 gmlevel);
+        bool IsConsoleAccount(uint32 gmlevel);
+
         AccountPersistentData& GetAccountPersistentData(uint32 accountId) { return m_accountPersistentData[accountId]; }
     protected:
         std::map<uint32, AccountTypes> m_accountSecurity;

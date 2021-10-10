@@ -501,6 +501,26 @@ void AccountMgr::AddInstanceEnterTime(uint32 accountId, uint32 instanceId, time_
     it->second[instanceId] = enterTime;
 }
 
+bool AccountMgr::IsPlayerAccount(uint32 gmlevel)
+{
+    return gmlevel == SEC_PLAYER;
+}
+
+bool AccountMgr::IsGMAccount(uint32 gmlevel)
+{
+    return gmlevel >= SEC_MODERATOR && gmlevel <= SEC_CONSOLE;
+}
+
+bool AccountMgr::IsAdminAccount(uint32 gmlevel)
+{
+    return gmlevel == SEC_ADMINISTRATOR || gmlevel == SEC_CONSOLE;
+}
+
+bool AccountMgr::IsConsoleAccount(uint32 gmlevel)
+{
+    return gmlevel == SEC_CONSOLE;
+}
+
 // Anticheat
 void AccountPersistentData::WhisperedBy(MasterPlayer* whisperer)
 {

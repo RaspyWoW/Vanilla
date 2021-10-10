@@ -32,6 +32,7 @@
 #include "Guild.h"
 #include "GuildMgr.h"
 #include "Auth/md5.h"
+#include "AccountMgr.h"
 #include "ObjectAccessor.h"
 #include "Group.h"
 #include "Database/DatabaseImpl.h"
@@ -596,7 +597,8 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder *holder)
     GetMasterPlayer()->SendInitialActionButtons();
 
     //Show cinematic at the first time that player login
-    if (pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST) && !sWorld.getConfig(CONFIG_BOOL_SKIP_CINEMATICS))
+    AccountMgr AccountMgr;
+    if (AccountMgr.IsPlayerAccount(GetSecurity()) && pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST) && !sWorld.getConfig(CONFIG_BOOL_SKIP_CINEMATICS))
     {
         if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->GetRace()))
             pCurrChar->SendCinematicStart(rEntry->CinematicSequence);
