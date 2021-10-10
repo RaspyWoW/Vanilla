@@ -127,6 +127,12 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recvData)
         if (ticketType >= GMTICKET_MAX)
             return;
 
+        ChatHandler(this).SendSysMessage("NOTE: Game Masters DO NOT handle bug reports!");
+        ChatHandler(this).SendSysMessage("Please use our bugtracker and provide reliable sources:");
+        ChatHandler(this).SendSysMessage("https://github.com/RaspyWoW/Vanilla/issues");
+        ChatHandler(this).SendSysMessage("If it's gamebreaking please PM our staff directly on discord:");
+        ChatHandler(this).SendSysMessage("https://raspywow.org/discord");
+
         ticket = new GmTicket(GetPlayer());
         ticket->SetPosition(mapId, x, y, z);
         ticket->SetMessage(ticketText);
