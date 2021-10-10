@@ -81,14 +81,17 @@ CreatureAI* GetAI_npc_primordial_behemoth(Creature* pCreature)
 
 bool GOHello_go_larva_spewer(Player* pPlayer, GameObject* pGo)
 {
-    ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData();
-
-    if (pGo && pInstance)
+    if (pGo)
     {
-        // Alternative state = destroyed
-        pGo->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
-        // Save state
-        pInstance->SetData(TYPE_LARVA_SPEWER, DONE);
+        ScriptedInstance* pInstance = static_cast<ScriptedInstance*>(pGo->GetInstanceData());
+
+        if (pInstance)
+        {
+            // Alternative state = destroyed
+            pGo->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
+            // Save state
+            pInstance->SetData(TYPE_LARVA_SPEWER, DONE);
+        }
     }
 
     // Always return true to avoid continuing GameObject::Use
