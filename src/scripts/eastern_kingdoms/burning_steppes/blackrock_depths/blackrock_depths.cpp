@@ -270,36 +270,46 @@ struct npc_grimstoneAI : public npc_escortAI
         switch (i)
         {
             case 0:
-                DoScriptText(-1000011, m_creature);
+            {
+                m_creature->MonsterYell(-1000011);
                 CanWalk = false;
                 Event_Timer = 5000;
                 break;
+            }
             case 1:
-                DoScriptText(-1000012, m_creature);
+            {
+                m_creature->MonsterYell(-1000012);
+                m_creature->HandleEmote(EMOTE_ROAR);
                 CanWalk = false;
                 Event_Timer = 5000;
                 break;
+            }
             case 2:
+            {
                 CanWalk = false;
                 break;
-            case 3:
-                //DoScriptText(-1000013, m_creature);//5
-                break;
+            }
             case 4:
-                DoScriptText(-1000015, m_creature);
+            {
+                m_creature->MonsterYell(-1000015);
                 CanWalk = false;
                 Event_Timer = 5000;
                 break;
+            }
             case 5:
+            {
                 if (m_pInstance)
                 {
                     m_pInstance->SetData(TYPE_RING_OF_LAW, DONE);
 
                     if (m_pInstance->GetData(DATA_THELDREN) == IN_PROGRESS)
                         m_pInstance->SetData(DATA_THELDREN, DONE);
+
                     sLog.outDebug("npc_grimstone: event reached end and set complete.");
                 }
+
                 break;
+            }
         }
     }
 
@@ -378,72 +388,101 @@ struct npc_grimstoneAI : public npc_escortAI
                 switch (EventPhase)
                 {
                     case 0:
-                        DoScriptText(-1000010, m_creature);
+                    {
+                        m_creature->CastSpell(m_creature, SPELL_COMEGO_EXPLOSION, false);
+                        m_creature->MonsterYell(-1000010);
                         DoGate(DATA_ARENA4, GO_STATE_READY);
                         Start(false);
                         CanWalk = true;
                         Event_Timer = 0;
                         break;
+                    }
                     case 1:
+                    {
                         CanWalk = true;
                         Event_Timer = 0;
                         break;
+                    }
                     case 2:
-                        Event_Timer = 2000;
+                    {
+                        m_creature->CastSpell(m_creature, SPELL_FIREBALL, false);
+                        Event_Timer = 3500;
                         break;
+                    }
                     case 3:
+                    {
                         DoGate(DATA_ARENA1, GO_STATE_ACTIVE);
                         Event_Timer = 3000;
                         break;
+                    }
                     case 4:
+                    {
                         CanWalk = true;
                         m_creature->SetVisibility(VISIBILITY_OFF);
                         SummonRingMob();
                         Event_Timer = 3000;
                         break;
+                    }
                     case 5:
+                    {
                         SummonRingMob();
                         SummonRingMob();
                         Event_Timer = 4000;
                         break;
+                    }
                     case 6:
+                    {
                         SummonRingMob();
                         Event_Timer = 12000;
                         break;
+                    }
                     case 7:
+                    {
                         MobSpawnId = urand(0, 5);
                         SummonRingMob();
                         Event_Timer = 3000;
                         break;
+                    }
                     case 8:
+                    {
                         SummonRingMob();
                         SummonRingMob();
                         m_creature->SetVisibility(VISIBILITY_ON);
-                        DoScriptText(-1000013, m_creature);
+                        m_creature->MonsterYell(-1000013);
                         Event_Timer = 4000;
                         break;
+                    }
                     case 9:
+                    {
                         SummonRingMob();
-                        DoScriptText(-1000014, m_creature);
+                        m_creature->MonsterYell(-1000014);
                         m_creature->SetVisibility(VISIBILITY_OFF);
                         Event_Timer = 0;
                         break;
+                    }
                     case 10:
+                    {
                         m_creature->SetVisibility(VISIBILITY_ON);
                         DoGate(DATA_ARENA1, GO_STATE_READY);
                         CanWalk = true;
                         Event_Timer = 0;
                         break;
+                    }
                     case 11:
+                    {
                         DoGate(DATA_ARENA2, GO_STATE_ACTIVE);
                         Event_Timer = 5000;
                         break;
+                    }
                     case 12:
+                    {
                         m_creature->SetVisibility(VISIBILITY_OFF);
                         SummonRingBoss();
                         Event_Timer = 0;
                         break;
+                    }
                     case 13:
+                    {
                         //if quest, complete
                         DoGate(DATA_ARENA2, GO_STATE_READY);
                         DoGate(DATA_ARENA3, GO_STATE_ACTIVE);
@@ -451,10 +490,13 @@ struct npc_grimstoneAI : public npc_escortAI
                         CanWalk = true;
                         Event_Timer = 0;
                         break;
+                    }
                 }
+
                 ++EventPhase;
             }
-            else Event_Timer -= diff;
+            else
+                Event_Timer -= diff;
         }
 
         if (CanWalk)

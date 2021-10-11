@@ -167,6 +167,11 @@ enum
     YELL_SENATOR_2             = -1230049,
     YELL_SENATOR_3             = -1230050,
     YELL_SENATOR_4             = -1230051,
+
+    // High Justice Grimstone
+    SPELL_COMEGO_EXPLOSION = 27745,
+    SPELL_FIREBALL = 145, // Needs to be replaced once actual spell is found. This is just for the visual.
+    EMOTE_ROAR = 15
 };
 
 // Random emotes for Grim Guzzler patrons
