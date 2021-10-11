@@ -222,8 +222,12 @@ public:
         }
 
         uint32 count = m.size();
-        data.put(0, clientcount);                               // insert right count, listed count
-        data.put(4, count > 49 ? count : clientcount);          // insert right count, online count
+        data.put(0, clientcount); // Insert right count, listed count
+
+        if (sWorld.getConfig(CONFIG_BOOL_HIDE_TOTAL_POPULATION))
+            data.put(4, clientcount);
+        else
+            data.put(4, count > 49 ? count : clientcount);
 
         sess->SendPacket(&data);
         DEBUG_LOG("WORLD: Send SMSG_WHO Message");

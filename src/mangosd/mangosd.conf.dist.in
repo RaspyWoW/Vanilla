@@ -1292,6 +1292,13 @@ WaitAtStartupError = 0
 Motd = "Welcome to World of Warcraft!"
 
 #
+#    Hide.Total.Population
+#        Hide total online popolation in /who list.
+#        (1 Blizzlike, capped to show 50 people.)
+
+Hide.Total.Population = 1
+
+#
 ###################################################################################################################
 # PLAYER INTERACTION
 #
