@@ -14,32 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: Boss_Overlord_Wyrmthalak
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
-
 #include "scriptPCH.h"
-
-enum
-{
-    SPELL_BLASTWAVE            = 11130,
-    SPELL_SHOUT                = 23511,
-    SPELL_CLEAVE               = 20691,
-    SPELL_KNOCKAWAY            = 20686,
-
-    NPC_SPIRESTONE_WARLORD     = 9216,
-    NPC_SMOLDERTHORN_BERSERKER = 9268
-
-};
-
-float const afLocations[2][4] =
-{
-    { -39.355381f, -513.456482f, 88.472046f, 4.679872f},
-    { -49.875881f, -511.896942f, 88.195160f, 4.613114f}
-};
 
 struct boss_overlordwyrmthalakAI : public ScriptedAI
 {
@@ -48,24 +23,37 @@ struct boss_overlordwyrmthalakAI : public ScriptedAI
         Reset();
     }
 
+    float const afLocations[2][4] =
+    {
+        { -39.355381f, -513.456482f, 88.472046f, 4.679872f},
+        { -49.875881f, -511.896942f, 88.195160f, 4.613114f}
+    };
+
+    static constexpr uint32 SPELL_BLASTWAVE = 11130;
+    static constexpr uint32 SPELL_SHOUT = 23511;
+    static constexpr uint32 SPELL_CLEAVE = 20691;
+    static constexpr uint32 SPELL_KNOCKAWAY = 20686;
+
+    static constexpr uint32 NPC_SPIRESTONE_WARLORD = 9216;
+    static constexpr uint32 NPC_SMOLDERTHORN_BERSERKER = 9268;
+
     uint32 m_uiBlastWaveTimer;
     uint32 m_uiShoutTimer;
     uint32 m_uiCleaveTimer;
     uint32 m_uiKnockawayTimer;
+    uint32 m_uiLeashCheckTimer;
     bool m_bSummoned;
     bool m_bPulledByPet;
-    uint32 m_uiLeashCheckTimer;
 
     void Reset() override
     {
         m_uiBlastWaveTimer = 20000;
-        m_uiShoutTimer     = 2000;
-        m_uiCleaveTimer    = 6000;
+        m_uiShoutTimer = 2000;
+        m_uiCleaveTimer = 6000;
         m_uiKnockawayTimer = 12000;
+        m_uiLeashCheckTimer = 5000;
         m_bSummoned = false;
         m_bPulledByPet = false;
-
-        m_uiLeashCheckTimer = 5000;
     }
 
     void JustSummoned(Creature* pSummoned) override
@@ -100,9 +88,12 @@ struct boss_overlordwyrmthalakAI : public ScriptedAI
             return;
         }
 
-        if (m_bPulledByPet || (m_creature->GetPositionZ() > 100.0f))
+        if (m_bPulledByPet || (m_creature->GetPositionZ() > 95.0f || m_creature->GetPositionZ() < 77.0f))
+        {
             EnterEvadeMode();
-    } 
+            return;
+        }
+    }
 
     void UpdateAI(uint32 const uiDiff) override
     {
@@ -110,7 +101,7 @@ struct boss_overlordwyrmthalakAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
 
-        // Prevent players from pulling Wyrmthalak into UBRS
+        // Prevent exploit
         LeashIfOutOfCombatArea(uiDiff);
 
         // BlastWave

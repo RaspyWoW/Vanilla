@@ -50,6 +50,7 @@ void AddSC_boss_general_angerforge();
 void AddSC_boss_gorosh_the_dervish();
 void AddSC_boss_grizzle();
 void AddSC_boss_high_interrogator_gerstahn();
+void AddSC_boss_lord_incendius();
 void AddSC_boss_magmus();
 void AddSC_boss_tomb_of_seven();
 void AddSC_boss_urok();
@@ -296,6 +297,7 @@ void AddScripts()
     AddSC_boss_gorosh_the_dervish();
     AddSC_boss_grizzle();
     AddSC_boss_high_interrogator_gerstahn();
+    AddSC_boss_lord_incendius();
     AddSC_boss_magmus();
     AddSC_boss_tomb_of_seven();
     AddSC_boss_urok();

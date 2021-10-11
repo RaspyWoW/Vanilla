@@ -14,21 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: Boss_Mother_Smolderweb
-SD%Complete: 100
-SDComment: Uncertain how often mother's milk is casted
-SDCategory: Blackrock Spire
-EndScriptData */
-
 #include "scriptPCH.h"
-
-enum
-{
-    SPELL_CRYSTALIZE              = 16104,
-    SPELL_MOTHERSMILK             = 16468,
-    SPELL_SUMMON_SPIRE_SPIDERLING = 16103
-};
 
 struct boss_mothersmolderwebAI : public ScriptedAI
 {
@@ -37,13 +23,48 @@ struct boss_mothersmolderwebAI : public ScriptedAI
         Reset();
     }
 
+    static constexpr uint32 SPELL_CRYSTALIZE = 16104;
+    static constexpr uint32 SPELL_MOTHERSMILK = 16468;
+    static constexpr uint32 SPELL_SUMMON_SPIRE_SPIDERLING = 16103;
+
     uint32 m_uiCrystalizeTimer;
     uint32 m_uiMothersMilkTimer;
+    uint32 m_uiLeashCheckTimer;
+    bool m_bSummoned;
+    bool m_bPulledByPet;
 
     void Reset() override
     {
-        m_uiCrystalizeTimer  = 20000;
+        m_uiCrystalizeTimer = 20000;
         m_uiMothersMilkTimer = 10000;
+        m_uiLeashCheckTimer = 5000;
+        m_bSummoned = false;
+        m_bPulledByPet = false;
+    }
+
+    void EnterCombat(Unit* pUnit) override
+    {
+        // Prevent exploit where pet can run through the wall and pull the boss.
+        if (Unit* pOwner = pUnit->GetOwner())
+            if (!pOwner->IsWithinLOSInMap(m_creature))
+                m_bPulledByPet = true;
+    }
+
+    void LeashIfOutOfCombatArea(uint32 uiDiff)
+    {
+        if (m_uiLeashCheckTimer < uiDiff)
+            m_uiLeashCheckTimer = 3500;
+        else
+        {
+            m_uiLeashCheckTimer -= uiDiff;
+            return;
+        }
+
+        if (m_bPulledByPet || (m_creature->GetPositionZ() > 23.0f || m_creature->GetPositionZ() < -19.0f))
+        {
+            EnterEvadeMode();
+            return;
+        }
     }
 
     void DamageTaken(Unit* pDoneBy, uint32 &uiDamage) override
@@ -57,6 +78,9 @@ struct boss_mothersmolderwebAI : public ScriptedAI
         // Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
+
+        // Prevent exploit
+        LeashIfOutOfCombatArea(uiDiff);
 
         // Crystalize
         if (m_uiCrystalizeTimer < uiDiff)

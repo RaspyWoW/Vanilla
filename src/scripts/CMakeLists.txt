@@ -58,6 +58,7 @@ set (SCRIPTS_SRCS
     eastern_kingdoms/burning_steppes/blackrock_depths/boss_gorosh_the_dervish.cpp
     eastern_kingdoms/burning_steppes/blackrock_depths/boss_grizzle.cpp
     eastern_kingdoms/burning_steppes/blackrock_depths/boss_high_interrogator_gerstahn.cpp
+    eastern_kingdoms/burning_steppes/blackrock_depths/boss_lord_incendius.cpp
     eastern_kingdoms/burning_steppes/blackrock_depths/boss_magmus.cpp
     eastern_kingdoms/burning_steppes/blackrock_depths/boss_tomb_of_seven.cpp
     eastern_kingdoms/burning_steppes/blackrock_depths/instance_blackrock_depths.cpp

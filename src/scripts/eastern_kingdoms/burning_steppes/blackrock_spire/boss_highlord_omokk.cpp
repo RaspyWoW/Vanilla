@@ -14,24 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: Boss_Highlord_Omokk
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
-
 #include "scriptPCH.h"
-
-enum
-{
-    SPELL_WARSTOMP    = 24375,
-    SPELL_STRIKE      = 18368,
-    SPELL_REND        = 18106,
-    SPELL_SUNDERARMOR = 24317,
-    SPELL_KNOCKAWAY   = 20686,
-    SPELL_SLOW        = 22356
-};
 
 struct boss_highlordomokkAI : public ScriptedAI
 {
@@ -40,28 +23,69 @@ struct boss_highlordomokkAI : public ScriptedAI
         Reset();
     }
 
+    static constexpr uint32 SPELL_WARSTOMP = 24375;
+    static constexpr uint32 SPELL_STRIKE = 18368;
+    static constexpr uint32 SPELL_REND = 18106;
+    static constexpr uint32 SPELL_SUNDERARMOR = 24317;
+    static constexpr uint32 SPELL_KNOCKAWAY = 20686;
+    static constexpr uint32 SPELL_SLOW = 22356;
+
     uint32 m_uiWarStompTimer;
     uint32 m_uiStrikeTimer;
     uint32 m_uiRendTimer;
     uint32 m_uiSunderArmorTimer;
     uint32 m_uiKnockAwayTimer;
     uint32 m_uiSlowTimer;
+    uint32 m_uiLeashCheckTimer;
+    bool m_bSummoned;
+    bool m_bPulledByPet;
 
     void Reset() override
     {
-        m_uiWarStompTimer    = 15000;
-        m_uiStrikeTimer      = 10000;
-        m_uiRendTimer        = 14000;
+        m_uiWarStompTimer = 15000;
+        m_uiStrikeTimer = 10000;
+        m_uiRendTimer = 14000;
         m_uiSunderArmorTimer = 2000;
-        m_uiKnockAwayTimer   = 18000;
-        m_uiSlowTimer        = 24000;
+        m_uiKnockAwayTimer = 18000;
+        m_uiSlowTimer = 24000;
+        m_uiLeashCheckTimer = 5000;
+        m_bSummoned = false;
+        m_bPulledByPet = false;
+    }
+
+    void EnterCombat(Unit* pUnit) override
+    {
+        // Prevent exploit where pet can run through the wall and pull the boss.
+        if (Unit* pOwner = pUnit->GetOwner())
+            if (!pOwner->IsWithinLOSInMap(m_creature))
+                m_bPulledByPet = true;
+    }
+
+    void LeashIfOutOfCombatArea(uint32 uiDiff)
+    {
+        if (m_uiLeashCheckTimer < uiDiff)
+            m_uiLeashCheckTimer = 3500;
+        else
+        {
+            m_uiLeashCheckTimer -= uiDiff;
+            return;
+        }
+
+        if (m_bPulledByPet || (m_creature->GetPositionZ() < 28.0f || m_creature->GetPositionZ() > 45.0f))
+        {
+            EnterEvadeMode();
+            return;
+        }
     }
 
     void UpdateAI(uint32 const uiDiff) override
     {
-        //Return since we have no target
+        // Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
+
+        // Prevent exploit
+        LeashIfOutOfCombatArea(uiDiff);
 
         // WarStomp
         if (m_uiWarStompTimer < uiDiff)

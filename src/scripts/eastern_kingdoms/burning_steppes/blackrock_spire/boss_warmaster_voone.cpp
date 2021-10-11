@@ -14,21 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: Boss_Warmaster_Voone
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
-
 #include "scriptPCH.h"
-
-#define SPELL_SNAPKICK          15618
-#define SPELL_CLEAVE            15284
-#define SPELL_UPPERCUT          10966
-#define SPELL_MORTALSTRIKE      15708
-#define SPELL_PUMMEL            15615
-#define SPELL_THROWAXE          16075
 
 struct boss_warmastervooneAI : public ScriptedAI
 {
@@ -37,12 +23,22 @@ struct boss_warmastervooneAI : public ScriptedAI
         Reset();
     }
 
+    static constexpr uint32 SPELL_SNAPKICK = 15618;
+    static constexpr uint32 SPELL_CLEAVE = 15284;
+    static constexpr uint32 SPELL_UPPERCUT = 10966;
+    static constexpr uint32 SPELL_MORTALSTRIKE = 15708;
+    static constexpr uint32 SPELL_PUMMEL = 15615;
+    static constexpr uint32 SPELL_THROWAXE = 16075;
+
     uint32 Snapkick_Timer;
     uint32 Cleave_Timer;
     uint32 Uppercut_Timer;
     uint32 MortalStrike_Timer;
     uint32 Pummel_Timer;
     uint32 ThrowAxe_Timer;
+    uint32 m_uiLeashCheckTimer;
+    bool m_bSummoned;
+    bool m_bPulledByPet;
 
     void Reset() override
     {
@@ -54,59 +50,93 @@ struct boss_warmastervooneAI : public ScriptedAI
         ThrowAxe_Timer = 1000;
     }
 
+    void EnterCombat(Unit* pUnit) override
+    {
+        // Prevent exploit where pet can run through the wall and pull the boss.
+        if (Unit* pOwner = pUnit->GetOwner())
+            if (!pOwner->IsWithinLOSInMap(m_creature))
+                m_bPulledByPet = true;
+    }
+
+    void LeashIfOutOfCombatArea(uint32 uiDiff)
+    {
+        if (m_uiLeashCheckTimer < uiDiff)
+            m_uiLeashCheckTimer = 3500;
+        else
+        {
+            m_uiLeashCheckTimer -= uiDiff;
+            return;
+        }
+
+        if (m_bPulledByPet || (m_creature->GetPositionZ() > -10.0f || m_creature->GetPositionZ() < -25.0f))
+        {
+            EnterEvadeMode();
+            return;
+        }
+    }
+
     void UpdateAI(uint32 const diff) override
     {
-        //Return since we have no target
+        // Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
 
-        //Snapkick_Timer
+        // Prevent exploit
+        LeashIfOutOfCombatArea(diff);
+
+        // Snapkick_Timer
         if (Snapkick_Timer < diff)
         {
             DoCastSpellIfCan(m_creature->GetVictim(), SPELL_SNAPKICK);
             Snapkick_Timer = 6000;
         }
-        else Snapkick_Timer -= diff;
+        else
+            Snapkick_Timer -= diff;
 
-        //Cleave_Timer
+        // Cleave_Timer
         if (Cleave_Timer < diff)
         {
             DoCastSpellIfCan(m_creature->GetVictim(), SPELL_CLEAVE);
             Cleave_Timer = 12000;
         }
-        else Cleave_Timer -= diff;
+        else
+            Cleave_Timer -= diff;
 
-        //Uppercut_Timer
+        // Uppercut_Timer
         if (Uppercut_Timer < diff)
         {
             DoCastSpellIfCan(m_creature->GetVictim(), SPELL_UPPERCUT);
             Uppercut_Timer = 14000;
         }
-        else Uppercut_Timer -= diff;
+        else
+            Uppercut_Timer -= diff;
 
-        //MortalStrike_Timer
+        // MortalStrike_Timer
         if (MortalStrike_Timer < diff)
         {
             DoCastSpellIfCan(m_creature->GetVictim(), SPELL_MORTALSTRIKE);
             MortalStrike_Timer = 10000;
         }
-        else MortalStrike_Timer -= diff;
+        else
+            MortalStrike_Timer -= diff;
 
-        //Pummel_Timer
+        // Pummel_Timer
         if (Pummel_Timer < diff)
         {
             DoCastSpellIfCan(m_creature->GetVictim(), SPELL_PUMMEL);
             Pummel_Timer = 16000;
         }
-        else Pummel_Timer -= diff;
+        else
+            Pummel_Timer -= diff;
 
-        //ThrowAxe_Timer
+        // ThrowAxe_Timer
         if (ThrowAxe_Timer < diff)
         {
             DoCastSpellIfCan(m_creature->GetVictim(), SPELL_THROWAXE);
             ThrowAxe_Timer = 8000;
         }
-        else ThrowAxe_Timer -= diff;
+        else
+            ThrowAxe_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }

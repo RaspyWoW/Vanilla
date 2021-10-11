@@ -14,26 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: Boss_The_Best
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
-
 #include "scriptPCH.h"
-
-enum
-{
-    SPELL_FLAMEBREAK       = 16785,
-    //SPELL_IMMOLATE         = 20294,
-    AURA_IMMOLATE          = 15506,
-    SPELL_TERRIFYINGROAR   = 14100,
-    SPELL_BERSERKER_CHARGE = 16636,
-    SPELL_FIREBALL         = 16788,
-    SPELL_FIREBLAST        = 14144,
-    SPELL_SUMMON_FINKLE    = 16710,
-};
 
 struct boss_thebeastAI : public ScriptedAI
 {
@@ -42,21 +23,58 @@ struct boss_thebeastAI : public ScriptedAI
         Reset();
     }
 
+    static constexpr uint32 AURA_IMMOLATE = 15506;
+    static constexpr uint32 SPELL_FLAMEBREAK = 16785;
+    static constexpr uint32 SPELL_TERRIFYINGROAR = 14100;
+    static constexpr uint32 SPELL_BERSERKER_CHARGE = 16636;
+    static constexpr uint32 SPELL_FIREBALL = 16788;
+    static constexpr uint32 SPELL_FIREBLAST = 14144;
+    static constexpr uint32 SPELL_SUMMON_FINKLE = 16710;
+
     uint32 m_uiFlamebreakTimer;
-    //uint32 m_uiImmolateTimer;
     uint32 m_uiTerrifyingRoarTimer;
     uint32 m_uiBeserkerChargeTimer;
     uint32 m_uiFireballTimer;
     uint32 m_uiFireBlastTimer;
+    uint32 m_uiLeashCheckTimer;
+    bool m_bSummoned;
+    bool m_bPulledByPet;
 
     void Reset() override
     {
-        m_uiFlamebreakTimer     = urand(8000, 12000);
-        //m_uiImmolateTimer       = 3000;
+        m_uiFlamebreakTimer = urand(8000, 12000);
         m_uiTerrifyingRoarTimer = 13000;
         m_uiBeserkerChargeTimer = 0;
-        m_uiFireballTimer       = 10000;
-        m_uiFireBlastTimer      = urand(8000, 11000);
+        m_uiFireballTimer = 10000;
+        m_uiFireBlastTimer = urand(8000, 11000);
+        m_uiLeashCheckTimer = 5000;
+        m_bSummoned = false;
+        m_bPulledByPet = false;
+    }
+
+    void EnterCombat(Unit* pUnit) override
+    {
+        // Prevent exploit where pet can run through the wall and pull the boss.
+        if (Unit* pOwner = pUnit->GetOwner())
+            if (!pOwner->IsWithinLOSInMap(m_creature))
+                m_bPulledByPet = true;
+    }
+
+    void LeashIfOutOfCombatArea(uint32 uiDiff)
+    {
+        if (m_uiLeashCheckTimer < uiDiff)
+            m_uiLeashCheckTimer = 3500;
+        else
+        {
+            m_uiLeashCheckTimer -= uiDiff;
+            return;
+        }
+
+        if (m_bPulledByPet || (m_creature->GetPositionZ() > 120.0f || m_creature->GetPositionZ() < 100.0f))
+        {
+            EnterEvadeMode();
+            return;
+        }
     }
 
     void SpellHit(Unit* pCaster, SpellEntry const* pSpell) override
@@ -69,9 +87,13 @@ struct boss_thebeastAI : public ScriptedAI
     {
         if (!m_creature->HasAura(AURA_IMMOLATE))
             m_creature->CastSpell(m_creature, AURA_IMMOLATE, true);
+
         // Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
+
+        // Prevent exploit
+        LeashIfOutOfCombatArea(uiDiff);
 
         // Flamebreak
         if (m_uiFlamebreakTimer < uiDiff)
@@ -81,18 +103,6 @@ struct boss_thebeastAI : public ScriptedAI
         }
         else
             m_uiFlamebreakTimer -= uiDiff;
-
-        // Immolate
-        // if (m_uiImmolateTimer < uiDiff)
-        // {
-        // if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
-        // {
-        // DoCastSpellIfCan(pTarget, SPELL_IMMOLATE);
-        // m_uiImmolateTimer = urand(8000, 12000);
-        // }
-        // }
-        // else
-        // m_uiImmolateTimer -= uiDiff;
 
         // Terrifying Roar
         if (m_uiTerrifyingRoarTimer < uiDiff)
@@ -137,6 +147,7 @@ struct boss_thebeastAI : public ScriptedAI
         }
         else
             m_uiFireBlastTimer -= uiDiff;
+
         DoMeleeAttackIfReady();
     }
 };

@@ -14,21 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: Boss_Shadow_Hunter_Voshgajin
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
-
 #include "scriptPCH.h"
-
-enum
-{
-    SPELL_CURSEOFBLOOD = 24673,
-    SPELL_HEX          = 16708,
-    SPELL_CLEAVE       = 20691
-};
 
 struct boss_shadowvoshAI : public ScriptedAI
 {
@@ -37,17 +23,50 @@ struct boss_shadowvoshAI : public ScriptedAI
         Reset();
     }
 
+    static constexpr uint32 SPELL_CURSEOFBLOOD = 24673;
+    static constexpr uint32 SPELL_HEX = 16708;
+    static constexpr uint32 SPELL_CLEAVE = 20691;
+
     uint32 m_uiCurseOfBloodTimer;
     uint32 m_uiHexTimer;
     uint32 m_uiCleaveTimer;
+    bool m_bSummoned;
+    bool m_bPulledByPet;
+    uint32 m_uiLeashCheckTimer;
 
     void Reset() override
     {
         m_uiCurseOfBloodTimer = 2000;
-        m_uiHexTimer          = 8000;
-        m_uiCleaveTimer       = 14000;
+        m_uiHexTimer = 8000;
+        m_uiCleaveTimer = 14000;
+        m_uiLeashCheckTimer = 5000;
+        m_bSummoned = false;
+        m_bPulledByPet = false;
+    }
 
-        //m_creature->CastSpell(m_creature,SPELL_ICEARMOR,true);
+    void EnterCombat(Unit* pUnit) override
+    {
+        // Prevent exploit where pet can run through the wall and pull the boss.
+        if (Unit* pOwner = pUnit->GetOwner())
+            if (!pOwner->IsWithinLOSInMap(m_creature))
+                m_bPulledByPet = true;
+    }
+
+    void LeashIfOutOfCombatArea(uint32 uiDiff)
+    {
+        if (m_uiLeashCheckTimer < uiDiff)
+            m_uiLeashCheckTimer = 3500;
+        else
+        {
+            m_uiLeashCheckTimer -= uiDiff;
+            return;
+        }
+
+        if (m_bPulledByPet || (m_creature->GetPositionZ() > 26.0f || m_creature->GetPositionZ() < 20.0f))
+        {
+            EnterEvadeMode();
+            return;
+        }
     }
 
     void UpdateAI(uint32 const uiDiff) override
@@ -55,6 +74,9 @@ struct boss_shadowvoshAI : public ScriptedAI
         // Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
+
+        // Prevent exploit
+        LeashIfOutOfCombatArea(uiDiff);
 
         // Curse Of Blood
         if (m_uiCurseOfBloodTimer < uiDiff)

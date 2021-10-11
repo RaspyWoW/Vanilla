@@ -14,25 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: Boss_Drakkisath
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
-
 #include "scriptPCH.h"
-
-enum
-{
-//    SPELL_FIRENOVA       = 23462,
-    SPELL_FLAMESTRIKE    = 16419, // Ustaag : en remplacement de SPELL_FIRENOVA
-    SPELL_CLEAVE         = 15284, // Ustaag : ancien cleave 20691
-    SPELL_CONFLIGURATION = 16805,
-    SPELL_THUNDERCLAP    = 15548,                            //Not sure if right ID. 23931 would be a harder possibility.
-    SPELL_RAGE           = 16789, // Ustaag : ajout
-    SPELL_PIERCEARMOR   = 12097
-};
 
 struct boss_drakkisathAI : public ScriptedAI
 {
@@ -41,21 +23,59 @@ struct boss_drakkisathAI : public ScriptedAI
         Reset();
     }
 
+    static constexpr uint32 SPELL_FLAMESTRIKE = 16419;
+    static constexpr uint32 SPELL_CLEAVE = 15284;
+    static constexpr uint32 SPELL_CONFLIGURATION = 16805;
+    static constexpr uint32 SPELL_THUNDERCLAP = 15548;
+    static constexpr uint32 SPELL_RAGE = 16789;
+    static constexpr uint32 SPELL_PIERCEARMOR = 12097;
+
     uint32 m_uiFlameStrikeTimer;
     uint32 m_uiCleaveTimer;
     uint32 m_uiConfligurationTimer;
     uint32 m_uiThunderclapTimer;
     uint32 m_uiRageTimer;
     uint32 m_uiPierceArmorTimer;
+    uint32 m_uiLeashCheckTimer;
+    bool m_bSummoned;
+    bool m_bPulledByPet;
 
     void Reset() override
     {
-        m_uiFlameStrikeTimer    = 16000;
-        m_uiCleaveTimer         = 12000;
+        m_uiFlameStrikeTimer = 16000;
+        m_uiCleaveTimer = 12000;
         m_uiConfligurationTimer = 8000;
-        m_uiThunderclapTimer    = 1000;
-        m_uiRageTimer           = 1000;
-        m_uiPierceArmorTimer    = 5000;
+        m_uiThunderclapTimer = 1000;
+        m_uiRageTimer = 1000;
+        m_uiPierceArmorTimer = 5000;
+        m_uiLeashCheckTimer = 5000;
+        m_bSummoned = false;
+        m_bPulledByPet = false;
+    }
+
+    void EnterCombat(Unit* pUnit) override
+    {
+        // Prevent exploit where pet can run through the wall and pull the boss.
+        if (Unit* pOwner = pUnit->GetOwner())
+            if (!pOwner->IsWithinLOSInMap(m_creature))
+                m_bPulledByPet = true;
+    }
+
+    void LeashIfOutOfCombatArea(uint32 uiDiff)
+    {
+        if (m_uiLeashCheckTimer < uiDiff)
+            m_uiLeashCheckTimer = 3500;
+        else
+        {
+            m_uiLeashCheckTimer -= uiDiff;
+            return;
+        }
+
+        if (m_bPulledByPet || (m_creature->GetPositionZ() > 115.0f || m_creature->GetPositionZ() < 105.0f))
+        {
+            EnterEvadeMode();
+            return;
+        }
     }
 
     void UpdateAI(uint32 const uiDiff) override
@@ -63,6 +83,9 @@ struct boss_drakkisathAI : public ScriptedAI
         // Return since we have no target
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
+
+        // Prevent exploit
+        LeashIfOutOfCombatArea(uiDiff);
 
         // FlameStrike
         if (m_uiFlameStrikeTimer < uiDiff)
