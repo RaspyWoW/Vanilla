@@ -1634,6 +1634,19 @@ SayMinLevel = 0
 
 SayEmoteMinLevel = 0
 
+#    WhisperTargets.MaxTargets
+#    WhisperTargets.DecayTime (Seconds)
+#        Sets how many different players can be whispered in a specific time window.
+
+WhisperTargets.MaxTargets = 0
+WhisperTargets.DecayTime = 0
+
+#
+#    WhisperTargets.BypassLevel
+#        Checking for the highest toon on the players account if there is a toon which is on level (WhisperTargets.BypassLevel), skip this mechanic.
+
+WhisperTargets.BypassLevel = 0
+
 #
 #    Antiflood.Sanction
 #        Sanction applied to a player if sending too many packets.

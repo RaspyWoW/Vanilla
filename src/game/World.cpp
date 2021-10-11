@@ -964,6 +964,9 @@ void World::LoadConfigSettings(bool reload)
     setConfig(CONFIG_UINT32_WORLD_CHAN_CD_SCALING, "WorldChan.CooldownScaling", 0);
     setConfig(CONFIG_UINT32_WORLD_CHAN_CD_USE_ACCOUNT_MAX_LEVEL, "WorldChan.CooldownUseAccountLevel", 0);
     setConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL, "PublicChansMute.BypassLevel", 61);
+    setConfig(CONFIG_UINT32_WHISPER_TARGETS_MAX, "WhisperTargets.MaxTargets", 0);
+    setConfig(CONFIG_UINT32_WHISPER_TARGETS_DECAY, "WhisperTargets.DecayTime", 0);
+    setConfig(CONFIG_UINT32_WHISPER_TARGETS_BYPASS_LEVEL, "WhisperTargets.BypassLevel", 0);
     setConfig(CONFIG_UINT32_SAY_MIN_LEVEL, "SayMinLevel", 0);
     setConfig(CONFIG_UINT32_YELL_MIN_LEVEL, "YellMinLevel", 0);
     setConfig(CONFIG_UINT32_SAY_EMOTE_MIN_LEVEL, "SayEmoteMinLevel", 0);

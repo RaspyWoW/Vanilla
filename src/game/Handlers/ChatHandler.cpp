@@ -296,10 +296,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (Channel *chn = cMgr->GetChannel(channel, playerPointer))
                 {
                     // Level channels restrictions
-                    if (chn->IsLevelRestricted() && playerPointer->GetLevel() < sWorld.getConfig(CONFIG_UINT32_WORLD_CHAN_MIN_LEVEL)
-                        && GetAccountMaxLevel() < sWorld.getConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL))
+                    const uint32 minChannelLvL = sWorld.getConfig(CONFIG_UINT32_WORLD_CHAN_MIN_LEVEL);
+                    if (chn->IsLevelRestricted() && playerPointer->GetLevel() < minChannelLvL && GetAccountMaxLevel() < sWorld.getConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL))
                     {
-                        ChatHandler(this).SendSysMessage("You cannot use this channel yet.");
+                        ChatHandler(this).PSendSysMessage("You need to be level %u or higher to talk in /world.", minChannelLvL);
                         return;
                     }
 
@@ -307,9 +307,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                     if (!chn->HasFlag(Channel::CHANNEL_FLAG_CUSTOM))
                     {
                         // GMs should not be able to use public channels
-                        if (GetSecurity() > SEC_PLAYER && !sWorld.getConfig(CONFIG_BOOL_GMS_ALLOW_PUBLIC_CHANNELS))
+                        if (GetSecurity() > SEC_PLAYER && GetSecurity() < SEC_ADMINISTRATOR && !sWorld.getConfig(CONFIG_BOOL_GMS_ALLOW_PUBLIC_CHANNELS))
                         {
-                            ChatHandler(this).SendSysMessage("GMs can't use public channels.");
+                            ChatHandler(this).SendSysMessage("Moderators or higher aren't allowed to talk in public channels.");
                             return;
                         }
 
@@ -353,14 +353,15 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 normalizePlayerName(channel);
                 sWorld.LogChat(this, "Chan", msg, nullptr, 0, channel.c_str());
             }
-        }
-        break;
 
+            break;
+        }
         case CHAT_MSG_SAY:
-            if (GetPlayer()->GetLevel() < sWorld.getConfig(CONFIG_UINT32_SAY_MIN_LEVEL)
-                && GetAccountMaxLevel() < sWorld.getConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL))
+        {
+            const uint32 minSayLvL = sWorld.getConfig(CONFIG_UINT32_SAY_MIN_LEVEL);
+            if (GetPlayer()->GetLevel() < minSayLvL && GetAccountMaxLevel() < sWorld.getConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL))
             {
-                ChatHandler(this).SendSysMessage("You cannot speak yet (too low level).");
+                ChatHandler(this).PSendSysMessage("You need to be level %u or higher to say something.", minSayLvL);
                 return;
             }
 
@@ -378,11 +379,13 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
 
             break;
+        }
         case CHAT_MSG_EMOTE:
-            if (GetPlayer()->GetLevel() < sWorld.getConfig(CONFIG_UINT32_SAY_EMOTE_MIN_LEVEL)
-                && GetAccountMaxLevel() < sWorld.getConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL))
+        {
+            const uint32 minEmoteLvL = sWorld.getConfig(CONFIG_UINT32_SAY_EMOTE_MIN_LEVEL);
+            if (GetPlayer()->GetLevel() < minEmoteLvL && GetAccountMaxLevel() < sWorld.getConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL))
             {
-                ChatHandler(this).SendSysMessage("You cannot use emotes yet (too low level).");
+                ChatHandler(this).PSendSysMessage("You need to be level %u or higher to use emotes.", minEmoteLvL);
                 return;
             }
 
@@ -400,12 +403,13 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
 
             break;
+        }
         case CHAT_MSG_YELL:
         {
-            if (GetPlayer()->GetLevel() < sWorld.getConfig(CONFIG_UINT32_YELL_MIN_LEVEL)
-                && GetAccountMaxLevel() < sWorld.getConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL))
+            const uint32 minYellLvL = sWorld.getConfig(CONFIG_UINT32_YELL_MIN_LEVEL);
+            if (GetPlayer()->GetLevel() < minYellLvL && GetAccountMaxLevel() < sWorld.getConfig(CONFIG_UINT32_PUB_CHANS_MUTE_VANISH_LEVEL))
             {
-                ChatHandler(this).SendSysMessage("You cannot yell yet (too low level).");
+                ChatHandler(this).PSendSysMessage("You need to be level %u or higher to yell.", minYellLvL);
                 return;
             }
 
@@ -421,9 +425,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (AntispamInterface *a = sAnticheatMgr->GetAntispam())
                     a->addMessage(msg, type, GetPlayerPointer(), nullptr);
             }
-        }
-        break;
 
+            break;
+        }
         case CHAT_MSG_WHISPER: // Master Side
         {
             if (!normalizePlayerName(to))
@@ -463,9 +467,22 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                     SendWrongFactionNotice();
                     return;
                 }
-                if (/*player->GetZoneId() != masterPlr->GetZoneId() && */masterPlr->GetLevel() < sWorld.getConfig(CONFIG_UINT32_WHISP_DIFF_ZONE_MIN_LEVEL))
+
+                const uint32 whisperMinLvL = sWorld.getConfig(CONFIG_UINT32_WHISP_DIFF_ZONE_MIN_LEVEL);
+                if (player->GetZoneId() != masterPlr->GetZoneId() && masterPlr->GetLevel() < whisperMinLvL)
                 {
-                    ChatHandler(this).SendSysMessage("You cannot whisper yet.");
+                    ChatHandler(this).PSendSysMessage("You need to be level %u or higher to whisper to players in different zones.", whisperMinLvL);
+                    return;
+                }
+
+                const uint32 maxLevel = masterPlr->GetSession()->GetAccountMaxLevel();
+                auto& whisper_targets = masterPlr->GetSession()->GetWhisperTargets();
+                Player* toPlayer = player->GetSession()->GetPlayer();
+
+                if (toPlayer && !whisper_targets.can_whisper(toPlayer->GetObjectGuid(), maxLevel))
+                {
+                    ChatHandler(this).PSendSysMessage("You have whispered too many different players too quickly.");
+                    ChatHandler(this).PSendSysMessage("Please wait a while before whispering any additional players.");
                     return;
                 }
             }
@@ -489,9 +506,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                             a->addMessage(msg, type, GetPlayerPointer(), PlayerPointer(new PlayerWrapper<MasterPlayer>(player)));
                 }
             }
-        }
-        break;
 
+            break;
+        }
         case CHAT_MSG_PARTY: // Master Side: TODO
         {
             // if player is in battleground, he cannot say to battleground members by /p
@@ -512,8 +529,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             group->BroadcastPacket(&data, false, group->GetMemberGroup(GetPlayer()->GetObjectGuid()));
             if (lang != LANG_ADDON)
                 sWorld.LogChat(this, "Group", msg, nullptr, group->GetId());
+            
+            break;
         }
-        break;
         case CHAT_MSG_GUILD: // Master side
         {
             if (GetMasterPlayer()->GetGuildId())
@@ -522,6 +540,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (lang != LANG_ADDON)
                 sWorld.LogChat(this, "Guild", msg, nullptr, GetMasterPlayer()->GetGuildId());
+
             break;
         }
         case CHAT_MSG_OFFICER: // Master side
@@ -532,6 +551,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (lang != LANG_ADDON)
                 sWorld.LogChat(this, "Officer", msg, nullptr, GetMasterPlayer()->GetGuildId());
+
             break;
         }
         case CHAT_MSG_RAID: // Master side: TODO
@@ -555,8 +575,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (lang != LANG_ADDON)
                 sWorld.LogChat(this, "Raid", msg, nullptr, group->GetId());
+
+            break;
         }
-        break;
 #if SUPPORTED_CLIENT_BUILD > CLIENT_BUILD_1_6_1
         case CHAT_MSG_RAID_LEADER: // Master side: TODO
         {
@@ -574,9 +595,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             group->BroadcastPacket(&data, false);
             if (lang != LANG_ADDON)
                 sWorld.LogChat(this, "Raid", msg, nullptr, group->GetId());
-        }
-        break;
 
+            break;
+        }
         case CHAT_MSG_RAID_WARNING: // Master side: TODO
         {
             Group* group = GetPlayer()->GetGroup();
@@ -591,9 +612,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (lang != LANG_ADDON)
                 sWorld.LogChat(this, "Raid", msg, nullptr, group->GetId());
-        }
-        break;
 
+            break;
+        }
         case CHAT_MSG_BATTLEGROUND: // Node side
         {
             // battleground raid is always in Player->GetGroup(), never in GetOriginalGroup()
@@ -607,9 +628,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (lang != LANG_ADDON)
                 sWorld.LogChat(this, "BG", msg, nullptr, group->GetId());
-        }
-        break;
 
+            break;
+        }
         case CHAT_MSG_BATTLEGROUND_LEADER: // Node side
         {
             // battleground raid is always in Player->GetGroup(), never in GetOriginalGroup()
@@ -623,8 +644,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (lang != LANG_ADDON)
                 sWorld.LogChat(this, "BG", msg, nullptr, group->GetId());
+
+            break;
         }
-        break;
 #endif
         case CHAT_MSG_AFK: // Node side (for combat Check)
         {
@@ -644,10 +666,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (_player->IsAFK() && _player->IsDND())
                     _player->ToggleDND();
             }
+
+            break;
         }
-
-        break;
-
         case CHAT_MSG_DND:
         {
             if (!msg.empty() || !_player->IsDND())
@@ -663,9 +684,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (_player->IsDND() && _player->IsAFK())
                     _player->ToggleAFK();
             }
-        }
 
-        break;
+            break;
+        }
     }
 }
 

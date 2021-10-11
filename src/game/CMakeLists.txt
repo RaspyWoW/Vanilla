@@ -45,6 +45,7 @@ set (game_SRCS
     StatSystem.cpp
     UnitAuraProcHandler.cpp
     Weather.cpp
+    WhisperTargetLimits.cpp
     World.cpp
     WorldSession.cpp
     AI/AggressorAI.cpp
@@ -248,6 +249,7 @@ set (game_SRCS
     SocialMgr.h
     UnitEvents.h
     Weather.h
+    WhisperTargetLimits.h
     World.h
     WorldSession.h
     AI/AggressorAI.h
