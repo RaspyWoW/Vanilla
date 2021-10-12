@@ -127,7 +127,7 @@ public:
 #endif
 
 #ifdef USE_ANTIBOT
-    #include "AntiBot/AntiBot.h"
+#include "AntiBot/AntiBot.h"
 #endif
 
 class AnticheatManager

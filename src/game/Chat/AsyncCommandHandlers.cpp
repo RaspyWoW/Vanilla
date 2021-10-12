@@ -36,7 +36,7 @@
 #include "Anticheat.h"
 
 #ifdef USE_ANTIBOT
-    #include "AntiBot/AntiBot.h"
+#include "AntiBot/AntiBot.h"
 #endif
 
 void PInfoHandler::HandlePInfoCommand(WorldSession* session, Player* target, ObjectGuid& target_guid, std::string& name)
@@ -239,8 +239,12 @@ void PInfoHandler::HandleResponse(WorldSession* session, PInfoData *data)
 
 #ifdef USE_ANTIBOT
     if (data->online && sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
+    {
         if (WorldSession* targetSession = sWorld.FindSession(data->accId))
+        {
                 targetSession->GetAntiBot()->SendPlayerInfo(&cHandler);
+        }
+    }
 #endif
 
     delete data;
