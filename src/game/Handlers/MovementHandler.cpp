@@ -316,6 +316,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
 
     if (pPlayerMover)
     {
+
+#ifdef USE_ANTIBOT
+        if (sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
+            GetAntiBot()->CheckMovementPacket(opcode, movementInfo);
+#endif
+
         if (!_player->GetCheatData()->HandleFlagTests(pPlayerMover, movementInfo, opcode) || 
             !_player->GetCheatData()->HandlePositionTests(pPlayerMover, movementInfo, opcode))
         {

@@ -1153,6 +1153,13 @@ void World::LoadConfigSettings(bool reload)
     setConfig(CONFIG_UINT32_AC_WARDEN_DB_LOGLEVEL, "Warden.DBLogLevel", 0);
     m_wardenModuleDirectory = sConfig.GetStringDefault("Warden.ModuleDir", "warden_modules");
 
+    // Anti Bot (Not implemented for public)
+    setConfig(CONFIG_BOOL_ANTIBOT_ENABLED, "AntiBot.Enabled", false);
+    setConfig(CONFIG_FLOAT_ANTIBOT_RANGE, "AntiBot.Range", 0.0f);
+    setConfig(CONFIG_UINT32_ANTIBOT_MIN_LEVEL, "AntiBot.Min.Level", 0);
+    setConfig(CONFIG_UINT32_ANTIBOT_COOLDOWN, "AntiBot.Cooldown", 0);
+    setConfig(CONFIG_UINT32_ANTIBOT_DEATH_COUNT, "AntiBot.Death.Count", 0);
+
     setConfig(CONFIG_UINT32_CREATURE_SUMMON_LIMIT, "MaxCreatureSummonLimit", DEFAULT_CREATURE_SUMMON_LIMIT);
 
     // Smartlog data
@@ -2102,6 +2109,31 @@ void World::SendGMText(int32 string_id, ...)
         if (WorldSession* session = itr.second)
         {
             if (session->GetSecurity() > SEC_PLAYER)
+            {
+                Player* player = session->GetPlayer();
+                if (player && player->IsInWorld())
+                {
+                    wt_do(player);
+                }
+            }
+        }
+    }
+
+    va_end(ap);
+}
+
+void World::SendGMText(AccountTypes security, int32 string_id, ...)
+{
+    va_list ap;
+    va_start(ap, string_id);
+
+    MaNGOS::WorldWorldTextBuilder wt_builder(string_id, &ap);
+    MaNGOS::LocalizedPacketListDo<MaNGOS::WorldWorldTextBuilder> wt_do(wt_builder);
+    for (const auto& itr : m_sessions)
+    {
+        if (WorldSession* session = itr.second)
+        {
+            if (session->GetSecurity() >= security)
             {
                 Player* player = session->GetPlayer();
                 if (player && player->IsInWorld())

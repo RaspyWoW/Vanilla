@@ -332,6 +332,9 @@ enum eConfigUInt32Values
     CONFIG_UINT32_AC_WARDEN_DEFAULT_PENALTY,
     CONFIG_UINT32_AC_WARDEN_CLIENT_BAN_DURATION,
     CONFIG_UINT32_AC_WARDEN_DB_LOGLEVEL,
+    CONFIG_UINT32_ANTIBOT_MIN_LEVEL,
+    CONFIG_UINT32_ANTIBOT_COOLDOWN,
+    CONFIG_UINT32_ANTIBOT_DEATH_COUNT,
     CONFIG_UINT32_AUTOBROADCAST_INTERVAL,
     CONFIG_UINT32_PARTY_BOT_MAX_BOTS,
     CONFIG_UINT32_PARTY_BOT_AUTO_EQUIP,
@@ -443,6 +446,7 @@ enum eConfigFloatValues
     CONFIG_FLOAT_RATE_XP_PERSONAL_BONUS,
     CONFIG_FLOAT_AC_MOVEMENT_CHEAT_TELEPORT_DISTANCE,
     CONFIG_FLOAT_AC_MOVEMENT_CHEAT_WALL_CLIMB_ANGLE,
+    CONFIG_FLOAT_ANTIBOT_RANGE,
     CONFIG_FLOAT_VALUE_COUNT
 };
 
@@ -591,6 +595,7 @@ enum eConfigBoolValues
     CONFIG_BOOL_AC_WARDEN_PLAYERS_ONLY,
     CONFIG_BOOL_AC_WARDEN_OSX_ENABLED,
     CONFIG_BOOL_AC_WARDEN_WIN_ENABLED,
+    CONFIG_BOOL_ANTIBOT_ENABLED,
     CONFIG_BOOL_VISIBILITY_FORCE_ACTIVE_OBJECTS,
     CONFIG_BOOL_PLAYER_BOT_SHOW_IN_WHO_LIST,
     CONFIG_BOOL_PARTY_BOT_SKIP_CHECKS,
@@ -791,6 +796,7 @@ class World
         void SendGMTicketText(int32 string_id, ...);
         void SendGMTicketText(char const* text);
         void SendGMText(int32 string_id, ...);
+        void SendGMText(AccountTypes sec, int32 string_id, ...);
         void SendGlobalText(char const* text, WorldSession* self);
         void SendGlobalMessage(WorldPacket* packet, WorldSession* self = 0, uint32 team = 0);
         void SendZoneMessage(uint32 zone, WorldPacket* packet, WorldSession* self = 0, uint32 team = 0);

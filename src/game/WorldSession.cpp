@@ -1084,12 +1084,24 @@ void WorldSession::InitCheatData(Player* pPlayer)
         m_cheatData->InitNewPlayer(pPlayer);
     else
         m_cheatData = sAnticheatMgr->CreateAnticheatFor(pPlayer);
+
+#ifdef USE_ANTIBOT
+    if (m_antibot && sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
+        m_antibot = sAnticheatMgr->CreateAntiBotFor(pPlayer);
+#endif
 }
 
 MovementAnticheat* WorldSession::GetCheatData()
 {
     return m_cheatData ? m_cheatData : (m_cheatData = sAnticheatMgr->CreateAnticheatFor(GetPlayer()));
 }
+
+#ifdef USE_ANTIBOT
+AntiBot* WorldSession::GetAntiBot()
+{
+    return m_antibot ? m_antibot : (m_antibot = sAnticheatMgr->CreateAntiBotFor(GetPlayer()));
+}
+#endif
 
 void WorldSession::ProcessAnticheatAction(char const* detector, char const* reason, uint32 cheatAction, uint32 banSeconds)
 {

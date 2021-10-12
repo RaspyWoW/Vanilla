@@ -54,6 +54,10 @@ class MovementAnticheat;
 class AccountPersistentData;
 struct AreaEntry;
 
+#ifdef USE_ANTIBOT
+class AntiBot;
+#endif
+
 class AntispamInterface
 {
 public:
@@ -122,13 +126,17 @@ public:
 };
 #endif
 
+#ifdef USE_ANTIBOT
+#include "AntiBot/AntiBot.h"
+#endif
+
 class AnticheatManager
 {
 public:
 #ifdef USE_ANTICHEAT
     void LoadAnticheatData();
 
-    Warden * CreateWardenFor(WorldSession* client, BigNumber* K);
+    Warden* CreateWardenFor(WorldSession* client, BigNumber* K);
     MovementAnticheat* CreateAnticheatFor(Player* player);
 #else
     void LoadAnticheatData() {}
@@ -141,6 +149,10 @@ public:
     {
         return new MovementAnticheat();
     }
+#endif
+
+#ifdef USE_ANTIBOT
+    AntiBot* CreateAntiBotFor(Player* player);
 #endif
 
     // Antispam wrappers

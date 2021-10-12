@@ -73,5 +73,14 @@ Warden* AnticheatManager::CreateWardenFor(WorldSession* client, BigNumber* K)
 
     return nullptr;
 }
+#endif
 
+#ifdef USE_ANTIBOT
+#include "AntiBot/AntiBot.h"
+AntiBot* AnticheatManager::CreateAntiBotFor(Player* player)
+{
+    AntiBot* hac = new AntiBot(player);
+    hac->Init();
+    return hac;
+}
 #endif
