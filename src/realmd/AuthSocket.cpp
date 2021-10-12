@@ -723,12 +723,12 @@ bool AuthSocket::_HandleLogonProof()
     }
     else
     {
-        if (_build == 5875) // 1.12.1
+        if ((_build == 8606) /*2.4.3*/ || (_build == 12340) /*3.3.5a*/)
         {
             char data[4] = { CMD_AUTH_LOGON_PROOF, WOW_FAIL_UNKNOWN_ACCOUNT, 0, 0};
             send(data, sizeof(data));
         }
-        else if ((_build == 8606) /*2.4.3*/ || (_build == 12340) /*3.3.5a*/)
+        else if (_build == 5875) // 1.12.1
         {
             // 1.x not react incorrectly at 4-byte message use 3 as real error
             char data[2] = { CMD_AUTH_LOGON_PROOF, WOW_FAIL_UNKNOWN_ACCOUNT};
@@ -1026,8 +1026,7 @@ void AuthSocket::LoadRealmlist(ByteBuffer &pkt)
             pkt << uint8(0x0);                            // 1.12.1 empty
         }
 
-        pkt << uint8(0x00);
-        pkt << uint8(0x02);
+        pkt << uint16(0x0002);
     }
     else if ((_build == 8606) /*2.4.3*/ || (_build == 12340) /*3.3.5a*/)
     {
