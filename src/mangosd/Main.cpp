@@ -177,21 +177,25 @@ extern int main(int argc, char **argv)
 #endif
 
     sLog.outString("Core revision: %s [world-daemon]", _FULLVERSION);
-    sLog.outString( "<Ctrl-C> to stop." );
-    sLog.outString("\n\n"
-        "MM   MM         MM   MM  MMMMM   MMMM   MMMMM\n"
-        "MM   MM         MM   MM MMM MMM MM  MM MMM MMM\n"
-        "MMM MMM         MMM  MM MMM MMM MM  MM MMM\n"
-        "MM M MM         MMMM MM MMM     MM  MM  MMM\n"
-        "MM M MM  MMMMM  MM MMMM MMM     MM  MM   MMM\n"
-        "MM M MM M   MMM MM  MMM MMMMMMM MM  MM    MMM\n"
-        "MM   MM     MMM MM   MM MM  MMM MM  MM     MMM\n"
-        "MM   MM MMMMMMM MM   MM MMM MMM MM  MM MMM MMM\n"
-        "MM   MM MM  MMM MM   MM  MMMMMM  MMMM   MMMMM\n"
-        "        MM  MMM http://getmangos.com\n"
-        "        MMMMMM\n\n");
-    sLog.outString("VMaNGOS : https://github.com/vmangos");
     sLog.outString("Using configuration file %s.", cfg_file);
+    sLog.outString("");
+    sLog.outString(" ,▄▄▄██▄▄▄,    ,▄▄▄███▄▄,");
+    sLog.outString("██░░░░░░░░▀█▄▄█▀░░░░░░░░▀█▌");
+    sLog.outString("█▌▒▒░░░▄░▒▒░██░▒▒▒░░░░░▒░█");
+    sLog.outString("▀█▄▒▒▒▒▒░▀▄▄██▄▄█▀░▒▒▒▒░█▀");
+    sLog.outString("  ██▄░░▒░▄██████▄░░▒░▄██▀");
+    sLog.outString("    █████▀▒▒▒▒▒▒▀█████");
+    sLog.outString("    ██╣╣╣╣╣╣╣╣╣╣╣╣╣╣██");
+    sLog.outString("   ██▒╢███▒╣▒▌╣╣███╣▒██");
+    sLog.outString("  ▐█▒╣╣╣██▌▒██▒▒██╢╣╣▒█▌");
+    sLog.outString("  ██▒╣╣╣▒████████▌╣╣╣╢█▌");
+    sLog.outString("   ██╣╣╣╢███▒▒███╢╣╣╣██");
+    sLog.outString("   ▀██╣╣▒███╣╣███▒╣╣██▀");
+    sLog.outString("    ████▒▒╣╣╣╣╣╣▒▒████");
+    sLog.outString("        ▀████████▀");
+    sLog.outString("");
+    sLog.outString("RaspyWoW - https://raspywow.org");
+    sLog.outString("");
 
 #define STR(s) #s
 #define XSTR(s) STR(s)

@@ -193,8 +193,25 @@ extern int main(int argc, char **argv)
     sLog.Initialize();
 
     sLog.outString("Core revision: %s [realm-daemon]", _FULLVERSION);
-    sLog.outString("<Ctrl-C> to stop.\n" );
     sLog.outString("Using configuration file %s.", cfg_file);
+    sLog.outString("");
+    sLog.outString(" ,▄▄▄██▄▄▄,    ,▄▄▄███▄▄,");
+    sLog.outString("██░░░░░░░░▀█▄▄█▀░░░░░░░░▀█▌");
+    sLog.outString("█▌▒▒░░░▄░▒▒░██░▒▒▒░░░░░▒░█");
+    sLog.outString("▀█▄▒▒▒▒▒░▀▄▄██▄▄█▀░▒▒▒▒░█▀");
+    sLog.outString("  ██▄░░▒░▄██████▄░░▒░▄██▀");
+    sLog.outString("    █████▀▒▒▒▒▒▒▀█████");
+    sLog.outString("    ██╣╣╣╣╣╣╣╣╣╣╣╣╣╣██");
+    sLog.outString("   ██▒╢███▒╣▒▌╣╣███╣▒██");
+    sLog.outString("  ▐█▒╣╣╣██▌▒██▒▒██╢╣╣▒█▌");
+    sLog.outString("  ██▒╣╣╣▒████████▌╣╣╣╢█▌");
+    sLog.outString("   ██╣╣╣╢███▒▒███╢╣╣╣██");
+    sLog.outString("   ▀██╣╣▒███╣╣███▒╣╣██▀");
+    sLog.outString("    ████▒▒╣╣╣╣╣╣▒▒████");
+    sLog.outString("        ▀████████▀");
+    sLog.outString("");
+    sLog.outString("RaspyWoW - https://raspywow.org");
+    sLog.outString("");
 
     ///- Check the version of the configuration file
     uint32 confVersion = sConfig.GetIntDefault("ConfVersion", 0);
