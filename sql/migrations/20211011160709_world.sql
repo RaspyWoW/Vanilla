@@ -152,18 +152,6 @@ REPLACE INTO `spell_threat` (`entry`, `Threat`, `build_min`) VALUES
 ('25918', '60', '5086'),
 ('25894', '52', '5086');
 
--- Adds the "no initial aggro" flag to arcane missiles
--- https://github.com/the-hyjal-project/bugtracker/issues/441
-INSERT INTO `spell_mod` (`Id`, `AttributesEx3`) VALUES
-(5143, 131072),
-(5144, 131072),
-(5145, 131072),
-(8416, 131072),
-(8417, 131072),
-(10211, 131072),
-(10212, 131072),
-(25345, 131072);
-
 -- End of migration.
 END IF;
 END??
