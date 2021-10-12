@@ -146,6 +146,11 @@ DELETE FROM `spell_threat` WHERE `entry` = 25898;
 UPDATE `creature_template` SET `auras`='' WHERE `entry` = 11936;
 UPDATE `gameobject` SET `patch_min`='5' WHERE `guid` = 20463;
 DELETE FROM `creature_ai_events` WHERE `id` = 1308201;
+DELETE FROM `creature_ai_scripts` WHERE `id` = 1308201;
+UPDATE `creature_ai_events` SET `event_flags`='0' WHERE `id` = 1094301;
+REPLACE INTO `spell_threat` (`entry`, `Threat`, `build_min`) VALUES
+('25918', '60', '5086'),
+('25894', '52', '5086');
 
 -- Adds the "no initial aggro" flag to arcane missiles
 -- https://github.com/the-hyjal-project/bugtracker/issues/441

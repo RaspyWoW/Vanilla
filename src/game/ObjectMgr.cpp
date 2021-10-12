@@ -7652,7 +7652,7 @@ void ObjectMgr::LoadReputationRewardRate()
         bar.step();
 
         sLog.outString();
-        sLog.outErrorDb(">> Loaded `reputation_reward_rate`, table is empty!");
+        sLog.outString(">> Loaded `reputation_reward_rate`, table is empty!");
         return;
     }
 
