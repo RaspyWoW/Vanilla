@@ -1733,6 +1733,12 @@ void Player::Update(uint32 update_diff, uint32 p_time)
         uint32 cheatAction = GetCheatData()->Update(p_time, reason);
         if (cheatAction)
             GetSession()->ProcessAnticheatAction("MovementAnticheat", reason.str().c_str(), cheatAction, sWorld.getConfig(CONFIG_UINT32_AC_MOVEMENT_BAN_DURATION));
+
+#ifdef USE_ANTIBOT
+        if (sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
+            m_session->GetAntiBot()->Update(p_time, reason);
+#endif
+
     }
 }
 
@@ -3335,6 +3341,11 @@ void Player::GiveLevel(uint32 level)
 {
     if (level == GetLevel())
         return;
+
+#ifdef USE_ANTIBOT
+    if (sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
+        m_session->GetAntiBot()->CheckBehavior(CHEAT_ANTIBOT_AB);
+#endif
 
     uint32 numInstanceMembers = 0;
     uint32 numGroupMembers = 0;
@@ -4953,6 +4964,11 @@ void Player::KillPlayer()
 
     // 6 minutes until repop at graveyard
     m_deathTimer = CORPSE_REPOP_TIME;
+
+#ifdef USE_ANTIBOT
+    if (sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
+        m_session->GetAntiBot()->CheckBehavior(CHEAT_ANTIBOT_DEATH);
+#endif
 
     UpdateCorpseReclaimDelay();                             // dependent at use SetDeathPvP() call before kill
 

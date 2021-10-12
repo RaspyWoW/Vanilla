@@ -35,6 +35,10 @@
 #include "AsyncCommandHandlers.h"
 #include "Anticheat.h"
 
+#ifdef USE_ANTIBOT
+    #include "AntiBot/AntiBot.h"
+#endif
+
 void PInfoHandler::HandlePInfoCommand(WorldSession* session, Player* target, ObjectGuid& target_guid, std::string& name)
 {
     PInfoData* data = new PInfoData;
@@ -232,6 +236,12 @@ void PInfoHandler::HandleResponse(WorldSession* session, PInfoData *data)
         cHandler.SendSysMessage(data->warden_endscene.c_str());
     if (!data->warden_proxifier.empty())
         cHandler.SendSysMessage(data->warden_proxifier.c_str());
+
+#ifdef USE_ANTIBOT
+    if (data->online && sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
+        if (WorldSession* targetSession = sWorld.FindSession(data->accId))
+                targetSession->GetAntiBot()->SendPlayerInfo(&cHandler);
+#endif
 
     delete data;
 }

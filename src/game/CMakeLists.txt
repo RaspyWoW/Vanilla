@@ -471,6 +471,12 @@ if(USE_ANTICHEAT)
   )
 endif()
 
+if(USE_ANTIBOT)
+  list(APPEND game_SRCS
+      Anticheat/AntiBot/AntiBot.cpp
+      Anticheat/AntiBot/AntiBot.h
+  )
+endif()
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}

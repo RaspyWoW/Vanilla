@@ -58,6 +58,10 @@ class BigNumber;
 class BehaviorAnalyzer;
 class MasterPlayer;
 
+#ifdef USE_ANTIBOT
+class AntiBot;
+#endif
+
 struct OpcodeHandler;
 struct PlayerBotEntry;
 
@@ -512,6 +516,10 @@ class WorldSession
         void InitCheatData(Player* pPlayer);
         MovementAnticheat* GetCheatData();
 
+#ifdef USE_ANTIBOT
+        AntiBot* GetAntiBot();
+#endif
+
         void AddScript(std::string name, WorldSessionScript* script)
         {
             scripts[name] = script;
@@ -929,6 +937,10 @@ class WorldSession
 
         Warden* m_warden;
         MovementAnticheat* m_cheatData;
+
+#ifdef USE_ANTIBOT
+        AntiBot* m_antibot;
+#endif
 
         std::string m_username;
         uint32 _floodPacketsCount[FLOOD_MAX_OPCODES_TYPE];
