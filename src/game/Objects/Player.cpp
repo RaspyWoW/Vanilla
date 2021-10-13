@@ -3112,8 +3112,8 @@ void Player::SetGMVisible(bool on, bool notify)
             GetSession()->SendNotification(LANG_INVIS_ON);
         }
     }
-    // Sauvegarde directement pour que le site n'affiche plus le MJ parmis les joueurs co.
-    CharacterDatabase.PExecute("UPDATE characters SET extra_flags = %u WHERE guid = %u", m_ExtraFlags, GetGUIDLow());
+    // Save directly so that the site no longer displays the GM among co players.
+    CharacterDatabase.PExecute("UPDATE `characters` SET `extra_flags` = %u WHERE `guid` = %u", m_ExtraFlags, GetGUIDLow());
 }
 
 void Player::SetCheatGod(bool on, bool notify)
@@ -14800,8 +14800,8 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     //"honor_rank_points, honor_highest_rank, honor_standing, honor_last_week_hk, honor_last_week_cp, honor_stored_hk, honor_stored_dk,"
     // 49                50     51      52      53      54      55      56      57              58               59       60
     //"watched_faction,  drunk, health, power1, power2, power3, power4, power5, explored_zones, equipment_cache, ammo_id, action_bars,"
-    // 61                62           63            64
-    //"world_phase_mask, create_time, allow_export, extra_flags FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
+    // 61                62           63
+    //"world_phase_mask, create_time, allow_export FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
 
     QueryResult* result = holder->GetResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
