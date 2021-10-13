@@ -601,6 +601,7 @@ enum eConfigBoolValues
     CONFIG_BOOL_PARTY_BOT_SKIP_CHECKS,
     CONFIG_BOOL_WORLD_AVAILABLE,
     CONFIG_BOOL_HIDE_TOTAL_POPULATION,
+    CONFIG_BOOL_HARDCORE_ENABLE,
     CONFIG_BOOL_VALUE_COUNT
 };
 
@@ -792,7 +793,8 @@ class World
         void LoadConfigSettings(bool reload = false);
 
         void SendWorldText(int32 string_id, ...);
-         // Only for GMs with ticket notification ON
+        // Only for GMs with ticket notification ON
+        void SendHardcoreWorldText(int32 string_id, ...);
         void SendGMTicketText(int32 string_id, ...);
         void SendGMTicketText(char const* text);
         void SendGMText(int32 string_id, ...);

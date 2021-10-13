@@ -220,6 +220,7 @@ class ChatHandler
         bool HandleSpamerUnmute(char* args);
         bool HandleSpamerList(char* args);
         bool HandleWhisperRestrictionCommand(char* args);
+        bool HandleHCAnnounceRestrictionCommand(char* args);
         bool HandleUnstuckCommand(char* args);
         bool HandleGoldRemoval(char* args);
         bool HandleAntiSpamAdd(char* args);
@@ -939,6 +940,9 @@ class ChatHandler
         bool HandleAddItemCommand(char* args);
         bool HandleDeleteItemCommand(char* args);
         bool HandleAddItemSetCommand(char* args);
+
+        bool HandleHardcoreCommand(char* args);
+        bool HandleHardcoreONCommand(char* args);
 
         bool HandleBankCommand(char* args);
         bool HandleChangeWeatherCommand(char* args);

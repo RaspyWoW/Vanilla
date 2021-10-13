@@ -932,6 +932,7 @@ void World::LoadConfigSettings(bool reload)
     }
 
     setConfig(CONFIG_BOOL_HIDE_TOTAL_POPULATION, "Hide.Total.Population", 1);
+    setConfig(CONFIG_BOOL_HARDCORE_ENABLE, "Hardcore.Enable", 0);
 
     setConfig(CONFIG_UINT32_ANTICRASH_OPTIONS, "Anticrash.Options", 0);
     setConfig(CONFIG_UINT32_ANTICRASH_REARM_TIMER, "Anticrash.Rearm.Timer", 0);
@@ -2049,6 +2050,27 @@ void World::SendWorldText(int32 string_id, ...)
         {
             Player* player = session->GetPlayer();
             if (player && player->IsInWorld())
+                wt_do(player);
+        }
+    }
+
+    va_end(ap);
+}
+
+/// Send a System Message to all players (except players that have opted out of hardcore announcements)
+void World::SendHardcoreWorldText(int32 string_id, ...)
+{
+    va_list ap;
+    va_start(ap, string_id);
+
+    MaNGOS::WorldWorldTextBuilder wt_builder(string_id, &ap);
+    MaNGOS::LocalizedPacketListDo<MaNGOS::WorldWorldTextBuilder> wt_do(wt_builder);
+    for (const auto& itr : m_sessions)
+    {
+        if (WorldSession* session = itr.second)
+        {
+            Player* player = session->GetPlayer();
+            if (player && player->IsInWorld() && player->IsEnabledHardcoreAnnouncements())
                 wt_do(player);
         }
     }

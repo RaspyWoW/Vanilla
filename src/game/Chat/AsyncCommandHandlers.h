@@ -52,8 +52,9 @@ struct PInfoData
     ObjectGuid target_guid;
     uint32 m_accountId;
     bool online = false;
-
     bool hasAccount = false;
+    bool hardcore;
+    bool permadeath;
     std::string two_factor_enabled;
     std::string username;
     std::string last_ip;

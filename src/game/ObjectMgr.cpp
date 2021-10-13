@@ -654,8 +654,8 @@ void ObjectMgr::LoadPlayerCacheData()
     m_playerNameToGuid.clear();
 
     std::unique_ptr<QueryResult> result(CharacterDatabase.Query(
-        //       0       1       2        3         4          5       6        7          8      9             10            11            12             13
-        "SELECT `guid`, `race`, `class`, `gender`, `account`, `name`, `level`, `zone`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `current_taxi_path` FROM `characters`;"));
+        //       0       1       2        3         4          5       6        7       8      9             10            11            12             13           14
+        "SELECT `guid`, `race`, `class`, `gender`, `account`, `name`, `level`, `zone`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `taxi_path`, `extra_flags` FROM `characters`;"));
 
     uint32 total_count = 0;
 
@@ -680,12 +680,17 @@ void ObjectMgr::LoadPlayerCacheData()
         std::string name = fields[5].GetCppString();
         if (normalizePlayerName(name))
         {
+            bool isLocked = false;
+            if ((fields[14].GetUInt32() & PLAYER_EXTRA_HARDCORE_DEATH) || (fields[14].GetUInt32() & PLAYER_EXTRA_LOCKED))
+                isLocked = true;
+
             PlayerCacheData* data = InsertPlayerInCache(fields[0].GetUInt32(), fields[1].GetUInt32(), fields[2].GetUInt32(),
-                fields[3].GetUInt32(), fields[4].GetUInt32(), name, fields[6].GetUInt32(), fields[7].GetUInt32());
+                fields[3].GetUInt32(), fields[4].GetUInt32(), name, fields[6].GetUInt32(), fields[7].GetUInt32(), isLocked);
 
             UpdatePlayerCachedPosition(data, fields[8].GetUInt32(), fields[9].GetFloat(), fields[10].GetFloat(),
                 fields[11].GetFloat(), fields[12].GetFloat(), !fields[13].GetCppString().empty());
         }
+
         ++total_count;
     }
     while (result->NextRow());
@@ -839,13 +844,14 @@ void ObjectMgr::UpdatePlayerCache(Player* pPlayer)
 
     if (!data)
         return;
+
     if (pPlayer->GetSession())
-        UpdatePlayerCache(data, pPlayer->GetRace(), pPlayer->GetClass(), pPlayer->GetGender(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetName(), pPlayer->GetLevel(), pPlayer->GetCachedZoneId());
+        UpdatePlayerCache(data, pPlayer->GetRace(), pPlayer->GetClass(), pPlayer->GetGender(), pPlayer->GetSession()->GetAccountId(), pPlayer->GetName(), pPlayer->GetLevel(), pPlayer->GetCachedZoneId(), pPlayer->IsPermaDeath());
 
     UpdatePlayerCachedPosition(data, pPlayer->GetMapId(), pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), pPlayer->IsTaxiFlying());
 }
 
-void ObjectMgr::UpdatePlayerCache(PlayerCacheData* data, uint32 race, uint32 _class, uint32 gender, uint32 accountId, std::string const& name, uint32 level, uint32 zoneId)
+void ObjectMgr::UpdatePlayerCache(PlayerCacheData* data, uint32 race, uint32 _class, uint32 gender, uint32 accountId, std::string const& name, uint32 level, uint32 zoneId, bool isLocked)
 {
     data->uiAccount = accountId;
     data->uiRace = race;
@@ -854,13 +860,14 @@ void ObjectMgr::UpdatePlayerCache(PlayerCacheData* data, uint32 race, uint32 _cl
     data->uiLevel = level;
     data->sName = name;
     data->uiZoneId = zoneId;
+    data->bCharIsLocked = isLocked;
 }
 
-PlayerCacheData* ObjectMgr::InsertPlayerInCache(uint32 lowGuid, uint32 race, uint32 _class, uint32 gender, uint32 accountId, std::string const& name, uint32 level, uint32 zoneId)
+PlayerCacheData* ObjectMgr::InsertPlayerInCache(uint32 lowGuid, uint32 race, uint32 _class, uint32 gender, uint32 accountId, std::string const& name, uint32 level, uint32 zoneId, bool isLocked)
 {
     auto data = new PlayerCacheData;
     data->uiGuid = lowGuid;
-    UpdatePlayerCache(data, race, _class, gender, accountId, name, level, zoneId);
+    UpdatePlayerCache(data, race, _class, gender, accountId, name, level, zoneId, isLocked);
 
     m_playerCacheData[lowGuid] = data;
     m_playerNameToGuid[name] = lowGuid;

@@ -587,11 +587,23 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
+    if (GetPlayer()->IsHardcore())
+    {
+        SendTradeStatus(TRADE_STATUS_BUSY);
+        return;
+    }
+
     Player* pOther = GetPlayer()->GetMap()->GetPlayer(otherGuid);
 
     if (!pOther)
     {
         SendTradeStatus(TRADE_STATUS_NO_TARGET);
+        return;
+    }
+
+    if (pOther->IsHardcore())
+    {
+        SendTradeStatus(TRADE_STATUS_BUSY);
         return;
     }
 

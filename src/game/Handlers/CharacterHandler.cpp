@@ -78,12 +78,12 @@ bool LoginQueryHolder::Initialize()
 
     // NOTE: all fields in `characters` must be read to prevent lost character data at next save in case wrong DB structure.
     // !!! NOTE: including unused `zone`,`online`
-    res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADFROM,            "SELECT `guid`, `account`, `name`, `race`, `class`, `gender`, `level`, `xp`, `xp_rate`, `money`, `skin`, `face`, `hair_style`, `hair_color`, `facial_hair`, `bank_bag_slots`, `player_flags`, "
+    res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADFROM, "SELECT `guid`, `account`, `name`, `race`, `class`, `gender`, `level`, `xp`, `xp_rate`, `money`, `skin`, `face`, `hair_style`, `hair_color`, `facial_hair`, `bank_bag_slots`, `player_flags`, "
                      "`position_x`, `position_y`, `position_z`, `map`, `orientation`, `known_taxi_mask`, `played_time_total`, `played_time_level`, `rest_bonus`, `logout_time`, `is_logout_resting`, `reset_talents_multiplier`, "
                      "`reset_talents_time`, `transport_guid`, `transport_x`, `transport_y`, `transport_z`, `transport_o`, `extra_flags`, `stable_slots`, `at_login_flags`, `zone`, `online`, `death_expire_time`, `current_taxi_path`, "
                      "`honor_rank_points`, `honor_highest_rank`, `honor_standing`, `honor_last_week_hk`, `honor_last_week_cp`, `honor_stored_hk`, `honor_stored_dk`, "
                      "`watched_faction`, `drunk`, `health`, `power1`, `power2`, `power3`, `power4`, `power5`, `explored_zones`, `equipment_cache`, `ammo_id`, `action_bars`, "
-                     "`world_phase_mask`, `create_time` FROM `characters` WHERE `guid` = '%u'", m_guid.GetCounter());
+                     "`world_phase_mask`, `create_time`, `extra_flags` FROM `characters` WHERE `guid` = '%u'", m_guid.GetCounter());
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADGROUP,           "SELECT `group_id` FROM `group_member` WHERE `member_guid` ='%u'", m_guid.GetCounter());
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES,  "SELECT `id`, `permanent`, `map`, `reset_time` FROM `character_instance` LEFT JOIN `instance` ON `instance` = `id` WHERE `guid` = '%u'", m_guid.GetCounter());
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADAURAS,           "SELECT `caster_guid`, `item_guid`, `spell`, `stacks`, `charges`, `base_points0`, `base_points1`, `base_points2`, `periodic_time0`, `periodic_time1`, `periodic_time2`, `max_duration`, `duration`, `effect_index_mask` FROM `character_aura` WHERE `guid` = '%u'", m_guid.GetCounter());
@@ -154,7 +154,7 @@ void WorldSession::HandleCharEnum(QueryResult* result)
                 _characterMaxLevel = level;
 
             DETAIL_LOG("Build enum data for char guid %u from account %u.", guidlow, GetAccountId());
-            if (Player::BuildEnumData(result, &data))
+            if (Player::BuildEnumData(result, &data, GetSecurity()))
                 ++num;
         }
         while (result->NextRow());
@@ -172,12 +172,12 @@ void WorldSession::HandleCharEnumOpcode(WorldPacket& /*recv_data*/)
 {
     /// get all the data necessary for loading all characters (along with their pets) on the account
     CharacterDatabase.AsyncPQuery(&chrHandler, &CharacterHandler::HandleCharEnumCallback, GetAccountId(),
-                                  //           0                    1                    2                    3                     4                      5                    6                    7                          8                          9                           10
+                                  //                    0                    1                    2                    3                     4                      5                    6                    7                          8                          9                           10
                                   "SELECT `characters`.`guid`, `characters`.`name`, `characters`.`race`, `characters`.`class`, `characters`.`gender`, `characters`.`skin`, `characters`.`face`, `characters`.`hair_style`, `characters`.`hair_color`, `characters`.`facial_hair`, `characters`.`level`, "
-                                  //    11                   12                  13                         14                         15                         16                         17
+                                  //             11                   12                  13                         14                         15                           16                       17
                                   "`characters`.`zone`, `characters`.`map`, `characters`.`position_x`, `characters`.`position_y`, `characters`.`position_z`, `guild_member`.`guild_id`, `characters`.`player_flags`, "
-                                  //    18                             19                       20                            21                       22
-                                  "`characters`.`at_login_flags`, `character_pet`.`entry`, `character_pet`.`display_id`, `character_pet`.`level`, `characters`.`equipment_cache` "
+                                  //             18                                19                       20                            21                    22                              23
+                                  "`characters`.`at_login_flags`, `character_pet`.`entry`, `character_pet`.`display_id`, `character_pet`.`level`, `characters`.`equipment_cache`, `characters`.`extra_flags` "
                                   "FROM `characters` LEFT JOIN `character_pet` ON `characters`.`guid`=`character_pet`.`owner_guid` AND `character_pet`.`slot`='%u' "
                                   "LEFT JOIN `guild_member` ON `characters`.`guid` = `guild_member`.`guid` "
                                   "WHERE `characters`.`account` = '%u' ORDER BY `characters`.`guid` "
@@ -402,9 +402,13 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
 {
     ObjectGuid playerGuid;
     recv_data >> playerGuid;
+    bool isLocked = false; // Overwritten by cachedata - if there is no cachedata the character couldn't be locked.
 
-    if ((!sWorld.getConfig(CONFIG_BOOL_WORLD_AVAILABLE) && GetSecurity() == SEC_PLAYER) ||
-        PlayerLoading() || GetPlayer() != nullptr || !playerGuid.IsPlayer())
+    PlayerCacheData* cacheData = sObjectMgr.GetPlayerDataByGUID(playerGuid);
+    if (cacheData)
+        isLocked = cacheData->bCharIsLocked; 
+
+    if ((!sWorld.getConfig(CONFIG_BOOL_WORLD_AVAILABLE) && GetSecurity() == SEC_PLAYER) || PlayerLoading() || GetPlayer() != nullptr || !playerGuid.IsPlayer() || (isLocked && GetSecurity() == SEC_PLAYER))
     {
         WorldPacket data(SMSG_CHARACTER_LOGIN_FAILED, 1);
         data << (uint8)1;

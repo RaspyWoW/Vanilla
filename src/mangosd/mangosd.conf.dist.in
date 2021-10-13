@@ -1299,6 +1299,12 @@ Motd = "Welcome to World of Warcraft!"
 Hide.Total.Population = 1
 
 #
+#   Hardcore.Enable
+#   Enable Hardcore command.
+
+Hardcore.Enable = 0
+
+#
 ###################################################################################################################
 # PLAYER INTERACTION
 #

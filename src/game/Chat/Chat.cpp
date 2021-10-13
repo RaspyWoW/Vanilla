@@ -1137,8 +1137,16 @@ ChatCommand * ChatHandler::getCommandTable()
         { nullptr,  0,                 false, nullptr,                         "", nullptr }
     };
 
+    static ChatCommand hardcoreommandTable[] =
+    {
+        { "on",       SEC_PLAYER, true,  &ChatHandler::HandleHardcoreONCommand,            "", nullptr },
+        { "messages", SEC_PLAYER, true,  &ChatHandler::HandleHCAnnounceRestrictionCommand, "", nullptr },
+        { nullptr,    0,          false, nullptr,                                          "", nullptr }
+    };
+
     static ChatCommand commandTable[] =
     {
+        { "hardcore",     SEC_PLAYER,        true,  &ChatHandler::HandleHardcoreCommand,  "", hardcoreCommandTable },
         { "account",      SEC_PLAYER,        true,  nullptr,                               "", accountCommandTable },
         { "auction",      SEC_MODERATOR,     false, nullptr,                               "", auctionCommandTable },
         { "cast",         SEC_ADMINISTRATOR, false, nullptr,                                  "", castCommandTable },

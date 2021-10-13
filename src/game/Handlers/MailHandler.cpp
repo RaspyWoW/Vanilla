@@ -139,6 +139,9 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     if (!CheckMailBox(mailboxGuid))
         return;
 
+    if (GetPlayer()->IsHardcore()) // Prevent hardcore players from sending mails
+        return;
+
     WorldSession::AsyncMailSendRequest* req = new WorldSession::AsyncMailSendRequest();
     req->accountId = GetAccountId();
     req->senderGuid = GetMasterPlayer()->GetObjectGuid();
@@ -739,6 +742,8 @@ void WorldSession::HandleGetMailList(WorldPacket& recv_data)
     MasterPlayer* pl = GetMasterPlayer();
     ASSERT(pl);
 
+    Player* player = GetPlayer();
+
     // client can't work with packets > max int16 value
     // uint32 const maxPacketSize = 32767;
 
@@ -756,6 +761,10 @@ void WorldSession::HandleGetMailList(WorldPacket& recv_data)
 
         // skip deleted or not delivered (deliver delay not expired) mails
         if ((*itr)->state == MAIL_STATE_DELETED || cur_time < (*itr)->deliver_time || cur_time > (*itr)->expire_time)
+            continue;
+
+        // Hardcore players can only view emails from gm's
+        if ((player->IsHardcore()) && (*itr)->stationery != MAIL_STATIONERY_GM)
             continue;
 
         /*[-ZERO] TODO recheck this

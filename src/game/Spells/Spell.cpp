@@ -1726,7 +1726,7 @@ void Spell::DoSpellHitOnUnit(Unit* unit, uint32 effectMask)
                 else if (unit->IsPvP() && unit->IsPlayer())
                 {
                     if (Player* pPlayer = pRealUnitCaster->GetCharmerOrOwnerPlayerOrPlayerItself())
-                        pPlayer->UpdatePvP(true);
+                        pPlayer->UpdatePvP(true, false, true);
                 }
             }
             
@@ -5558,6 +5558,16 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (m_caster->IsPlayer())
     {
+        // Start of hardmode checks
+        if (Player* pPlayer = ToPlayer(m_caster))
+        {
+            if (pPlayer->IsHardcore())
+            {
+                // Prevent bubble hs in hardmode
+                //if ((m_spellInfo->Id == 8690) && (pPlayer->IsImmuneToSchoolMask(SPELL_SCHOOL_MASK_NORMAL)) && pPlayer->GetClass() == CLASS_PALADIN)
+                //    return SPELL_FAILED_IMMUNE;
+            }
+        }
         // Autorepeat spells, if cast start when moving, are delayed until moving stop in spell update code.
         if (m_caster->IsMoving())
         {

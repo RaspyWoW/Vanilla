@@ -1975,15 +1975,14 @@ void Player::AutoReSummonPet()
     pet->SetHealth(pet->GetMaxHealth());
 }
 
-
-bool Player::BuildEnumData(QueryResult* result, WorldPacket* p_data)
+bool Player::BuildEnumData(QueryResult* result, WorldPacket* p_data, AccountTypes security)
 {
-    //                0                1                2                3                 4                  5                6                7                      8                      9                       10
-    //    "SELECT characters.guid, characters.name, characters.race, characters.class, characters.gender, characters.skin, characters.face, characters.hair_style, characters.hair_color, characters.facial_hair, characters.level, "
-    //         11               12              13                     14                     15                     16                     17
-    //    "characters.zone, characters.map, characters.position_x, characters.position_y, characters.position_z, guild_member.guild_id, characters.player_flags, "
-    //         18                         19                   20                        21                   22
-    //    "characters.at_login_flags, character_pet.entry, character_pet.display_id, character_pet.level, characters.equipment_cache "
+    //                    0                1                2                3                 4                  5                6                7                      8                      9                       10
+    // "SELECT characters.guid, characters.name, characters.race, characters.class, characters.gender, characters.skin, characters.face, characters.hair_style, characters.hair_color, characters.facial_hair, characters.level, "
+    //             11               12              13                     14                     15                       16                   17
+    // "characters.zone, characters.map, characters.position_x, characters.position_y, characters.position_z, guild_member.guild_id, characters.player_flags, "
+    //             18                            19                   20                        21                22                          23
+    // "characters.at_login_flags, character_pet.entry, character_pet.display_id, character_pet.level, characters.equipment_cache, characters.extra_flags "
 
     Field* fields = result->Fetch();
 
@@ -1999,7 +1998,21 @@ bool Player::BuildEnumData(QueryResult* result, WorldPacket* p_data)
     }
 
     *p_data << ObjectGuid(HIGHGUID_PLAYER, guid);
-    *p_data << fields[1].GetString();                       // name
+    if (fields[20].GetUInt32() & PLAYER_EXTRA_HARDCORE_DEATH)
+    {
+        char name[24];
+        sprintf(name, "%s %s", fields[1].GetString(), " DEATH");
+        *p_data << name;
+    }
+    else if ((fields[20].GetUInt32() & PLAYER_EXTRA_LOCKED) && (security == SEC_PLAYER))
+    {
+        char name[24];
+        sprintf(name, "%s %s", fields[1].GetString(), " LOCKED");
+        *p_data << name;
+    }
+    else
+        *p_data << fields[1].GetString();                   // name
+
     *p_data << uint8(pRace);                                // race
     *p_data << uint8(pClass);                               // class
     *p_data << uint8(fields[4].GetUInt8());                 // gender
@@ -2828,6 +2841,9 @@ Creature* Player::GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask) c
     if (!guid || !IsInWorld() || IsTaxiFlying())
         return nullptr;
 
+    if ((npcflagmask == UNIT_NPC_FLAG_AUCTIONEER) && (IsHardcore())) // Prevent Hardcore players interacting with autioneers
+        return nullptr;
+
     // exist (we need look pets also for some interaction (quest/etc)
     Creature* pCreature = GetMap()->GetAnyTypeCreature(guid);
     
@@ -2896,6 +2912,9 @@ GameObject* Player::GetGameObjectIfCanInteractWith(ObjectGuid guid, uint32 gameo
 {
     // some basic checks
     if (!guid || !IsInWorld() || IsTaxiFlying())
+        return nullptr;
+
+    if ((gameobject_type == GAMEOBJECT_TYPE_MEETINGSTONE) && (IsHardcore())) // Prevent Hardcore player interacting with meeting stones
         return nullptr;
 
     GameObject* pGo = GetMap()->GetGameObject(guid);
@@ -3341,6 +3360,52 @@ void Player::GiveLevel(uint32 level)
 {
     if (level == GetLevel())
         return;
+
+    // Hardcore
+    if (IsHardcore())
+    {
+        if (level == 60)
+        {
+            std::stringstream message;
+            message << GetName() << " has reached level 60!";
+
+            sWorld.SendHardcoreWorldText(LANG_HARDCORE, message.str().c_str());
+
+            MailDraft draft;
+            draft.SetSubjectAndBody("Congratulations!", "You did it! You beat Hardcore!\n\nHere is a companion for the rest of your journey.");
+            MailSender sender(MAIL_NORMAL, m_session ? m_session->GetPlayer()->GetObjectGuid().GetCounter() : 0, MAIL_STATIONERY_GM);
+
+            static constexpr uint32 ITEM_PANDA_COLLAR = 13583;
+            static constexpr uint32 ITEM_DIABLO_STONE = 13584;
+            static constexpr uint32 ITEM_BLUE_MURLOC_EGG = 20371;
+
+            uint8 randomPet = urand(0, 2);
+            uint32 petReward = 0;
+            switch (randomPet)
+            {
+                case 0:
+                {
+                    petReward = ITEM_PANDA_COLLAR;
+                    break;
+                }
+                case 1:
+                {
+                    petReward = ITEM_DIABLO_STONE;
+                    break;
+                }
+                case 2:
+                {
+                    petReward = ITEM_BLUE_MURLOC_EGG;
+                    break;
+                }
+            }
+
+            Item* item = Item::CreateItem(petReward, 1, 0);
+            item->SaveToDB();                               
+            draft.AddItem(item);
+            draft.SendMailTo(MailReceiver(this), sender);
+        }
+    }
 
 #ifdef USE_ANTIBOT
     if (sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
@@ -4970,7 +5035,24 @@ void Player::KillPlayer()
         m_session->GetAntiBot()->CheckBehavior(CHEAT_ANTIBOT_DEATH);
 #endif
 
-    UpdateCorpseReclaimDelay();                             // dependent at use SetDeathPvP() call before kill
+    UpdateCorpseReclaimDelay(); // dependent at use SetDeathPvP() call before kill
+
+    if (IsHardcore())
+    {
+        if (pvpInfo.isHardcoreImmune)
+        {
+            ChatHandler(this).PSendSysMessage("[Hardcore] You died. But PVP immunity saved you! Extra life granted!");
+            pvpInfo.isHardcoreImmune = false;
+        }
+        else
+        {
+            ChatHandler(this).PSendSysMessage("[Hardcore] Game over! Exiting game in 15 seconds.");
+            SetHardcorePermaDeath();
+            SaveToDB();
+            m_DbSaveDisabled = true;
+            pvpInfo.timerPvPHardcoreRemaining = 15 * 1000; // 15 sec to forced logout
+        }
+    }
 
     // don't create corpse at this moment, player might be falling
 
@@ -14718,8 +14800,8 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     //"honor_rank_points, honor_highest_rank, honor_standing, honor_last_week_hk, honor_last_week_cp, honor_stored_hk, honor_stored_dk,"
     // 49                50     51      52      53      54      55      56      57              58               59       60
     //"watched_faction,  drunk, health, power1, power2, power3, power4, power5, explored_zones, equipment_cache, ammo_id, action_bars,"
-    // 61                62           63
-    //"world_phase_mask, create_time, allow_export FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
+    // 61                62           63            64
+    //"world_phase_mask, create_time, allow_export, extra_flags FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
 
     QueryResult* result = holder->GetResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
@@ -15023,6 +15105,10 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
 
     uint32 extraflags = fields[35].GetUInt32();
 
+    // Prevent players from logging in - if they died in hardcode
+    if (extraflags & PLAYER_EXTRA_HARDCORE_DEATH)
+        return false;
+
     m_stableSlots = fields[36].GetUInt32();
     if (m_stableSlots > MAX_PET_STABLES)
     {
@@ -15265,8 +15351,14 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
                     SetAcceptWhispers(true);
                 break;
         }
+
         SetCheatGod(true);
     }
+
+    if (extraflags & PLAYER_EXTRA_HARDCORE)
+        SetHardcore(true);
+
+    SetHardcoreAnnouncements(extraflags & PLAYER_EXTRA_HARDCORE_ANNOUNCE_RESTRICTION);
 
     if (extraflags & PLAYER_EXTRA_WHISP_RESTRICTION)
         SetWhisperRestriction(true);
@@ -17302,6 +17394,8 @@ void Player::UpdatePvPFlagTimer(uint32 diff)
     if (!pvpInfo.inPvPCombat && !pvpInfo.inPvPEnforcedArea && !pvpInfo.inPvPCapturePoint && !pvpInfo.isPvPFlagCarrier && !HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_PVP_DESIRED))
         pvpInfo.timerPvPRemaining -= std::min(pvpInfo.timerPvPRemaining, diff);
 
+    pvpInfo.timerPvPHardcoreRemaining -= std::min(pvpInfo.timerPvPHardcoreRemaining, diff);
+
     // Timer tries to drop flag if all conditions are met and time has passed
     UpdatePvP(false);
 }
@@ -18511,8 +18605,52 @@ void Player::UpdateHomebindTime(uint32 time)
     }
 }
 
-void Player::UpdatePvP(bool state, bool overriding)
+void Player::UpdatePvP(bool state, bool overriding, bool isPlayerCombat)
 {
+    if (isPlayerCombat && IsHardcore())
+    {
+        pvpInfo.isHardcoreImmune = true;
+
+        //if (pvpInfo.timerPvPHardcoreRemaining < 90 * 1000) // Only announce timer if more than 30 secs difference to avoid spam
+        //    ChatHandler(this).PSendSysMessage("[Hardcore] PVP immunity engaged for 2 minutes.");
+        pvpInfo.timerPvPHardcoreRemaining = 45 * 1000;
+        /*
+        SpellEntry const* spellInfo = sSpellMgr.GetSpellEntry(28126);
+        SpellAuraHolder* holder = CreateSpellAuraHolder(spellInfo, m_session->GetPlayer(), m_session->GetPlayer(), m_session->GetPlayer());
+
+        holder->SetAuraDuration(2 * 60 * 1000);
+
+        for (uint32 i = 0; i < MAX_EFFECT_INDEX; ++i)
+        {
+            uint8 eff = spellInfo->Effect[i];
+            if (eff >= TOTAL_SPELL_EFFECTS)
+                continue;
+
+            if (Spells::IsAreaAuraEffect(eff) || eff == SPELL_EFFECT_APPLY_AURA || eff == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+            {
+                Aura* aur = CreateAura(spellInfo, SpellEffectIndex(i), nullptr, holder, m_session->GetPlayer());
+                holder->AddAura(aur, SpellEffectIndex(i));
+            }
+        }
+
+        if (!m_session->GetPlayer()->AddSpellAuraHolder(holder))
+            holder = nullptr;
+        */
+    }
+
+    if (!pvpInfo.timerPvPHardcoreRemaining && (m_ExtraFlags & PLAYER_EXTRA_HARDCORE_DEATH))
+    {
+        sObjectMgr.UpdatePlayerCache(this);
+        m_session->KickPlayer();
+    }
+
+    if (!pvpInfo.timerPvPHardcoreRemaining && pvpInfo.isHardcoreImmune)
+    {
+        pvpInfo.isHardcoreImmune = false;
+        // ChatHandler(this).PSendSysMessage("Hardcore: PVP immunity ended.");
+        // m_session->GetPlayer()->RemoveAurasDueToSpell(28126);
+    }
+
     if (!state || overriding)
     {
         // Updating into unset state or overriding anything
