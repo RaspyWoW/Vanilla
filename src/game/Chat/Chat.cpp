@@ -1137,7 +1137,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { nullptr,  0,                 false, nullptr,                         "", nullptr }
     };
 
-    static ChatCommand hardcoreommandTable[] =
+    static ChatCommand hardcoreCommandTable[] =
     {
         { "on",       SEC_PLAYER, true,  &ChatHandler::HandleHardcoreONCommand,            "", nullptr },
         { "messages", SEC_PLAYER, true,  &ChatHandler::HandleHCAnnounceRestrictionCommand, "", nullptr },

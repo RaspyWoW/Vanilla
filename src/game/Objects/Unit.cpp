@@ -789,8 +789,8 @@ uint32 Unit::DealDamage(Unit* pVictim, uint32 damage, CleanDamage const* cleanDa
                     message << ".";
                 }
 
-                if (GetLevel() > 19)
-                    sWorld.SendHardCoreWorldText(50001, message.str().c_str());
+                if (GetLevel() >= 20)
+                    sWorld.SendHardcoreWorldText(50001, message.str().c_str());
             }
         }
 

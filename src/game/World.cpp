@@ -932,7 +932,7 @@ void World::LoadConfigSettings(bool reload)
     }
 
     setConfig(CONFIG_BOOL_HIDE_TOTAL_POPULATION, "Hide.Total.Population", 1);
-    setConfig(CONFIG_BOOL_HARDCORE_ENABLE, "Hardcore.Enable", 0);
+    setConfig(CONFIG_BOOL_HARDCORE_ENABLED, "Hardcore.Enable", 0);
 
     setConfig(CONFIG_UINT32_ANTICRASH_OPTIONS, "Anticrash.Options", 0);
     setConfig(CONFIG_UINT32_ANTICRASH_REARM_TIMER, "Anticrash.Rearm.Timer", 0);
