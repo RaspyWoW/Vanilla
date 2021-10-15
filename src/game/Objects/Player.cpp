@@ -4331,7 +4331,7 @@ uint32 Player::GetResetTalentsCost() const
     if (!sWorld.getConfig(CONFIG_BOOL_NO_RESPEC_PRICE_DECAY) || (sWorld.GetWowPatch() >= WOW_PATCH_111))
         UpdateResetTalentsMultiplier();
 
-    if (!m_resetTalentsMultiplier) // initial respec
+    if (!m_resetTalentsMultiplier && !sWorld.getConfig(CONFIG_BOOL_NO_RESPEC_COSTS)) // Initial respec
     {
         return sWorld.getConfig(CONFIG_UINT32_RESPEC_BASE_COST) * GOLD;
     }
@@ -4344,7 +4344,7 @@ uint32 Player::GetResetTalentsCost() const
         return (multiCost * maxMulti) * GOLD;
     }
 
-    return (m_resetTalentsMultiplier * multiCost) * GOLD;
+    return sWorld.getConfig(CONFIG_BOOL_NO_RESPEC_COSTS) ? 0 : ((m_resetTalentsMultiplier * multiCost) * GOLD);
 }
 
 bool Player::ResetTalents(bool no_cost)
@@ -4360,6 +4360,9 @@ bool Player::ResetTalents(bool no_cost)
     }
 
     uint32 cost = 0;
+
+    if (sWorld.getConfig(CONFIG_BOOL_NO_RESPEC_COSTS))
+        no_cost = true;
 
     if (!no_cost)
     {

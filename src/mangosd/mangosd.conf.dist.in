@@ -1299,6 +1299,12 @@ Motd = "Welcome to World of Warcraft!"
 Hide.Total.Population = 1
 
 #
+#    NoRespecCosts
+#        Don't charge players for talent reset.
+
+NoRespecCosts = 0
+
+#
 ###################################################################################################################
 # PLAYER INTERACTION
 #
