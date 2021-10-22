@@ -80,6 +80,11 @@ UPDATE `gossip_menu_option` SET `condition_id`=866 WHERE `condition_id`=870;
 -- Remove orphaned addon row for Ribbon Pole Debug Target which was respawned with a different guid.
 DELETE FROM `creature_addon` WHERE `guid`=1886;
 
+-- Remove EventAI from Negolash.
+DELETE FROM `creature_ai_scripts` WHERE `id` IN (149401);
+DELETE FROM `creature_ai_events` WHERE `creature_id`=1494;
+UPDATE `creature_template` SET `ai_name`='' WHERE `entry`=1494;
+
 -- End of migration.
 END IF;
 END??
