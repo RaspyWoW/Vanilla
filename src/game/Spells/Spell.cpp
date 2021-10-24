@@ -1561,17 +1561,13 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
             if (Player* p = pRealUnitCaster->GetCharmerOrOwnerPlayerOrPlayerItself())
                 p->RewardPlayerAndGroupAtCast(unit, m_spellInfo->Id);
 
-        if (m_casterUnit)
-        {
-            if (((Creature*)unit)->AI())
-                ((Creature*)unit)->AI()->SpellHit(m_casterUnit, m_spellInfo);
+        if (((Creature*)unit)->AI())
+            ((Creature*)unit)->AI()->SpellHit(m_caster, m_spellInfo);
 
-            if (ZoneScript* pZoneScript = unit->GetZoneScript())
-                pZoneScript->OnCreatureSpellHit(m_casterUnit, unit->ToCreature(), m_spellInfo);
-        }
+        if (ZoneScript* pZoneScript = unit->GetZoneScript())
+            pZoneScript->OnCreatureSpellHit(m_caster, unit->ToCreature(), m_spellInfo);
     }
 
-    
     // World of Warcraft Client Patch 1.8.0 (2005-10-11)
     // - Pets no longer break off attacks when their target is affected by Warlock Fear.
 #if SUPPORTED_CLIENT_BUILD <= CLIENT_BUILD_1_7_1

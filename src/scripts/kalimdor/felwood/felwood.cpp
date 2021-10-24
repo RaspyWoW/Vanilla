@@ -176,16 +176,20 @@ struct npc_cursed_oozeAI : public ScriptedAI
     {
         Reset();
     }
+
     uint32 SpellTimer;
-    void SpellHit(Unit *caster, SpellEntry const* spell) override
+
+    void SpellHit(SpellCaster* caster, SpellEntry const* spell) override
     {
         if (spell && spell->Id == SPELL_QUEST_CURSED_JAR)
             m_creature->ForcedDespawn();
     }
+
     void UpdateAI(uint32 const diff) override
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
+
         if (SpellTimer < diff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_CURSED) == CAST_OK)
@@ -193,8 +197,10 @@ struct npc_cursed_oozeAI : public ScriptedAI
         }
         else
             SpellTimer -= diff;
+
         DoMeleeAttackIfReady();
     }
+
     void Reset() override
     {
         SpellTimer = 3000;
@@ -216,12 +222,15 @@ struct npc_tainted_oozeAI : public ScriptedAI
     {
         Reset();
     }
+
     uint32 SpellTimer;
-    void SpellHit(Unit *caster, SpellEntry const* spell) override
+
+    void SpellHit(SpellCaster* caster, SpellEntry const* spell) override
     {
         if (spell && spell->Id == SPELL_QUEST_TAINTED_JAR)
             m_creature->ForcedDespawn();
     }
+
     void UpdateAI(uint32 const diff) override
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
@@ -233,8 +242,10 @@ struct npc_tainted_oozeAI : public ScriptedAI
         }
         else
             SpellTimer -= diff;
+        
         DoMeleeAttackIfReady();
     }
+
     void Reset() override
     {
         SpellTimer = 3000;

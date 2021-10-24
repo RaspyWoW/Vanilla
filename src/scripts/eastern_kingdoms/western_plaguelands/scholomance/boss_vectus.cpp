@@ -38,7 +38,7 @@ enum
 
     GO_DAWN_S_GAMBIT                                = 177304,
 
-    SPELL_VIEWING_ROOM_STUDENT_TRANSFORM_EFFECT     = 18115,    //spell qui transforme les étudiants élites en squelettes
+    SPELL_VIEWING_ROOM_STUDENT_TRANSFORM_EFFECT     = 18115,    //spell qui transforme les ï¿½tudiants ï¿½lites en squelettes
     SPELL_FLAMESTRIKE                               = 18399,
     SPELL_BLAST_WAVE                                = 16046
   //SPELL_FRENZY                                    = 28371     //spell is used by Gluth, confirm this is for this boss too
@@ -228,7 +228,7 @@ struct npc_scholomance_studentAI : public ScriptedAI
 
     void Reset() override {}
 
-    void SpellHit(Unit *pCaster, SpellEntry const* pSpell) override
+    void SpellHit(SpellCaster* pCaster, SpellEntry const* pSpell) override
     {
         if (pSpell->Id == SPELL_VIEWING_ROOM_STUDENT_TRANSFORM_EFFECT)
         {

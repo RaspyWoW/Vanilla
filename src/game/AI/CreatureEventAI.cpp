@@ -117,7 +117,7 @@ CreatureEventAI::CreatureEventAI(Creature* c) : CreatureAI(c)
     Reset();
 }
 
-bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pActionInvoker)
+bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, SpellCaster* pActionInvoker)
 {
     if (!pHolder.Enabled || pHolder.Time)
         return false;
@@ -440,7 +440,7 @@ bool CreatureEventAI::ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pAction
     return true;
 }
 
-void CreatureEventAI::ProcessAction(ScriptMap* action, uint32 EventId, Unit* pActionInvoker)
+void CreatureEventAI::ProcessAction(ScriptMap* action, uint32 EventId, SpellCaster* pActionInvoker)
 {
     if (!action)
         return;
@@ -726,7 +726,7 @@ void CreatureEventAI::UpdateEventsOn_MoveInLineOfSight(Unit* pWho)
     }
 }
 
-void CreatureEventAI::SpellHit(Unit* pUnit, SpellEntry const* pSpell)
+void CreatureEventAI::SpellHit(SpellCaster* pCaster, SpellEntry const* pSpell)
 {
     if (m_bEmptyList)
         return;
@@ -740,13 +740,13 @@ void CreatureEventAI::SpellHit(Unit* pUnit, SpellEntry const* pSpell)
                 //If spell id matches (or no spell id) & if spell school matches (or no spell school)
                 if (!i.Event.hit_by_spell.spellId || pSpell->Id == i.Event.hit_by_spell.spellId)
                     if (GetSchoolMask(pSpell->School) & i.Event.hit_by_spell.schoolMask)
-                        ProcessEvent(i, pUnit);
+                        ProcessEvent(i, pCaster);
                 break;
             }
             case EVENT_T_HIT_BY_AURA:
             {
                 if (!i.Event.hit_by_aura.auraType || pSpell->HasAura(AuraType(i.Event.hit_by_aura.auraType)))
-                    ProcessEvent(i, pUnit);
+                    ProcessEvent(i, pCaster);
                 break;
             }
         }

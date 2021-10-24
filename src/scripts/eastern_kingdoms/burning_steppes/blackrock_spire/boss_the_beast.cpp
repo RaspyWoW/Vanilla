@@ -77,7 +77,7 @@ struct boss_thebeastAI : public ScriptedAI
         }
     }
 
-    void SpellHit(Unit* pCaster, SpellEntry const* pSpell) override
+    void SpellHit(SpellCaster* pCaster, SpellEntry const* pSpell) override
     {
         if (pSpell->Effect[0] == SPELL_EFFECT_SKINNING)
             pCaster->CastSpell(pCaster, SPELL_SUMMON_FINKLE, true);
