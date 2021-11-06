@@ -583,8 +583,9 @@ class Spell
             SpellMissInfo missCondition:8;
             SpellMissInfo reflectResult:8;
             uint8  effectMask:8;
-            bool   processed:1;
-            bool   deleted:1;
+            bool processed:1;
+            bool isCrit:1;
+            bool deleted:1;
         };
         uint8 m_needAliveTargetMask = 0;                    // Mask req. alive targets
 
