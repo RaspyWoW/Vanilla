@@ -189,24 +189,6 @@ struct mob_ancient_core_houndAI : public ScriptedAI
         }
     }
 
-    /*
-    void MoveInLineOfSight(Unit *pWho) override
-    {        
-        if (!m_creature->IsInCombat())
-        {
-            if (pWho->IsPlayer() && m_creature->IsWithinDistInMap(pWho, 20.0f) && pWho->IsTargetable(true, false))
-            {
-                // allow Soothe Animal to lower aggro range
-                if (m_creature->HasAuraType(SPELL_AURA_MOD_DETECT_RANGE) && !m_creature->IsWithinDistInMap(pWho, 10.0f))
-                    return;
-
-                pWho->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
-                m_creature->AI()->AttackStart(pWho);
-            }
-        }
-    }
-    */
-
     void UpdateAI(uint32 const uiDiff) override
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())

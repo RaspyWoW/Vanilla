@@ -48,7 +48,7 @@ set (game_SRCS
     WhisperTargetLimits.cpp
     World.cpp
     WorldSession.cpp
-    AI/AggressorAI.cpp
+    AI/BasicAI.cpp
     AI/CreatureAI.cpp
     AI/CreatureAIRegistry.cpp
     AI/CreatureAISelector.cpp
@@ -62,7 +62,6 @@ set (game_SRCS
     AI/PetAI.cpp
     AI/PetEventAI.cpp
     AI/PlayerAI.cpp
-    AI/ReactorAI.cpp
     AI/ScriptedAI.cpp
     AI/ScriptedEscortAI.cpp
     AI/ScriptedFollowerAI.cpp
@@ -252,7 +251,7 @@ set (game_SRCS
     WhisperTargetLimits.h
     World.h
     WorldSession.h
-    AI/AggressorAI.h
+    AI/BasicAI.h
     AI/CreatureAI.h
     AI/CreatureAIImpl.h
     AI/CreatureAIRegistry.h
@@ -267,7 +266,6 @@ set (game_SRCS
     AI/PetAI.h
     AI/PetEventAI.h
     AI/PlayerAI.h
-    AI/ReactorAI.h
     AI/ScriptedAI.h
     AI/ScriptedEscortAI.h
     AI/ScriptedFollowerAI.h

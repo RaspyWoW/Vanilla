@@ -627,6 +627,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "movetype",       SEC_ADMINISTRATOR, false, &ChatHandler::HandleNpcSpawnSetMoveTypeCommand,  "", nullptr },
         { "wanderdistance", SEC_ADMINISTRATOR, false, &ChatHandler::HandleNpcSpawnWanderDistCommand,   "", nullptr },
         { "respawntime",    SEC_ADMINISTRATOR, false, &ChatHandler::HandleNpcSpawnSpawnTimeCommand,    "", nullptr },
+        { "reactstate",     SEC_ADMINISTRATOR, false, &ChatHandler::HandleNpcSetReactStateCommand,     "", nullptr },
         { "deathstate",     SEC_ADMINISTRATOR, false, &ChatHandler::HandleNpcSetDeathStateCommand,     "", nullptr },
         { nullptr,          0,                 false, nullptr,                                         "", nullptr }
     };
