@@ -8249,7 +8249,6 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
     }
 
     SetLootGuid(guid);
-    ALL_SESSION_SCRIPTS(GetSession(), OnLoot(guid, loot_type));
 
     // need know for proper finish item loots (internal pre-switch loot type set in different from 3.x code version)
     // in fact this meaning that it send same loot types for interesting cases like 3.x version code (skip pre-3.x client loot type limitaitons)
@@ -14631,7 +14630,6 @@ void Player::SendQuestUpdateAddCreatureOrGo(Quest const* pQuest, ObjectGuid guid
     uint16 slot = FindQuestSlot(pQuest->GetQuestId());
     if (slot < MAX_QUEST_LOG_SIZE)
         SetQuestSlotCounter(slot, uint8(creatureOrGO_idx), uint8(count));
-    ALL_SESSION_SCRIPTS(GetSession(), OnQuestKillUpdated(guid));
 }
 
 /*********************************************************/

@@ -55,7 +55,6 @@ class WorldSession;
 class Warden;
 class MovementAnticheat;
 class BigNumber;
-class BehaviorAnalyzer;
 class MasterPlayer;
 
 #ifdef USE_ANTIBOT
@@ -199,11 +198,6 @@ enum PacketProcessing
     PACKET_PROCESS_GUILD = PACKET_PROCESS_WORLD,
 };
 
-enum PacketDumpType
-{
-    PACKET_DUMP_SKIP_FREQUENT_OPCODES       = 0x1,
-};
-
 enum AccountFlags
 {
     ACCOUNT_FLAG_MUTED_FROM_PUBLIC_CHANNELS     = 0x1,
@@ -255,24 +249,6 @@ class WorldSessionFilter : public PacketFilter
 };
 
 typedef std::map<uint8, std::string> ClientIdentifiersMap;
-
-class WorldSessionScript
-{
-public:
-    WorldSessionScript() {}
-    virtual ~WorldSessionScript() {}
-    virtual void OnWardenData(uint32 dataType, uint32 notMovedSecs, Player* owner) {}
-    virtual void OnUnitKilled(ObjectGuid unitEntry) {}
-    virtual void OnLoot(ObjectGuid guid, LootType lootType) {}
-    virtual void OnPacket(uint32 opcode) {}
-    virtual void OnSpellCasted(uint32 spellId) {}
-    virtual void OnLogin(Player const* owner) {}
-    virtual void OnWhispered(ObjectGuid from) {}
-    virtual void OnQuestKillUpdated(ObjectGuid guid) {}
-};
-
-typedef std::map<std::string, WorldSessionScript*> SessionScriptsMap;
-#define ALL_SESSION_SCRIPTS(session, what) for (SessionScriptsMap::iterator it = session->scripts.begin(); it != session->scripts.end(); ++it) it->second->what;
 
 /// Player session in the World
 class WorldSession
@@ -470,24 +446,6 @@ class WorldSession
         time_t GetLastPubChanMsgTime() { return m_lastPubChannelMsgTime; }
         void SetLastPubChanMsgTime(time_t time) { m_lastPubChannelMsgTime = time; }
 
-        bool IsReplaying() const { return _pcktReading != nullptr; }
-        ObjectGuid GetRecorderGuid() const { return _recorderGuid; }
-        void ReplaySkipTime(int32 delay) { _pcktReadTimer += delay; }
-        void SetReplaySpeedRate(float r) { _pcktReadSpeedRate = r; }
-        void SetDumpPacket(char const* file);
-        void SetPacketsDumpFlags(uint32 flags) { _pcktDumpFlags = flags; }
-        void SetReadPacket(char const* file);
-        void SetDumpRecvPackets(char const* file);
-
-        FILE* _pcktReading;
-        FILE* _pcktWriting;
-        FILE* _pcktRecvDump;
-        uint32 _pcktDumpFlags;
-        float  _pcktReadSpeedRate;
-        uint32 _pcktReadTimer;
-        uint32 _pcktReadLastUpdate;
-        ObjectGuid _recorderGuid;
-
         // Bot system
         std::stringstream _chatBotHistory;
         PlayerBotEntry* GetBot() { return m_bot; }
@@ -519,19 +477,6 @@ class WorldSession
 #ifdef USE_ANTIBOT
         AntiBot* GetAntiBot();
 #endif
-
-        void AddScript(std::string name, WorldSessionScript* script)
-        {
-            scripts[name] = script;
-        }
-        WorldSessionScript* GetScriptByName(std::string name)
-        {
-            SessionScriptsMap::iterator it = scripts.find(name);
-            if (it == scripts.end())
-                return nullptr;
-            return it->second;
-        }
-        SessionScriptsMap scripts;
 
         void ClearIncomingPacketsByType(PacketProcessing type);
         inline bool HasRecentPacket(PacketProcessing type) const { return _receivedPacketType[type]; }

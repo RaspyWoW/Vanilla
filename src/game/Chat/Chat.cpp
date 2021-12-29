@@ -349,7 +349,6 @@ ChatCommand * ChatHandler::getCommandTable()
         { "time",                SEC_ADMINISTRATOR, true,  &ChatHandler::HandleDebugTimeCommand,             "", nullptr },
         { "moveflags",           SEC_ADMINISTRATOR, false, &ChatHandler::HandleDebugMoveFlagsCommand,        "", nullptr },
         { "movespline",          SEC_ADMINISTRATOR, false, &ChatHandler::HandleDebugMoveSplineCommand,       "", nullptr },
-        { "dump",                SEC_ADMINISTRATOR, false, &ChatHandler::HandleDebugRecvPacketDumpWrite,     "", nullptr },
         { "movemotion",          SEC_ADMINISTRATOR, false, &ChatHandler::HandleDebugMoveCommand,             "", nullptr },
         { "factionchange_items", SEC_ADMINISTRATOR, true, &ChatHandler::HandleFactionChangeItemsCommand,     "", nullptr },
         { "loottable",           SEC_ADMINISTRATOR, true,  &ChatHandler::HandleDebugLootTableCommand,        "", nullptr },
@@ -1056,17 +1055,6 @@ ChatCommand * ChatHandler::getCommandTable()
         { nullptr,  0,           false, nullptr,                              "", nullptr }
     };
 
-    static ChatCommand replayCommandTable[] =
-    {
-        { "play",    SEC_ADMINISTRATOR, false, &ChatHandler::HandleReplayPlayCommand,    "", nullptr },
-        { "forward", SEC_ADMINISTRATOR, false, &ChatHandler::HandleReplayForwardCommand, "", nullptr },
-        { "stop",    SEC_ADMINISTRATOR, false, &ChatHandler::HandleReplayStopCommand,    "", nullptr },
-        { "record",  SEC_ADMINISTRATOR, false, &ChatHandler::HandleReplayRecordCommand,  "", nullptr },
-        { "speed",   SEC_ADMINISTRATOR, false, &ChatHandler::HandleReplaySpeedCommand,   "", nullptr },
-        { "",        SEC_ADMINISTRATOR, false, &ChatHandler::HandleReplayPlayCommand,    "", nullptr },
-        { nullptr,   0,                 false, nullptr,                                  "", nullptr }
-    };
-
     static ChatCommand channelCommandTable[] =
     {
         { "join",  SEC_MODERATOR, false, &ChatHandler::HandleChannelJoinCommand,  "", nullptr },
@@ -1148,7 +1136,6 @@ ChatCommand * ChatHandler::getCommandTable()
         { "cheat",        SEC_ADMINISTRATOR, false, nullptr,                                 "", cheatCommandTable },
         { "debug",        SEC_ADMINISTRATOR, true,  nullptr,                                 "", debugCommandTable },
         { "replenish",    SEC_GAMEMASTER,    false, &ChatHandler::HandleReplenishCommand,              "", nullptr },
-        { "replay",       SEC_ADMINISTRATOR, false, nullptr,                                "", replayCommandTable },
         { "event",        SEC_ADMINISTRATOR, false, nullptr,                                 "", eventCommandTable },
         { "gm",           SEC_MODERATOR,     true,  nullptr,                                    "", gmCommandTable },
         { "honor",        SEC_MODERATOR,     false, nullptr,                                 "", honorCommandTable },
