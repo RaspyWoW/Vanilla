@@ -323,6 +323,9 @@ enum eScriptCommand
                                                             // datalong = (bool) 0 = off, 1 = on
     SCRIPT_COMMAND_RESET_DOOR_OR_BUTTON     = 87,           // source = GameObject
 
+    SCRIPT_COMMAND_SET_COMMAND_STATE        = 88,           // source = Creature
+                                                            // datalong = command_state (see enum CommandStates)
+
     SCRIPT_COMMAND_MAX,
 
     SCRIPT_COMMAND_DISABLED                 = 9999          // Script action was disabled during loading.
@@ -1033,6 +1036,11 @@ struct ScriptInfo
         } setPvP;
 
                                                             // SCRIPT_COMMAND_RESET_DOOR_OR_BUTTON (87)
+
+        struct                                              // SCRIPT_COMMAND_SET_COMMAND_STATE (88)
+        {
+            uint32 commandState;                            // datalong
+        } setCommandState;
 
         struct
         {
