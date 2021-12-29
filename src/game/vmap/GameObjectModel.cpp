@@ -129,9 +129,14 @@ GameObjectModel* GameObjectModel::construct(GameObject const* const object)
         // TODO: What kind of gobj should block LoS or not ?
         if (gobjInfo->type == GAMEOBJECT_TYPE_BUTTON && gobjInfo->button.losOK)
             return nullptr;
+
         if (gobjInfo->type == GAMEOBJECT_TYPE_GOOBER && gobjInfo->goober.losOK)
             return nullptr;
+
+        if (gobjInfo->IsServerOnly())
+            return nullptr;
     }
+
     GameObjectDisplayInfoEntry const* info = sGameObjectDisplayInfoStore.LookupEntry(object->GetDisplayId());
     if (!info)
         return nullptr;
