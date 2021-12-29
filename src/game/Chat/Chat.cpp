@@ -1231,7 +1231,6 @@ ChatCommand * ChatHandler::getCommandTable()
         { "pinfo",        SEC_MODERATOR,     false, &ChatHandler::HandlePInfoCommand,                  "", nullptr },
         { "groupinfo",    SEC_GAMEMASTER,    true,  &ChatHandler::HandleGroupInfoCommand,              "", nullptr },
         { "pbcast",       SEC_ADMINISTRATOR, true,  &ChatHandler::HandlePBCastStatsCommand, "", pbcastCommandTable },
-        { "addons",       SEC_GAMEMASTER,    false, &ChatHandler::HandleListAddonsCommand,             "", nullptr },
         { "respawn",      SEC_ADMINISTRATOR, false, &ChatHandler::HandleRespawnCommand,                "", nullptr },
         { "send",         SEC_MODERATOR,     true,  nullptr,                                  "", sendCommandTable },
         { "mute",         SEC_MODERATOR,     true,  &ChatHandler::HandleMuteCommand,                   "", nullptr },

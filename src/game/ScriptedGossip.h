@@ -2,8 +2,7 @@
  * This program is free software licensed under GPL version 2
  * Please see the included DOCS/LICENSE.TXT for more information */
 
-#ifndef SC_GOSSIP_H
-#define SC_GOSSIP_H
+#pragma once
 
 #include "Player.h"
 #include "GossipDef.h"
@@ -125,5 +124,4 @@ extern uint32 GetSkillLevel(Player* pPlayer,uint32 skill);
 
 // defined fuctions to use with Creature
 
-#define QUEST_DIALOG_STATUS(a, b, c)   GetSession()->getDialogStatus(a, b, c)
-#endif
+#define QUEST_DIALOG_STATUS(a, b, c)   GetSession()->GetDialogStatus(a, b, c)

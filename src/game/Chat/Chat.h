@@ -202,8 +202,7 @@ class ChatHandler
         bool HandleCheatWaterwalkCommand(char* args);
         bool HandleCheatWallclimbCommand(char* args);
 
-        //Custom
-        bool HandleListAddonsCommand(char *);
+        // Custom
         bool HandleSendSpellVisualCommand(char *);
         bool HandleSendSpellImpactCommand(char *);
         bool HandleDebugUnitCommand(char *);

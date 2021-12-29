@@ -2203,6 +2203,7 @@ class Player final: public Unit
         bool m_repopAtGraveyardPending;
         ObjectGuid m_selectedGobj; // For GM commands
         ObjectGuid m_escortingGuid;
+        ObjectGuid m_currentBankerGuid;
         bool m_bIsAllowedToExportToon;
 
         void SendMountResult(UnitMountResult result) const;
@@ -2215,6 +2216,7 @@ class Player final: public Unit
         UnitMountResult Mount(uint32 mount, uint32 spellId = 0) override;
         UnitDismountResult Unmount(bool from_aura = false) override;
 
+        bool CanUseBank(ObjectGuid bankerGUID = ObjectGuid()) const;
         bool CanInteractWithQuestGiver(Object* questGiver) const;
         Creature* FindNearestInteractableNpcWithFlag(uint32 npcFlags) const;
         Creature* GetNPCIfCanInteractWith(ObjectGuid guid, uint32 npcflagmask) const;
