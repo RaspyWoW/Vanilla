@@ -1043,7 +1043,7 @@ struct eye_of_cthunAI : public ScriptedAI
         IsAlreadyPulled = false;
 
         if (m_creature) {
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             // need to reset the orientation in case of wipe during glare phase
             m_creature->SetOrientation(3.44f);
             RemoveGlarePhaseSpells();
@@ -1241,8 +1241,9 @@ struct cthunAI : public ScriptedAI
         if (!m_pInstance)
             sLog.outError("SD0: No Instance for cthunAI");
 
-        if (Creature* pPortal = DoSpawnCreature(MOB_CTHUN_PORTAL, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 0)) {
-            pPortal->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+        if (Creature* pPortal = DoSpawnCreature(MOB_CTHUN_PORTAL, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 0))
+        {
+            pPortal->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
         }
 
         Reset();
@@ -1309,7 +1310,7 @@ struct cthunAI : public ScriptedAI
         m_creature->DeMorph();
 
         m_creature->SetVisibility(VISIBILITY_ON);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_SPAWNING);
                 
         
         // Hack to allow eye-respawning with .respawn chat-command. 
@@ -1589,13 +1590,15 @@ struct cthunAI : public ScriptedAI
         UpdateTentaclesP2(diff);
         UpdateStomachGrab(diff);
 
-        if (cthunEmergeTimer < diff) {
-            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        if (cthunEmergeTimer < diff)
+        {
+            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING);
             m_creature->SetInCombatWithZone();
 
             currentPhase = PHASE_CTHUN_INVULNERABLE;
         }
-        else {
+        else
+        {
             cthunEmergeTimer -= diff;
         }
     }

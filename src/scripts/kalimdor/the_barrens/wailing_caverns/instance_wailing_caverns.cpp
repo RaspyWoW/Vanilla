@@ -75,14 +75,8 @@ struct instance_wailing_caverns : public ScriptedInstance
             case 3671:
                 m_uiAnacondraGUID = pCreature->GetGUID();
                 break;
-                /*case 5775:                  // Verdan the Everliving
-                    m_uiVerdanGUID = pCreature->GetGUID();
-                    pCreature->SetVisibility(VISIBILITY_OFF);
-                    pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                    pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
-                    break;*/
         }
+
         if ((pCreature->GetCreatureType() != CREATURE_TYPE_CRITTER) &&
             pCreature->GetFactionTemplateId() != 35 && // the 2 druids
             pCreature->GetEntry() != 3653) // Kresh is cool
