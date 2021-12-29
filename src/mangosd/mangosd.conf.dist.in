@@ -229,19 +229,11 @@ vmap.enableLOS = 1
 vmap.enableHeight = 1
 
 #
-#    vmap.ignoreSpellIds
-#        These spells are ignored for LoS calculation.
-#        (List of ids with delimiter ',')
-
-vmap.ignoreSpellIds = "7720"
-
-#
 #    vmap.enableIndoorCheck
 #        VMap based indoor checks to remove outdoor-only auras (mounts etc.).
 #        (Requires VMaps enabled to work.)
 
 vmap.enableIndoorCheck = 1
-vmap.petLOS = 1
 
 #
 #    mmap.enabled
@@ -1426,12 +1418,6 @@ WorldBossLevelDiff = 3
 SendLootRollUponReconnect = 0
 
 #
-#    Corpse.EmptyLootShow
-#        If target can have loot, or can be skining after loot, but no loot generated still show loot window.
-
-Corpse.EmptyLootShow = 1
-
-#
 #    Corpse.Decay.NORMAL
 #    Corpse.Decay.RARE
 #    Corpse.Decay.ELITE
@@ -1665,7 +1651,7 @@ WhisperTargets.BypassLevel = 0
 #        Sanction applied to a player if sending too many packets.
 #        (See enum CheatAction for all flags.)
 
-Antiflood.Sanction = 4
+Antiflood.Sanction = 8
 
 #
 ###################################################################################################################
@@ -2722,12 +2708,6 @@ Auction.Deposit.Min = 0
 Auction.AccountConcurrentLimit = 0
 
 #
-#    Rate.Honor
-#        Honor gain rate multiplier.
-
-Rate.Honor = 1
-
-#
 #    Rate.Mining.Amount
 #    Rate.Mining.Next
 #        Mining rates multiplier.
@@ -2847,27 +2827,6 @@ SkillFail.Possible.FishingPool = 1
 #         (0.5 (100/0.5 = 200) Each 200 damage apply one from 19 possible equipped items.)
 
 DurabilityLossChance.Damage = 0.5
-
-#
-#    DurabilityLossChance.Absorb
-#         Chance lost one from armor items durability point at damage absorb.
-#         (0.5 (100/0.5 = 200) Each 200 absorbs apply one from 15 possible armor equipped items.)
-
-DurabilityLossChance.Absorb = 0.5
-
-#
-#    DurabilityLossChance.Parry
-#         Chance lost weapon durability point at parry.
-#         (0.05 (100/0.05 = 2000) Each 2000 parry attacks main weapon lost point.)
-
-DurabilityLossChance.Parry = 0.05
-
-#
-#    DurabilityLossChance.Block
-#         Chance lost sheild durability point at damage block.
-#         (0.05 (100/0.05 = 2000) Each 2000 partly or full blocked attacks shield lost point.)
-
-DurabilityLossChance.Block = 0.05
 
 #
 #    Death.SicknessLevel
