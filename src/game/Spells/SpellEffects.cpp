@@ -3123,7 +3123,7 @@ void Spell::EffectDispel(SpellEffectIndex eff_idx)
             {
                 if (checkFaction)
                 {
-                    bool positive = holder->IsPositive();
+                    const bool positive = holder->IsPositive();
                     // do not remove positive auras if friendly target
                     // do not remove negative auras if non-friendly target
                     // when removing charm auras ignore hostile reaction from the charm
@@ -3131,13 +3131,14 @@ void Spell::EffectDispel(SpellEffectIndex eff_idx)
                     {
                         if (CharmInfo *charm = unitTarget->GetCharmInfo())
                             if (FactionTemplateEntry const* ft = charm->GetOriginalFactionTemplate())
-                                if (ft->IsFriendlyTo(*m_caster->getFactionTemplateEntry()))
+                                if (ft->IsFriendlyTo(*m_caster->GetFactionTemplateEntry()))
                                     priority_dispel = dispel_list.size();
                     }
                     else if (positive == friendly)
                         continue;
                 }
             }
+
             dispel_list.push_back(std::pair<SpellAuraHolder*, uint32>(holder, holder->GetStackAmount()));
         }
     }
