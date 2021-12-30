@@ -3,9 +3,9 @@ delimiter ??
 CREATE PROCEDURE `add_migration`()
 BEGIN
 DECLARE v INT DEFAULT 1;
-SET v = (SELECT COUNT(*) FROM `migrations` WHERE `id`='20211229103221');
+SET v = (SELECT COUNT(*) FROM `migrations` WHERE `id`='20211229100221');
 IF v=0 THEN
-INSERT INTO `migrations` VALUES ('20211229103221');
+INSERT INTO `migrations` VALUES ('20211229100221');
 -- Add your query below.
 
 -- Add support for spawn spells.
