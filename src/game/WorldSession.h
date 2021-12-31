@@ -466,6 +466,10 @@ class WorldSession
         void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
         void BuildPartyMemberStatsPacket(Player* player, WorldPacket* data, uint32 updateMask, bool sendAllAuras);
 
+#ifdef USE_ANTIBOT
+        AntiBot* GetAntiBot();
+#endif
+
     public:                                                 // opcodes handlers
 
         void Handle_NULL(WorldPacket& recvPacket);          // not used
