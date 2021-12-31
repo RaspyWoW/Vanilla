@@ -269,7 +269,7 @@ bool WorldSession::ForcePlayerLogoutDelay()
 bool WorldSession::Update(PacketFilter& updater)
 {
     uint32 sessionUpdateTime = WorldTimer::getMSTime();
-    for (uint32& i : m_floodPacketsCount)
+    for (uint32 & i : m_floodPacketsCount)
         i = 0;
 
     ///- Retrieve packets from the receive queue and call the appropriate handlers
@@ -353,7 +353,7 @@ void WorldSession::ProcessPackets(PacketFilter& updater)
             switch (opHandle.status)
             {
             case STATUS_LOGGEDIN:
-
+            {
                 if (!_player)
                 {
                     // skip STATUS_LOGGEDIN opcode unexpected errors if player logout sometime ago - this can be network lag delayed packets
@@ -365,14 +365,18 @@ void WorldSession::ProcessPackets(PacketFilter& updater)
 
                 // lag can cause STATUS_LOGGEDIN opcodes to arrive after the player started a transfer
                 break;
+            }
             case STATUS_LOGGEDIN_OR_RECENTLY_LOGGEDOUT:
+            {
                 if (!_player && !m_playerRecentlyLogout)
                     LogUnexpectedOpcode(packet, "the player has not logged in yet and not recently logout");
                 else
                     // not expected _player or must checked in packet hanlder
                     ExecuteOpcode(opHandle, packet);
                 break;
+            }
             case STATUS_TRANSFER:
+            {
                 if (!_player)
                     LogUnexpectedOpcode(packet, "the player has not logged in yet");
                 else if (_player->IsInWorld())
@@ -380,7 +384,9 @@ void WorldSession::ProcessPackets(PacketFilter& updater)
                 else
                     ExecuteOpcode(opHandle, packet);
                 break;
+            }
             case STATUS_AUTHED:
+            {
                 // prevent cheating with skip queue wait
                 if (m_inQueue)
                 {
@@ -394,30 +400,37 @@ void WorldSession::ProcessPackets(PacketFilter& updater)
 
                 ExecuteOpcode(opHandle, packet);
                 break;
+            }
             case STATUS_NEVER:
+            {
                 sLog.outError("SESSION: received not allowed opcode %s (0x%.4X)",
                     opHandle.name,
                     packet->GetOpcode());
                 break;
+            }
             case STATUS_UNHANDLED:
+            {
                 DEBUG_LOG("SESSION: received not handled opcode %s (0x%.4X)",
                     opHandle.name,
                     packet->GetOpcode());
                 break;
+            }
             default:
-                sLog.outError("SESSION: received wrong-status-req opcode %s (0x%.4X)",
-                    opHandle.name,
-                    packet->GetOpcode());
-                break;
+            {
+            sLog.outError("SESSION: received wrong-status-req opcode %s (0x%.4X)",
+                opHandle.name,
+                packet->GetOpcode());
+            break;
+            }
             }
             packetTime = WorldTimer::getMSTimeDiffToNow(packetTime);
             if (sWorld.getConfig(CONFIG_UINT32_PERFLOG_SLOW_PACKET) && packetTime > sWorld.getConfig(CONFIG_UINT32_PERFLOG_SLOW_PACKET))
                 sLog.out(LOG_PERFORMANCE, "Slow packet opcode %s: %ums. Account %u on IP %s", opHandle.name, packetTime, GetAccountId(), GetRemoteAddress().c_str());
         }
-        catch (ByteBufferException&)
+        catch (ByteBufferException &)
         {
             sLog.outError("WorldSession::Update ByteBufferException occured while parsing a packet (opcode:0x%x) from client %s, accountid=%i.",
-                packet->GetOpcode(), GetRemoteAddress().c_str(), GetAccountId());
+                          packet->GetOpcode(), GetRemoteAddress().c_str(), GetAccountId());
             if (sLog.HasLogLevelOrHigher(LOG_LVL_DEBUG))
             {
                 DEBUG_LOG("Dumping error causing packet:");
@@ -427,11 +440,11 @@ void WorldSession::ProcessPackets(PacketFilter& updater)
             if (sWorld.getConfig(CONFIG_BOOL_KICK_PLAYER_ON_BAD_PACKET))
             {
                 DETAIL_LOG("Disconnecting session [account id %u / address %s] for badly formatted packet.",
-                    GetAccountId(), GetRemoteAddress().c_str());
+                           GetAccountId(), GetRemoteAddress().c_str());
                 ProcessAnticheatAction("Anticrash", "ByteBufferException", CHEAT_ACTION_KICK);
             }
         }
-        catch (std::runtime_error& e)
+        catch (std::runtime_error &e)
         {
             sLog.outInfo("CATCH Exception 'ASSERT' for account %u / IP %s", GetAccountId(), GetRemoteAddress().c_str());
             sLog.outInfo(e.what());
@@ -488,7 +501,7 @@ void WorldSession::LogoutPlayer(bool Save)
     {
         bool inWorld = _player->IsInWorld() && _player->FindMap();
 
-        sLog.out(LOG_CHAR, "Account: %d (IP: %s) Logout Character:[%s] (guid: %u)", GetAccountId(), GetRemoteAddress().c_str(), _player->GetName(), _player->GetGUIDLow());
+        sLog.out(LOG_CHAR, "Account: %d (IP: %s) Logout Character:[%s] (guid: %u)", GetAccountId(), GetRemoteAddress().c_str(), _player->GetName() , _player->GetGUIDLow());
         sWorld.LogCharacter(_player, "Logout");
         if (ObjectGuid lootGuid = GetPlayer()->GetLootGuid())
             DoLootRelease(lootGuid);
@@ -515,7 +528,7 @@ void WorldSession::LogoutPlayer(bool Save)
             _player->RepopAtGraveyard();
         }
         //drop a flag if player is carrying it
-        if (BattleGround* bg = _player->GetBattleGround())
+        if (BattleGround *bg = _player->GetBattleGround())
             _player->LeaveBattleground(true);
 
         ///- Teleport to home if the player is in an invalid instance
@@ -783,7 +796,8 @@ void WorldSession::LoadTutorialsData()
 
         for (int iI = 0; iI < 8; ++iI)
             m_tutorials[iI] = fields[iI].GetUInt32();
-    } while (result->NextRow());
+    }
+    while (result->NextRow());
 
     delete result;
 
@@ -805,30 +819,29 @@ void WorldSession::SaveTutorialsData()
 
     switch (m_tutorialState)
     {
-    case TUTORIALDATA_CHANGED:
-    {
-        SqlStatement stmt = CharacterDatabase.CreateStatement(updTutorial, "UPDATE `character_tutorial` SET `tut0`=?, `tut1`=?, `tut2`=?, `tut3`=?, `tut4`=?, `tut5`=?, `tut6`=?, `tut7`=? WHERE `account` = ?");
-        for (uint32 tutorial : m_tutorials)
-            stmt.addUInt32(tutorial);
+        case TUTORIALDATA_CHANGED:
+        {
+            SqlStatement stmt = CharacterDatabase.CreateStatement(updTutorial, "UPDATE `character_tutorial` SET `tut0`=?, `tut1`=?, `tut2`=?, `tut3`=?, `tut4`=?, `tut5`=?, `tut6`=?, `tut7`=? WHERE `account` = ?");
+            for (uint32 tutorial : m_tutorials)
+                stmt.addUInt32(tutorial);
 
-        stmt.addUInt32(GetAccountId());
-        stmt.Execute();
-    }
-    break;
+            stmt.addUInt32(GetAccountId());
+            stmt.Execute();
+            break;
+        }
+        case TUTORIALDATA_NEW:
+        {
+            SqlStatement stmt = CharacterDatabase.CreateStatement(insTutorial, "INSERT INTO `character_tutorial` (`account`, `tut0`, `tut1`, `tut2`, `tut3`, `tut4`, `tut5`, `tut6`, `tut7`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-    case TUTORIALDATA_NEW:
-    {
-        SqlStatement stmt = CharacterDatabase.CreateStatement(insTutorial, "INSERT INTO `character_tutorial` (`account`, `tut0`, `tut1`, `tut2`, `tut3`, `tut4`, `tut5`, `tut6`, `tut7`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            stmt.addUInt32(GetAccountId());
+            for (uint32 tutorial : m_tutorials)
+                stmt.addUInt32(tutorial);
 
-        stmt.addUInt32(GetAccountId());
-        for (uint32 tutorial : m_tutorials)
-            stmt.addUInt32(tutorial);
-
-        stmt.Execute();
-    }
-    break;
-    case TUTORIALDATA_UNCHANGED:
-        break;
+            stmt.Execute();
+            break;
+        }
+        case TUTORIALDATA_UNCHANGED:
+            break;
     }
 
     m_tutorialState = TUTORIALDATA_UNCHANGED;
@@ -873,12 +886,12 @@ void WorldSession::InitCheatData(Player* pPlayer)
         m_cheatData->InitNewPlayer(pPlayer);
     else
         m_cheatData = sAnticheatMgr->CreateAnticheatFor(pPlayer);
+}
 
 #ifdef USE_ANTIBOT
-    if (m_antibot && sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
-        m_antibot = sAnticheatMgr->CreateAntiBotFor(pPlayer);
+if (m_antibot && sWorld.getConfig(CONFIG_BOOL_ANTIBOT_ENABLED))
+m_antibot = sAnticheatMgr->CreateAntiBotFor(pPlayer);
 #endif
-}
 
 MovementAnticheat* WorldSession::GetCheatData()
 {
@@ -971,46 +984,46 @@ bool WorldSession::AllowPacket(uint16 opcode)
     // Do not count packets that are often spamed by the client when loading a zone for example.
     switch (opcode)
     {
-    case CMSG_GAMEOBJECT_QUERY:
-    case CMSG_CREATURE_QUERY:
-    case CMSG_QUESTGIVER_STATUS_QUERY:
-    case CMSG_ITEM_QUERY_SINGLE:
-    case CMSG_NAME_QUERY:
-    case CMSG_PET_NAME_QUERY:
-    case CMSG_GUILD_QUERY:
-    case CMSG_JOIN_CHANNEL:         // Can be flooded by addons upon login
-    case CMSG_AUCTION_LIST_ITEMS:   // We already handle only one per session update
-    case CMSG_WHO:                  // We already handle only one per session update
-        return true;
-    default:
-        break;
+        case CMSG_GAMEOBJECT_QUERY:
+        case CMSG_CREATURE_QUERY:
+        case CMSG_QUESTGIVER_STATUS_QUERY:
+        case CMSG_ITEM_QUERY_SINGLE:
+        case CMSG_NAME_QUERY:
+        case CMSG_PET_NAME_QUERY:
+        case CMSG_GUILD_QUERY:
+        case CMSG_JOIN_CHANNEL:         // Can be flooded by addons upon login
+        case CMSG_AUCTION_LIST_ITEMS:   // We already handle only one per session update
+        case CMSG_WHO:                  // We already handle only one per session update
+            return true;
+        default:
+            break;
     }
 
     m_floodPacketsCount[FLOOD_TOTAL_PACKETS]++;
 
     switch (opcode)
     {
-    case CMSG_CHAR_CREATE:
-    case CMSG_CHAR_ENUM:
-    case CMSG_CHAR_DELETE:
-    case CMSG_OPEN_ITEM:
-    case CMSG_PETITION_BUY:
-    case CMSG_PETITION_SIGN:
-    case CMSG_PETITION_QUERY:
-    case MSG_PETITION_RENAME:
-    case CMSG_SEND_MAIL:
-    case CMSG_PLAYER_LOGIN:
-        m_floodPacketsCount[FLOOD_VERY_SLOW_OPCODES]++;
+        case CMSG_CHAR_CREATE:
+        case CMSG_CHAR_ENUM:
+        case CMSG_CHAR_DELETE:
+        case CMSG_OPEN_ITEM:
+        case CMSG_PETITION_BUY:
+        case CMSG_PETITION_SIGN:
+        case CMSG_PETITION_QUERY:
+        case MSG_PETITION_RENAME:
+        case CMSG_SEND_MAIL:
+        case CMSG_PLAYER_LOGIN:
+            m_floodPacketsCount[FLOOD_VERY_SLOW_OPCODES]++;
         // no break, since slow packets are also very slow packets.
-    case CMSG_LOGOUT_REQUEST:
-    case CMSG_ADD_FRIEND:
-    case CMSG_DEL_FRIEND:
-    case CMSG_BUY_ITEM:
-    case CMSG_SELL_ITEM:
-        m_floodPacketsCount[FLOOD_SLOW_OPCODES]++;
-        break;
-    default:
-        break;
+        case CMSG_LOGOUT_REQUEST:
+        case CMSG_ADD_FRIEND:
+        case CMSG_DEL_FRIEND:
+        case CMSG_BUY_ITEM:
+        case CMSG_SELL_ITEM:
+            m_floodPacketsCount[FLOOD_SLOW_OPCODES]++;
+            break;
+        default:
+            break;
     }
 
     // Check if the permitted threshold has been exceeded

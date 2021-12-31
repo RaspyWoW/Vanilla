@@ -108,15 +108,8 @@ bool QuestAccept_npc_miran(Player* pPlayer, Creature* pCreature, Quest const* pQ
     if (pQuest->GetQuestId() == QUEST_PROTECTING_THE_SHIPMENT)
     {
         if (npc_miranAI* pEscortAI = dynamic_cast<npc_miranAI*>(pCreature->AI()))
-        {
-            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_NPC);
-            // Prior to patch 1.10 Miran had a different faction. This faction is confirmed by sniffs to be blizzlike, but it prevent him for entering combat with the ambushers.
-            // Changing his faction temporarily allows combat - while still keeping the accurate sniffed data in database.
-            pCreature->SetFactionTemporary(1618);
             pEscortAI->Start(false, pPlayer->GetGUID(), pQuest);
-        }
     }
-
     return true;
 }
 

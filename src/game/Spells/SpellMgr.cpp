@@ -2280,9 +2280,8 @@ bool SpellMgr::IsSpellValid(SpellEntry const* spellInfo, Player* pl, bool msg)
                         if (pl)
                             ChatHandler(pl).PSendSysMessage("Craft spell %u create item (Entry: %u) but item does not exist in item_template.", spellInfo->Id, spellInfo->EffectItemType[i]);
                         else
-                            DEBUG_LOG("Craft spell %u create item (Entry: %u) but item does not exist in item_template.", spellInfo->Id, spellInfo->EffectItemType[i]);
+                            sLog.outErrorDb("Craft spell %u create item (Entry: %u) but item does not exist in item_template.", spellInfo->Id, spellInfo->EffectItemType[i]);
                     }
-
                     return false;
                 }
 
@@ -3360,28 +3359,28 @@ namespace SpellInternal
 
             switch (spellInfo->Effect[eff])
             {
-            case SPELL_EFFECT_INTERRUPT_CAST:
-                foundNoDamageAura = true;
-                break;
-            case SPELL_EFFECT_APPLY_AURA:
-                switch (spellInfo->EffectApplyAuraName[eff])
-                {
-                case SPELL_AURA_MOD_DECREASE_SPEED:
-                case SPELL_AURA_MOD_FEAR:
-                case SPELL_AURA_MOD_STUN:
-                case SPELL_AURA_MOD_PACIFY:
-                case SPELL_AURA_MOD_ROOT:
-                case SPELL_AURA_MOD_SILENCE:
-                case SPELL_AURA_MOD_DISARM:
-                case SPELL_AURA_MOD_RESISTANCE:
-                case SPELL_AURA_MOD_DAMAGE_TAKEN:
+                case SPELL_EFFECT_INTERRUPT_CAST:
                     foundNoDamageAura = true;
                     break;
-                }
-                break;
-            case SPELL_EFFECT_KNOCK_BACK:
-                foundNoDamageAura = true;
-                break;
+                case SPELL_EFFECT_APPLY_AURA:
+                    switch (spellInfo->EffectApplyAuraName[eff])
+                    {
+                        case SPELL_AURA_MOD_DECREASE_SPEED:
+                        case SPELL_AURA_MOD_FEAR:
+                        case SPELL_AURA_MOD_STUN:
+                        case SPELL_AURA_MOD_PACIFY:
+                        case SPELL_AURA_MOD_ROOT:
+                        case SPELL_AURA_MOD_SILENCE:
+                        case SPELL_AURA_MOD_DISARM:
+                        case SPELL_AURA_MOD_RESISTANCE:
+                        case SPELL_AURA_MOD_DAMAGE_TAKEN:
+                            foundNoDamageAura = true;
+                            break;
+                    }
+                    break;
+                case SPELL_EFFECT_KNOCK_BACK:
+                    foundNoDamageAura = true;
+                    break;
             }
         }
 
@@ -3422,11 +3421,11 @@ namespace SpellInternal
         {
             switch (i)
             {
-            case SPELL_AURA_MOD_FEAR:
-            case SPELL_AURA_MOD_ROOT:
-            case SPELL_AURA_MOD_PACIFY_SILENCE:
-            case SPELL_AURA_MOD_CONFUSE:
-                return false;
+                case SPELL_AURA_MOD_FEAR:
+                case SPELL_AURA_MOD_ROOT:
+                case SPELL_AURA_MOD_PACIFY_SILENCE:
+                case SPELL_AURA_MOD_CONFUSE:
+                    return false;
             }
         }
 
@@ -3443,9 +3442,9 @@ namespace SpellInternal
 
         switch (spellInfo->GetDiminishingReturnsGroup(false))
         {
-        case DIMINISHING_NONE:
-        case DIMINISHING_LIMITONLY:
-            return false;
+            case DIMINISHING_NONE:
+            case DIMINISHING_LIMITONLY:
+                return false;
         }
 
         return true;

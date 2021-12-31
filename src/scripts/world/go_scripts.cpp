@@ -456,13 +456,13 @@ struct go_firework_rocket : public GameObjectAI
         {
             switch (eventId)
             {
-            case EVENT_ROCKET_DESPAWN:
-            {
-                me->Despawn();
-                break;
-            }
-            default:
-                break;
+                case EVENT_ROCKET_DESPAWN:
+                {
+                    me->Despawn();
+                    break;
+                }
+                default:
+                    break;
             }
         }
     }
@@ -489,7 +489,7 @@ struct go_lunar_festival_firecracker : public GameObjectAI
     go_lunar_festival_firecracker(GameObject* gobj) : GameObjectAI(gobj)
     {
         if (me->GetEntry() == 180763 || me->GetEntry() == 180764)
-            m_events.ScheduleEvent(EVENT_FIRECRACKER_DESPAWN, Seconds(urand(30, 60)));
+            m_events.ScheduleEvent(EVENT_FIRECRACKER_DESPAWN, Seconds(urand(30,60)));
     }
 
     bool OnUse(Unit* /*user*/) override
@@ -539,61 +539,61 @@ void AddSC_go_scripts()
 
     newscript = new Script;
     newscript->Name = "go_cat_figurine";
-    newscript->pGOHello =           &GOHello_go_cat_figurine;
+    newscript->pGOHello = &GOHello_go_cat_figurine;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_barov_journal";
-    newscript->pGOHello =           &GOHello_go_barov_journal;
-    newscript->pGOGossipSelect =    &GossipSelect_go_barov_journal;
+    newscript->pGOHello = &GOHello_go_barov_journal;
+    newscript->pGOGossipSelect = &GossipSelect_go_barov_journal;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_field_repair_bot_74A";
-    newscript->pGOHello =           &GOHello_go_field_repair_bot_74A;
+    newscript->pGOHello = &GOHello_go_field_repair_bot_74A;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_orb_of_command";
-    newscript->pGOHello =           &GOHello_go_orb_of_command;
+    newscript->pGOHello = &GOHello_go_orb_of_command;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_resonite_cask";
-    newscript->pGOHello =           &GOHello_go_resonite_cask;
+    newscript->pGOHello = &GOHello_go_resonite_cask;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_tablet_of_madness";
-    newscript->pGOHello =           &GOHello_go_tablet_of_madness;
+    newscript->pGOHello = &GOHello_go_tablet_of_madness;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_silithyste";
-    newscript->pGOHello =           &GOHello_go_silithyste;
+    newscript->pGOHello = &GOHello_go_silithyste;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_restes_sha_ni";
-    newscript->pGOHello =           &GOHello_go_restes_sha_ni;
+    newscript->pGOHello = &GOHello_go_restes_sha_ni;
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_Hive_Regal_Glyphed_Crystal";
-    newscript->pGOHello =           &(GOHello_go_Hive_Glyphed_Crystal<ITEM_HIVE_REGAL_RUBBING>);
-    newscript->pGOGossipSelect =    &(GOSelect_go_Hive_Glyphed_Crystal<ITEM_HIVE_REGAL_RUBBING>);
+    newscript->pGOHello = &(GOHello_go_Hive_Glyphed_Crystal<ITEM_HIVE_REGAL_RUBBING>);
+    newscript->pGOGossipSelect = &(GOSelect_go_Hive_Glyphed_Crystal<ITEM_HIVE_REGAL_RUBBING>);
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_Hive_Ashi_Glyphed_Crystal";
-    newscript->pGOHello =           &(GOHello_go_Hive_Glyphed_Crystal<ITEM_HIVE_ASHI_RUBBING>);
-    newscript->pGOGossipSelect =    &(GOSelect_go_Hive_Glyphed_Crystal<ITEM_HIVE_ASHI_RUBBING>);
+    newscript->pGOHello = &(GOHello_go_Hive_Glyphed_Crystal<ITEM_HIVE_ASHI_RUBBING>);
+    newscript->pGOGossipSelect = &(GOSelect_go_Hive_Glyphed_Crystal<ITEM_HIVE_ASHI_RUBBING>);
     newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "go_Hive_Zora_Glyphed_Crystal";
-    newscript->pGOHello =           &(GOHello_go_Hive_Glyphed_Crystal<ITEM_HIVE_ZORA_RUBBING>);
-    newscript->pGOGossipSelect =    &(GOSelect_go_Hive_Glyphed_Crystal<ITEM_HIVE_ZORA_RUBBING>);
+    newscript->pGOHello = &(GOHello_go_Hive_Glyphed_Crystal<ITEM_HIVE_ZORA_RUBBING>);
+    newscript->pGOGossipSelect = &(GOSelect_go_Hive_Glyphed_Crystal<ITEM_HIVE_ZORA_RUBBING>);
     newscript->RegisterSelf();
 
     newscript = new Script;

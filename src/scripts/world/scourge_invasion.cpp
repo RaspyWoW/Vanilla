@@ -360,7 +360,7 @@ struct NecropolisAI : public ScriptedAI
 
     void Reset() override {}
 
-    void SpellHit(SpellCaster* pCaster, SpellEntry const* spell) override
+    void SpellHit(SpellCaster*, SpellEntry const* spell) override
     {
         if (m_creature->HasAura(SPELL_COMMUNIQUE_TIMER_NECROPOLIS))
             return;
@@ -941,7 +941,6 @@ struct ScourgeMinion : public ScriptedAI
             m_creature->MonsterSay(PickRandomValue(BCT_SHADOW_OF_DOOM_TEXT_0, BCT_SHADOW_OF_DOOM_TEXT_1, BCT_SHADOW_OF_DOOM_TEXT_2, BCT_SHADOW_OF_DOOM_TEXT_3), LANG_UNIVERSAL, pInvoker->ToUnit());
             m_creature->CastSpell(m_creature, SPELL_SPAWN_SMOKE, true);
         }
-
         if (uiEvent == NPC_FLAMESHOCKER)
             m_events.ScheduleEvent(EVENT_MINION_FLAMESHOCKERS_DESPAWN, 60000);
     }
@@ -959,7 +958,7 @@ struct ScourgeMinion : public ScriptedAI
         }
     }
 
-    void SpellHit(SpellCaster* pUnit, SpellEntry const* spell) override
+    void SpellHit(SpellCaster*, SpellEntry const* spell) override
     {
         switch (spell->Id)
         {
@@ -987,25 +986,25 @@ struct ScourgeMinion : public ScriptedAI
         {
             switch (Events)
             {
-            case EVENT_DOOM_START_ATTACK:
-            {
-                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER);
-
-                if (TemporarySummon* pMe = dynamic_cast<TemporarySummon*>(m_creature))
+                case EVENT_DOOM_START_ATTACK:
                 {
-                    // Shadow of Doom seems to attack the Summoner here.
-                    if (Player* pPlayer = ToPlayer(pMe->GetSummoner()))
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER);
+
+                    if (TemporarySummon* pMe = dynamic_cast<TemporarySummon*>(m_creature))
                     {
-                        if (pPlayer->IsWithinLOSInMap(m_creature))
+                        // Shadow of Doom seems to attack the Summoner here.
+                        if (Player* pPlayer = ToPlayer(pMe->GetSummoner()))
                         {
-                            m_creature->SetInCombatWith(pPlayer);
-                            m_creature->SetDetectionDistance(2.0f);
+                            if (pPlayer->IsWithinLOSInMap(m_creature))
+                            {
+                                m_creature->SetInCombatWith(pPlayer);
+                                m_creature->SetDetectionDistance(2.0f);
+                            }
                         }
                     }
+                    
+                    break;
                 }
-
-                break;
-            }
                 case EVENT_DOOM_MINDFLAY:
                 {
                     DoCastSpellIfCan(m_creature->GetVictim(), SPELL_MINDFLAY);
@@ -1328,7 +1327,6 @@ struct PallidHorrorAI : public ScriptedAI
                             }
                         }
                     }
-
                     m_events.ScheduleEvent(EVENT_PALLID_SUMMON_FLAMESHOCKER, 2000);
                     break;
                 }

@@ -325,7 +325,7 @@ struct npc_injured_patientAI : public ScriptedAI
         }
     }
 
-    void SpellHit(SpellCaster* caster, SpellEntry const* spell) override
+    void SpellHit(SpellCaster *caster, SpellEntry const* spell) override
     {
         if (caster->GetTypeId() == TYPEID_PLAYER && m_creature->IsAlive() && spell->Id == 20804)
         {
@@ -1202,7 +1202,7 @@ enum
     NPC_CLUSTER_CREDIT_MARKER       = 15894,
     GO_OMEN_CLUSTER_LAUNCHER        = 180874,
 
-    SPELL_LUNAR_FORTUNE             = 26522
+    SPELL_LUNAR_FORTUNE             = 26522,
 };
 
 struct FireworkStruct
@@ -1308,21 +1308,21 @@ struct npc_pats_firework_guyAI : ScriptedAI
             {
                 switch (i)
                 {
-                    case 0:
-                        m_creature->NearTeleportTo(x, y, z + 7.0f, 0.0f);
-                        break;
-                    case 1:
-                        m_creature->NearTeleportTo(x - 1.5f, y + 1.5f, z + 5.0f, 0.0f);
-                        break;
-                    case 2:
-                        m_creature->NearTeleportTo(x - 1.5f, y - 1.5f, z + 5.0f, 0.0f);
-                        break;
-                    case 3:
-                        m_creature->NearTeleportTo(x + 1.5f, y, z + 5.0f, 0.0f);
-                        break;
-                    case 4:
-                        m_creature->NearTeleportTo(x, y + 1.5f, z + 3.0f, 0.0f);
-                        break;
+                case 0:
+                    m_creature->NearTeleportTo(x, y, z + 7.0f, 0.0f);
+                    break;
+                case 1:
+                    m_creature->NearTeleportTo(x - 1.5f, y + 1.5f, z + 5.0f, 0.0f);
+                    break;
+                case 2:
+                    m_creature->NearTeleportTo(x - 1.5f, y - 1.5f, z + 5.0f, 0.0f);
+                    break;
+                case 3:
+                    m_creature->NearTeleportTo(x + 1.5f, y, z + 5.0f, 0.0f);
+                    break;
+                case 4:
+                    m_creature->NearTeleportTo(x, y + 1.5f, z + 3.0f, 0.0f);
+                    break;
                 }
                 m_creature->CastSpell(m_creature, Fireworks[m_uiIndex].m_uiSpellEntry[i], true);
             }
@@ -1335,9 +1335,9 @@ struct npc_pats_firework_guyAI : ScriptedAI
         {
             Creature* caster = m_creature;
             m_creature->m_Events.AddLambdaEventAtOffset([caster]
-                {
-                    caster->CastSpell(caster, SPELL_LUNAR_FORTUNE, true);
-                }, 3 * IN_MILLISECONDS);
+            {
+                caster->CastSpell(caster, SPELL_LUNAR_FORTUNE, true);
+            }, 3 * IN_MILLISECONDS);
         }
 
         if (m_creature->IsTemporarySummon())
@@ -2343,7 +2343,7 @@ struct npc_oozeling_jubjubAI : public ScriptedPetAI
         m_uiReturnTimer = 0;
     }
 
-    void SpellHit(SpellCaster* pUnit, SpellEntry const* pSpell) override
+    void SpellHit(SpellCaster*, SpellEntry const* pSpell) override
     {
         if (pSpell->Id == SPELL_DARK_IRON_MUG)
             m_uiReturnTimer = 10000;
