@@ -1256,6 +1256,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "antispam",     SEC_CONSOLE,       true,  nullptr,                              "", AntiSpamCommandTable },
         { "gold",         SEC_ADMINISTRATOR, true,  nullptr,                                  "", goldCommandTable },
         { "xprate",       SEC_PLAYER,        false, &ChatHandler::HandleXpRateCommand,                 "", nullptr },
+        { "permapvp",     SEC_PLAYER,        false, &ChatHandler::HandlePermaPvPCommand,               "", nullptr },
         { nullptr,        0,                 false, nullptr,                                           "", nullptr }
     };
 

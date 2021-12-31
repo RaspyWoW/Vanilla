@@ -19,8 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MANGOSSERVER_CHAT_H
-#define MANGOSSERVER_CHAT_H
+#pragma once
 
 #include "Common.h"
 #include "SharedDefines.h"
@@ -973,6 +972,7 @@ class ChatHandler
         bool HandleRepairitemsCommand(char* args);
         bool HandleStableCommand(char* args);
         bool HandleQuitCommand(char* args);
+        bool HandlePermaPvPCommand(char* args);
 
         //! Development Commands
         bool HandleSaveAllCommand(char* args);
@@ -1122,6 +1122,3 @@ class NullChatHandler : public ChatHandler
         LocaleConstant GetSessionDbcLocale() const override;
         int GetSessionDbLocaleIndex() const override;
 };
-
-
-#endif

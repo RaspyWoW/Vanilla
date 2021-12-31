@@ -19,8 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __UNIT_H
-#define __UNIT_H
+#pragma once
 
 #include "Common.h"
 #include "SharedDefines.h"
@@ -1179,7 +1178,7 @@ class Unit : public SpellCaster
         bool IsInPartyWith(Unit const* unit) const;
         bool IsInRaidWith(Unit const* unit) const;
 
-        bool IsPvP() const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP); }
+        virtual bool IsPvP() const { return (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP)); }
         void SetPvP(bool state);
         bool IsPvPContested() const;
         void SetPvPContested(bool state);
@@ -1500,5 +1499,3 @@ bool Unit::CheckAllControlledUnits(Func const& func, uint32 controlledMask) cons
 
     return false;
 }
-
-#endif
