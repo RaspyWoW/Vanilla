@@ -328,6 +328,7 @@ enum PlayerFlags
     PLAYER_FLAGS_SANCTUARY              = 0x00010000,       // player entered sanctuary
     PLAYER_FLAGS_TAXI_BENCHMARK         = 0x00020000,       // taxi benchmark mode (on/off) (2.0.1)
     PLAYER_FLAGS_PVP_TIMER              = 0x00040000,       // 3.0.2, pvp timer active (after you disable pvp manually)
+    PLAYER_FLAGS_PERMANENT_PVP          = 0x00080000
 };
 
 enum PlayerBytesOffsets
@@ -2377,9 +2378,19 @@ class Player final: public Unit
         void RewardHonor(Unit* uVictim, uint32 groupSize);
         void RewardHonorOnDeath();
         bool IsHonorOrXPTarget(Unit* pVictim) const;
-        bool IsCityProtector();
+        bool IsCityProtector() const { return m_ExtraFlags & PLAYER_EXTRA_CITY_PROTECTOR; }
         void SetCityTitle();
         void RemoveCityTitle();
+        bool IsPermaPvP() const { return (HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_PERMANENT_PVP)); }
+        void SetPermaPvP() { SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_PERMANENT_PVP); }
+
+        bool IsPvP() const override
+        {
+            if (IsPermaPvP())
+                return true;
+
+            return Unit::IsPvP();
+        }
 
         HonorMgr&       GetHonorMgr() { return m_honorMgr; }
         HonorMgr const& GetHonorMgr() const { return m_honorMgr; }
