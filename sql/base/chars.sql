@@ -699,6 +699,7 @@ CREATE TABLE `characters` (
   `deleted_name` varchar(12) DEFAULT NULL,
   `deleted_time` bigint(20) DEFAULT NULL,
   `world_phase_mask` int(11) DEFAULT 0,
+  `allow_export` TINYINT(3) UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`guid`),
   KEY `idx_account` (`account`),
   KEY `idx_online` (`online`),
@@ -1575,6 +1576,29 @@ CREATE TABLE `saved_variables` (
 LOCK TABLES `saved_variables` WRITE;
 /*!40000 ALTER TABLE `saved_variables` DISABLE KEYS */;
 /*!40000 ALTER TABLE `saved_variables` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `whisper_targets`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `whisper_targets` (
+  `account` int(11) unsigned NOT NULL,
+  `target_guid` int(11) unsigned NOT NULL,
+  `time` int(10) unsigned NOT NULL,
+  UNIQUE KEY `account_target` (`account`,`target_guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `whisper_targets`
+--
+
+LOCK TABLES `whisper_targets` WRITE;
+/*!40000 ALTER TABLE `whisper_targets` DISABLE KEYS */;
+/*!40000 ALTER TABLE `whisper_targets` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
