@@ -19,14 +19,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MANGOS_MAPMANAGER_H
-#define MANGOS_MAPMANAGER_H
+#pragma once
 
 #include "Common.h"
 #include "Platform/Define.h"
 #include "Policies/Singleton.h"
 #include "Map.h"
 #include "GridStates.h"
+#include <condition_variable>
 
 class BattleGround;
 
@@ -247,5 +247,3 @@ void MapManager::DoForAllMapsWithMapId(uint32 mapId, Do& _do)
 }
 
 #define sMapMgr MapManager::Instance()
-
-#endif
