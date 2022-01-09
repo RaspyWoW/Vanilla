@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _MODELINSTANCE_H_
-#define _MODELINSTANCE_H_
+#pragma once
 
 #include <G3D/Matrix3.h>
 #include <G3D/Vector3.h>
@@ -69,7 +68,7 @@ namespace VMAP
             ModelInstance(): iInvScale(0), iModel(nullptr) {}
             ModelInstance(ModelSpawn const& spawn, std::shared_ptr<WorldModel> model);
             void setUnloaded() { iModel = nullptr; }
-            bool intersectRay(G3D::Ray const& pRay, float& pMaxDist, bool pStopAtFirstHit) const;
+            bool intersectRay(G3D::Ray const& pRay, float& pMaxDist, bool pStopAtFirstHit, bool ignoreM2Model = false) const;
             void intersectPoint(G3D::Vector3 const& p, AreaInfo& info) const;
             bool isUnderModel(G3D::Vector3 const& p, float* outDist = nullptr, float* inDist = nullptr) const;
             bool GetLocationInfo(G3D::Vector3 const& p, LocationInfo& info) const;
@@ -85,6 +84,5 @@ namespace VMAP
             float getScale() const             { return iInvScale; }
             G3D::Matrix3 const& getRot() const { return iInvRot; }
     };
-} // namespace VMAP
+}
 
-#endif // _MODELINSTANCE

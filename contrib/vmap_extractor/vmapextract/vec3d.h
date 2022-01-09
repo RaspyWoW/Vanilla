@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef VEC3D_H
-#define VEC3D_H
+#pragma once
 
 #include <iostream>
 #include <cmath>
@@ -138,6 +137,12 @@ class Vec3D
         }
 };
 
+class AaBox3D
+{
+public:
+    Vec3D min;
+    Vec3D max;
+};
 
 class Vec2D
 {
@@ -247,4 +252,7 @@ inline void rotate(float x0, float y0, float* x, float* y, float angle)
     *y = xa * sinf(angle) + ya * cosf(angle) + y0;
 }
 
-#endif
+struct Quaternion
+{
+    float X, Y, Z, W;
+};

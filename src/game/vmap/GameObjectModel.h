@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MANGOSSERVER_GAMEOBJECTMODEL_H
-#define MANGOSSERVER_GAMEOBJECTMODEL_H
+#pragma once
 
 #include <G3D/Matrix3.h>
 #include <G3D/Vector3.h>
@@ -61,10 +60,9 @@ class GameObjectModel
         void disable() { collision_enabled = false;}
         void enable(bool enabled) { collision_enabled = enabled;}
 
-        bool intersectRay(G3D::Ray const& ray, float& MaxDist, bool StopAtFirstHit) const;
+        bool intersectRay(G3D::Ray const& ray, float& MaxDist, bool StopAtFirstHit, bool ignoreM2Model) const;
 
         static GameObjectModel* construct(GameObject const* const pGo);
 
         bool Relocate(GameObject const& go);
 };
-#endif

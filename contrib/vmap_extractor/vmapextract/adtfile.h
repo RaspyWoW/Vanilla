@@ -16,11 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef ADT_H
-#define ADT_H
+#pragma once
 
 #include "mpq_libmpq04.h"
-#include "wmo.h"
 #include "vmapexport.h"
 #include "model.h"
 #include "libmpq/mpq.h"
@@ -108,6 +106,33 @@ struct MapChunkHeader
     uint32 effectId;
 };
 
+#pragma pack(push, 1)
+namespace ADT
+{
+    struct MDDF
+    {
+        uint32 Id;
+        uint32 UniqueId;
+        Vec3D Position;
+        Vec3D Rotation;
+        uint16 Scale;
+        uint16 Flags;
+    };
+
+    struct MODF
+    {
+        uint32 Id;
+        uint32 UniqueId;
+        Vec3D Position;
+        Vec3D Rotation;
+        AaBox3D Bounds;
+        uint16 Flags;
+        uint16 DoodadSet;   // can be larger than number of doodad sets in WMO
+        uint16 NameSet;
+        uint16 Scale;
+    };
+}
+#pragma pack(pop)
 
 class ADTFile
 {
@@ -140,6 +165,3 @@ char* GetPlainName(char* FileName);
 char const* GetExtension(char const* FileName);
 void fixnamen(char* name, size_t len);
 void fixname2(char* name, size_t len);
-//void fixMapNamen(char *name, size_t len);
-
-#endif

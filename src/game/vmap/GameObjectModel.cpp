@@ -25,6 +25,7 @@
 #include "World.h"
 #include "GameObjectModel.h"
 #include "DBCStores.h"
+#include "ModelInstance.h"
 
 struct GameobjectModelData
 {
@@ -90,6 +91,9 @@ bool GameObjectModel::initialize(GameObject const* const pGo, GameObjectDisplayI
     if (!iModel)
         return false;
 
+    if (it->second.name.find(".m2") != std::string::npos)
+        iModel->setModelFlags(VMAP::MOD_M2);
+
     name = it->second.name;
     iPos = Vector3(pGo->GetPositionX(), pGo->GetPositionY(), pGo->GetPositionZ());
     collision_enabled = true;
@@ -151,7 +155,7 @@ GameObjectModel* GameObjectModel::construct(GameObject const* const object)
     return mdl;
 }
 
-bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& MaxDist, bool StopAtFirstHit) const
+bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& MaxDist, bool StopAtFirstHit, bool ignoreM2Model) const
 {
     if (!collision_enabled)
         return false;
@@ -164,12 +168,13 @@ bool GameObjectModel::intersectRay(G3D::Ray const& ray, float& MaxDist, bool Sto
     Vector3 p = iInvRot * (ray.origin() - iPos) * iInvScale;
     Ray modRay(p, iInvRot * ray.direction());
     float distance = MaxDist * iInvScale;
-    bool hit = iModel->IntersectRay(modRay, distance, StopAtFirstHit);
+    const bool hit = iModel->IntersectRay(modRay, distance, StopAtFirstHit, ignoreM2Model);
     if (hit)
     {
         distance *= iScale;
         MaxDist = distance;
     }
+
     return hit;
 }
 

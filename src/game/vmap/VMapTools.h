@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _VMAPTOOLS_H
-#define _VMAPTOOLS_H
+#pragma once
 
 #include <G3D/CollisionDetection.h>
 #include <G3D/AABox.h>
@@ -38,9 +37,9 @@ namespace VMAP
             G3D::Vector3 hitLocation;
             G3D::Vector3 hitNormal;
 
-            void operator()(G3D::Ray const& ray, TValue const* entity, bool pStopAtFirstHit, float& distance)
+            void operator()(const G3D::Ray& ray, const TValue* entity, bool pStopAtFirstHit, bool ignoreM2Model, float& distance)
             {
-                entity->intersect(ray, distance, pStopAtFirstHit, hitLocation, hitNormal);
+                entity->intersect(ray, distance, pStopAtFirstHit, ignoreM2Model, hitLocation, hitNormal);
             }
     };
 
@@ -146,4 +145,3 @@ namespace VMAP
             }
     };
 }
-#endif

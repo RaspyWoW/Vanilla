@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MANGOS_GRIDMAP_H
-#define MANGOS_GRIDMAP_H
+#pragma once
 
 #include "Platform/Define.h"
 #include "Policies/Singleton.h"
@@ -32,12 +31,12 @@
 #include <atomic>
 
 
-#define MAX_HEIGHT            100000.0f                     // can be use for find ground height at surface
-#define INVALID_HEIGHT       -100000.0f                     // for check, must be equal to VMAP_INVALID_HEIGHT, real value for unknown height is VMAP_INVALID_HEIGHT_VALUE
-#define INVALID_HEIGHT_VALUE -200000.0f                     // for return, must be equal to VMAP_INVALID_HEIGHT_VALUE, check value for unknown height is VMAP_INVALID_HEIGHT
-#define MAX_FALL_DISTANCE     250000.0f                     // "unlimited fall" to find VMap ground if it is available, just larger than MAX_HEIGHT - INVALID_HEIGHT
-#define DEFAULT_HEIGHT_SEARCH     10.0f                     // default search distance to find height at nearby locations
-#define DEFAULT_WATER_SEARCH      50.0f                     // default search distance to case detection water level
+constexpr auto MAX_HEIGHT            {100000.0f};  // can be use for find ground height at surface
+constexpr auto INVALID_HEIGHT        {-100000.0f}; // for check, must be equal to VMAP_INVALID_HEIGHT, real value for unknown height is VMAP_INVALID_HEIGHT_VALUE
+constexpr auto INVALID_HEIGHT_VALUE  {-200000.0f}; // for return, must be equal to VMAP_INVALID_HEIGHT_VALUE, check value for unknown height is VMAP_INVALID_HEIGHT
+constexpr auto MAX_FALL_DISTANCE     {250000.0f};  // "unlimited fall" to find VMap ground if it is available, just larger than MAX_HEIGHT - INVALID_HEIGHT
+constexpr auto DEFAULT_HEIGHT_SEARCH {10.0f};      // default search distance to find height at nearby locations
+constexpr auto DEFAULT_WATER_SEARCH  {50.0f};      // default search distance to case detection water level
 
 class Creature;
 class Unit;
@@ -52,6 +51,7 @@ class GridMap
 {
     private:
 
+        uint16 m_holes[16][16];
         uint32 m_flags = 0;
 
         // Area data
@@ -89,6 +89,8 @@ class GridMap
         bool loadAreaData(FILE* in, uint32 offset, uint32 size);
         bool loadHeightData(FILE* in, uint32 offset, uint32 size);
         bool loadGridMapLiquidData(FILE* in, uint32 offset, uint32 size);
+        bool loadHolesData(FILE* in, uint32 offset, uint32 size);
+        bool isHole(int row, int col) const;
 
         // Get height functions and pointers
         typedef float(GridMap::*pGetHeightPtr)(float x, float y) const;
@@ -257,5 +259,3 @@ class TerrainManager : public MaNGOS::Singleton<TerrainManager, MaNGOS::ClassLev
 };
 
 #define sTerrainMgr TerrainManager::Instance()
-
-#endif

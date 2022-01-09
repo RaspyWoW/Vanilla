@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef DBCFILE_H
-#define DBCFILE_H
+#pragma once
+
 #include <cassert>
 #include <string>
 
@@ -77,7 +77,7 @@ class DBCFile
                     return reinterpret_cast<char*>(file.stringTable + stringOffset);
                 }
             private:
-                Record(DBCFile& file, unsigned char* offset): offset(offset), file(file) {}
+                Record(DBCFile& file, unsigned char* offset) : file(file), offset(offset) {}
                 unsigned char* offset;
                 DBCFile& file;
 
@@ -135,5 +135,3 @@ class DBCFile
         unsigned char* data;
         unsigned char* stringTable;
 };
-
-#endif

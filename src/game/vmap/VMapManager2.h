@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _VMAPMANAGER2_H
-#define _VMAPMANAGER2_H
+#pragma once
 
 #include "IVMapManager.h"
 #include <unordered_map>
@@ -29,9 +28,8 @@
 
 //===========================================================
 
-#define MAP_FILENAME_EXTENSION2 ".vmtree"
-
-#define FILENAMEBUFFER_SIZE 500
+constexpr auto MAP_FILENAME_EXTENSION2{ ".vmtree" };
+constexpr auto FILENAMEBUFFER_SIZE{ 500 };
 
 /**
 This is the main Class to manage loading and unloading of maps, line of sight, height calculation and so on.
@@ -85,7 +83,7 @@ namespace VMAP
             void unloadMap(unsigned int pMapId, int x, int y) override;
             void unloadMap(unsigned int pMapId) override;
 
-            bool isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2) override;
+            bool isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, bool ignoreM2Model) override;
             ModelInstance* FindCollisionModel(unsigned int mapId, float x0, float y0, float z0, float x1, float y1, float z1) override;
             /**
             fill the hit pos and return true, if an object was hit
@@ -97,7 +95,7 @@ namespace VMAP
 
             bool getAreaInfo(unsigned int pMapId, float x, float y, float& z, uint32& flags, int32& adtId, int32& rootId, int32& groupId) const override;
             bool isUnderModel(unsigned int pMapId, float x, float y, float z, float* outDist = nullptr, float* inDist = nullptr) const override;
-            bool GetLiquidLevel(uint32 pMapId, float x, float y, float z, uint8 ReqLiquidType, float& level, float& floor, uint32& type) const override;
+            bool GetLiquidLevel(uint32 pMapId, float x, float y, float z, uint8 ReqLiquidTypeMask, float& level, float& floor, uint32& type) const override;
 
             std::shared_ptr<WorldModel> acquireModelInstance(std::string const& basepath, std::string const& filename);
 
@@ -114,4 +112,3 @@ namespace VMAP
 #endif
     };
 }
-#endif

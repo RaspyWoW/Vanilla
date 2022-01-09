@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _IVMAPMANAGER_H
-#define _IVMAPMANAGER_H
+#pragma once
 
 #include <string>
 #include <Platform/Define.h>
@@ -39,8 +38,8 @@ namespace VMAP
         VMAP_LOAD_RESULT_IGNORED,
     };
 
-#define VMAP_INVALID_HEIGHT       -100000.0f            // for check
-#define VMAP_INVALID_HEIGHT_VALUE -200000.0f            // real assigned value in unknown height case
+    #define VMAP_INVALID_HEIGHT -100000.0f       // for check
+    #define VMAP_INVALID_HEIGHT_VALUE -200000.0f // real assigned value in unknown height case
 
     //===========================================================
     class IVMapManager
@@ -62,7 +61,7 @@ namespace VMAP
             virtual void unloadMap(unsigned int pMapId, int x, int y) = 0;
             virtual void unloadMap(unsigned int pMapId) = 0;
 
-            virtual bool isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2) = 0;
+            virtual bool isInLineOfSight(unsigned int pMapId, float x1, float y1, float z1, float x2, float y2, float z2, bool ignoreM2Model) = 0;
             virtual float getHeight(unsigned int pMapId, float x, float y, float z, float maxSearchDist) = 0;
             /**
             test if we hit an object. return true if we hit one. rx,ry,rz will hold the hit position or the dest position, if no intersection was found
@@ -105,10 +104,4 @@ namespace VMAP
             bool getUseManagedPtrs() const { return m_useManagedPtrs; }
             void setUseManagedPtrs(bool managedPtrs) { m_useManagedPtrs = managedPtrs; }
     };
-
-
-
-
-
 }
-#endif

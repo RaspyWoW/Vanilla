@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef WDTFILE_H
-#define WDTFILE_H
+#pragma once
 
 #include "mpq_libmpq04.h"
 #include "wmo.h"
@@ -33,7 +32,7 @@ class WDTFile
         ~WDTFile(void);
         bool init(char* map_id, unsigned int mapID);
 
-        string* gWmoInstansName;
+        std::vector<std::string> m_wmoNames;
         int gnWMO, nMaps;
 
         ADTFile* GetMap(int x, int z);
@@ -43,5 +42,3 @@ class WDTFile
         bool maps[64][64];
         string filename;
 };
-
-#endif
