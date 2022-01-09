@@ -741,12 +741,6 @@ GmLogPerAccount = 0
 CriticalCommandsLogFile = "gm_critical.log"
 
 #
-#    ExploitsLogFile
-#        Log file for possible exploits for abuse detection.
-
-ExploitsLogFile = ""
-
-#
 #    ClientIdsLogFile
 #        Log file for client traffic.
 
