@@ -318,7 +318,7 @@ class WorldSession
         // Session can be safely deleted if returns false
         bool ForcePlayerLogoutDelay();
 
-        void DoLootRelease(ObjectGuid lguid);
+        void DoLootRelease(ObjectGuid const lguid);
 
         // Account mute time
         time_t m_muteTime;

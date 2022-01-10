@@ -351,8 +351,12 @@ void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
     uint32 lootThreshold;
     recv_data >> lootMethod >> lootMaster >> lootThreshold;
 
-    // Impossible.
+    // Impossible
     if (lootMethod > 4)
+        return;
+
+    // Prevent exploit
+    if (lootThreshold < ITEM_QUALITY_UNCOMMON || lootThreshold > ITEM_QUALITY_LEGENDARY)
         return;
 
     Group* group = GetPlayer()->GetGroup();
@@ -362,12 +366,11 @@ void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
     if (!group)
         return;
 
-    /** error handling **/
+    // Error handling
     if (!group->IsLeader(GetPlayer()->GetObjectGuid()))
         return;
-    /********************/
 
-    // everything is fine, do it
+    // Everything is fine, do it
     group->SetLootMethod((LootMethod)lootMethod);
     group->SetLooterGuid(lootMaster);
     group->SetLootThreshold((ItemQualities)lootThreshold);
@@ -379,7 +382,7 @@ void WorldSession::HandleLootRoll(WorldPacket& recv_data)
     ObjectGuid lootedTarget;
     uint32 itemSlot;
     uint8  rollType;
-    recv_data >> lootedTarget;                              //guid of the item rolled
+    recv_data >> lootedTarget; // Guid of the item rolled
     recv_data >> itemSlot;
     recv_data >> rollType;
 
@@ -392,7 +395,7 @@ void WorldSession::HandleLootRoll(WorldPacket& recv_data)
     if (rollType >= MAX_ROLL_FROM_CLIENT)
         return;
 
-    // everything is fine, do it, if false then some cheating problem found (result not used in pre-3.0)
+    // Everything is fine, do it, if false then some cheating problem found (result not used in pre-3.0)
     group->CountRollVote(GetPlayer(), lootedTarget, itemSlot, RollVote(rollType));
 }
 
@@ -424,12 +427,11 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
     recv_data >> minimum;
     recv_data >> maximum;
 
-    /** error handling **/
-    if (minimum > maximum || maximum > 10000)               // < 32768 for urand call
+    // Error handling
+    if (minimum > maximum || maximum > 10000) // < 32768 for urand call
         return;
-    /********************/
 
-    // everything is fine, do it
+    // Everything is fine, do it
     roll = urand(minimum, maximum);
 
     //DEBUG_LOG("ROLL: MIN: %u, MAX: %u, ROLL: %u", minimum, maximum, roll);
@@ -447,7 +449,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleRaidTargetUpdateOpcode(WorldPacket& recv_data)
 {
-    uint8  x;
+    uint8 x;
     recv_data >> x;
 
     Group* group = GetPlayer()->GetGroup();
@@ -457,16 +459,12 @@ void WorldSession::HandleRaidTargetUpdateOpcode(WorldPacket& recv_data)
     if (!group)
         return;
 
-    /** error handling **/
-    /********************/
-
-    // everything is fine, do it
-    if (x == 0xFF)                                          // target icon request
+    // Everything is fine, do it
+    if (x == 0xFF) // Target icon request
         group->SendTargetIconList(this);
-    else                                                    // target icon update
+    else // Target icon update
     {
-        if (!group->IsLeader(GetPlayer()->GetObjectGuid()) &&
-                !group->IsAssistant(GetPlayer()->GetObjectGuid()))
+        if (!group->IsLeader(GetPlayer()->GetObjectGuid()) && !group->IsAssistant(GetPlayer()->GetObjectGuid()))
             return;
 
         ObjectGuid guid;

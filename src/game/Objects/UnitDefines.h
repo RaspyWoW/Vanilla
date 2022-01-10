@@ -14,8 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __UNIT_DEFINES_H
-#define __UNIT_DEFINES_H
+#pragma once
 
 #include "Common.h"
 
@@ -29,11 +28,11 @@ enum UnitMoveType
     MOVE_TURN_RATE      = 5,
 };
 
-#define MAX_MOVE_TYPE 6
+constexpr auto MAX_MOVE_TYPE{ 6 };
 
-extern float baseMoveSpeed[MAX_MOVE_TYPE];
+extern const float baseMoveSpeed[MAX_MOVE_TYPE];
 
-#define MOVEMENT_PACKET_TIME_DELAY 0
+constexpr auto MOVEMENT_PACKET_TIME_DELAY{ 0 };
 
 enum MovementChangeType
 {
@@ -56,20 +55,20 @@ enum MovementChangeType
 };
 
 // No orientation check for auto attacks or spells below this distance.
-#define NO_FACING_CHECKS_DISTANCE 1.4f
+constexpr auto NO_FACING_CHECKS_DISTANCE{ 1.4f };
 
 // Delay time next attack to prevent client attack animation problems
-#define ATTACK_DISPLAY_DELAY 200
+constexpr auto ATTACK_DISPLAY_DELAY{ 200 };
 
 // For this time difference is computed regen value
-#define REGEN_TIME_FULL     2000
+constexpr auto REGEN_TIME_FULL{ 2000 };
 
-#define UNIT_PVP_COMBAT_TIMER 5500
+constexpr auto UNIT_PVP_COMBAT_TIMER{ 5500 };
 
-#define BASE_MELEERANGE_OFFSET 1.33f
-#define BASE_MINDAMAGE 1.0f
-#define BASE_MAXDAMAGE 2.0f
-#define BASE_ATTACK_TIME 2000
+constexpr auto BASE_MELEERANGE_OFFSET{ 1.33f };
+constexpr auto BASE_MINDAMAGE{ 1.0f };
+constexpr auto BASE_MAXDAMAGE{ 2.0f };
+constexpr auto BASE_ATTACK_TIME{ 2000 };
 
 enum UnitBytes0Offsets : uint8
 {
@@ -109,7 +108,7 @@ enum UnitStandStateType
     UNIT_STAND_STATE_KNEEL             = 8
 };
 
-#define MAX_UNIT_STAND_STATE             9
+constexpr auto MAX_UNIT_STAND_STATE{ 9 };
 
 // byte flags value (UNIT_FIELD_BYTES_1,3)
 // These flags seem to be related to visibility
@@ -130,7 +129,7 @@ enum SheathState
     SHEATH_STATE_RANGED   = 2                               // prepared ranged weapon
 };
 
-#define MAX_SHEATH_STATE    3
+constexpr auto MAX_SHEATH_STATE{ 3 };
 
 // byte flags value (UNIT_FIELD_BYTES_2,1)
 enum UnitBytes2_Flags
@@ -145,7 +144,7 @@ enum UnitBytes2_Flags
     UNIT_BYTE2_FLAG_UNK7        = 0x80
 };
 
-#define CREATURE_MAX_SPELLS     4
+constexpr auto CREATURE_MAX_SPELLS{ 4 };
 
 enum Swing
 {
@@ -506,18 +505,18 @@ enum ActionBarIndex
 
 #define MAX_UNIT_ACTION_BAR_INDEX (ACTION_BAR_INDEX_END-ACTION_BAR_INDEX_START)
 
-// used in CallForAllControlledUnits/CheckAllControlledUnits
+// Used in CallForAllControlledUnits/CheckAllControlledUnits
 enum ControlledUnitMask
 {
     CONTROLLED_PET = 0x01,
     CONTROLLED_MINIPET = 0x02,
-    CONTROLLED_GUARDIANS = 0x04,                            // including PROTECTOR_PET
+    CONTROLLED_GUARDIANS = 0x04, // Including PROTECTOR_PET
     CONTROLLED_CHARM = 0x08,
     CONTROLLED_TOTEMS = 0x10,
 };
 
-// for clearing special attacks
-#define REACTIVE_TIMER_START 4000
+// For clearing special attacks
+constexpr auto REACTIVE_TIMER_START{ 4000 };
 
 enum ReactiveType
 {
@@ -528,7 +527,7 @@ enum ReactiveType
     REACTIVE_OVERPOWER = 5
 };
 
-#define MAX_REACTIVE 6
+constexpr auto MAX_REACTIVE{ 6 };
 
 // for Unit::AddAura
 enum AddAuraFlags
@@ -539,7 +538,6 @@ enum AddAuraFlags
     ADD_AURA_PASSIVE = 0x04,
     ADD_AURA_PERMANENT = 0x08,
 };
-
 
 enum UnitDebugFlags
 {
@@ -553,7 +551,6 @@ enum UnitDebugFlags
     DEBUG_SPELLS_DAMAGE         = 0x80,
 };
 
-
 enum TeleportToOptions
 {
     TELE_TO_GM_MODE             = 0x01,
@@ -564,7 +561,7 @@ enum TeleportToOptions
     TELE_TO_FORCE_MAP_CHANGE    = 0x20,
 };
 
-#define UNIT_DEFAULT_MELEE_Z_LIMIT 36                                    // vertical range diff limit for melee attacks (no meleeing units that fly too high overhead)
+constexpr auto UNIT_DEFAULT_MELEE_Z_LIMIT{ 36 }; // Vertical range diff limit for melee attacks (no meleeing units that fly too high overhead)
 
 enum MovementModType
 {
@@ -597,7 +594,7 @@ enum UnitDismountResult
 };
 
 // First entry in CreatureDisplayInfo.dbc
-#define UNIT_DISPLAY_ID_BOX 4
+constexpr auto UNIT_DISPLAY_ID_BOX{ 4 };
 
 enum ModelIds
 {
@@ -618,5 +615,3 @@ enum ModelIds
     MODEL_TROLL_MALE    = 185,
     MODEL_TROLL_FEMALE  = 186,
 };
-
-#endif

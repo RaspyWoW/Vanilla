@@ -7846,7 +7846,7 @@ void Player::RemovedInsignia(Player* looterPlr, Corpse* corpse)
     sObjectAccessor.ConvertCorpseForPlayer(GetObjectGuid(), looterPlr);
 }
 
-void Player::SendLootRelease(ObjectGuid guid) const
+void Player::SendLootRelease(ObjectGuid const guid) const
 {
     WorldPacket data(SMSG_LOOT_RELEASE_RESPONSE, (8 + 1));
     data << guid;
@@ -7854,10 +7854,9 @@ void Player::SendLootRelease(ObjectGuid guid) const
     SendDirectMessage(&data);
 }
 
-void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
+void Player::SendLoot(ObjectGuid const guid, LootType loot_type, Player* pVictim)
 {
-    // Nostalrius : desactivation des loots / map
-    if (Map* myMap = FindMap())
+    if (Map const* myMap = FindMap())
     {
         if (sObjectMgr.IsMapLootDisabled(myMap->GetId()))
         {
@@ -7868,7 +7867,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
     else
         return;
 
-    if (ObjectGuid lootGuid = GetLootGuid())
+    if (ObjectGuid const lootGuid = GetLootGuid())
         m_session->DoLootRelease(lootGuid);
 
     Loot* loot = 0;
@@ -7883,10 +7882,10 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
     {
         case HIGHGUID_GAMEOBJECT:
         {
-            DEBUG_LOG("       IS_GAMEOBJECT_GUID(guid)");
+            DEBUG_LOG("IS_GAMEOBJECT_GUID(guid)");
             GameObject* go = GetMap()->GetGameObject(guid);
 
-            // not check distance for GO in case owned GO (fishing bobber case, for example)
+            // Not check distance for GO in case owned GO (fishing bobber case, for example)
             // And permit out of range GO with no owner in case fishing hole
             if (!go || (loot_type != LOOT_FISHINGHOLE && ((loot_type != LOOT_FISHING && loot_type != LOOT_FISHING_FAIL) || go->GetOwnerGuid() != GetObjectGuid()) && !go->IsAtInteractDistance(this)))
             {
@@ -7895,6 +7894,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
             }
             // Allowed to loot chest ?
             if (GameObjectInfo const* goInfo = go->GetGOInfo())
+            {
                 if (goInfo->type == GAMEOBJECT_TYPE_CHEST && goInfo->chest.level > (GetLevel() + 10))
                 {
                     std::stringstream oss;
@@ -7903,13 +7903,14 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
                     SendLootRelease(guid);
                     return;
                 }
+            }
 
             loot = &go->loot;
 
-            // generate loot only if ready for open and spawned in world
+            // Generate loot only if ready for open and spawned in world
             if (go->getLootState() == GO_READY && go->isSpawned())
             {
-                uint32 lootid =  go->GetGOInfo()->GetLootId();
+                const uint32 lootid = go->GetGOInfo()->GetLootId();
                 // Entry 0 in fishing loot template used for store junk fish loot at fishing fail it junk allowed by config option
                 // this is overwrite fishinghole loot for example
                 if (loot_type == LOOT_FISHING_FAIL)
@@ -7919,9 +7920,9 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
                     loot->clear();
 
                     Group* group = GetGroup();
-                    bool groupRules = (group && go->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST && go->GetGOInfo()->chest.groupLootRules);
+                    const bool groupRules = (group && go->GetGOInfo()->type == GAMEOBJECT_TYPE_CHEST && go->GetGOInfo()->chest.groupLootRules);
 
-                    // check current RR player and get next if necessary
+                    // Check current RR player and get next if necessary
                     if (groupRules)
                     {
                         group->UpdateLooterGuid(go, true);
@@ -7929,19 +7930,22 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
                     }
 
                     loot->FillLoot(lootid, LootTemplates_Gameobject, this, !groupRules, false);
+
                     if (go->GetInstanceId())
                         go->GetMap()->BindToInstanceOrRaid(this, go->GetRespawnTimeEx(), false);
 
-                    // get next RR player (for next loot)
+                    // Get next RR player (for next loot)
                     if (groupRules)
                         group->UpdateLooterGuid(go);
                 }
                 else if (loot_type == LOOT_FISHING)
                     go->getFishLoot(loot, this);
+
                 go->SetLootState(GO_ACTIVATED);
             }
             else if (go->getLootState() == GO_ACTIVATED)
                 loot->FillNotNormalLootFor(this);
+
             break;
         }
         case HIGHGUID_ITEM:
@@ -7960,7 +7964,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
 
             if (!item->HasGeneratedLoot())
             {
-                if (item->HasGeneratedLootSecondary()) // temporary check, merge conditions later
+                if (item->HasGeneratedLootSecondary()) // Temporary check, merge conditions later
                 {
                     sLog.outError("%s attempted to regenerate %s at map %u, zone %u, area %u - grouped? %s",
                         GetGuidStr().c_str(), item->GetGuidStr().c_str(), GetMap()->GetId(), GetZoneId(), GetAreaId(), GetGroup()? "yes" : "no");
@@ -7974,20 +7978,24 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
                 switch (loot_type)
                 {
                     case LOOT_DISENCHANTING:
+                    {
                         loot->FillLoot(item->GetProto()->DisenchantID, LootTemplates_Disenchant, this, true);
                         item->SetLootState(ITEM_LOOT_TEMPORARY);
                         break;
+                    }
                     default:
+                    {
                         loot->FillLoot(item->GetEntry(), LootTemplates_Item, this, true, item->GetProto()->MaxMoneyLoot == 0);
-                        loot->generateMoneyLoot(item->GetProto()->MinMoneyLoot, item->GetProto()->MaxMoneyLoot);
+                        loot->GenerateMoneyLoot(item->GetProto()->MinMoneyLoot, item->GetProto()->MaxMoneyLoot);
                         item->SetLootState(ITEM_LOOT_CHANGED);
                         item->SetGeneratedLoot(true);
                         break;
+                    }
                 }
             }
             break;
         }
-        case HIGHGUID_CORPSE:                               // remove insignia
+        case HIGHGUID_CORPSE: // Remove insignia
         {
             Corpse* bones = GetMap()->GetCorpse(guid);
 
@@ -7996,26 +8004,27 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
                 SendLootRelease(guid);
                 return;
             }
+
             loot = &bones->loot;
 
             if (!bones->lootForBody)
             {
                 bones->lootForBody = true;
-                // uint32 pLevel = bones->loot.gold;
                 bones->loot.clear();
+
                 // It may need a better formula
                 // Now it works like this: lvl10: ~6copper, lvl70: ~9silver
                 if (pVictim != nullptr)
                 {
-                    uint32 level = pVictim->GetLevel();
+                    const uint32 level = pVictim->GetLevel();
                     bones->loot.gold = (uint32)(urand(50, 150) * 0.016f * pow(((float)level) / 5.76f, 2.5f) * sWorld.getConfig(CONFIG_FLOAT_RATE_DROP_MONEY));
                     bones->loot.m_personal = true; // Everyone can loot the corpse
                     if (BattleGround* bg = GetBattleGround())
                     {
                         if (bg->GetTypeID() == BATTLEGROUND_AV)
                         {
-                            uint8 race = pVictim->GetRace();
-                            uint32 rank = pVictim->GetHonorMgr().GetHighestRank().visualRank;
+                            const uint8 race = pVictim->GetRace();
+                            const uint32 rank = pVictim->GetHonorMgr().GetHighestRank().visualRank;
                             uint32 raceItem = 0;
                             uint32 rankItem = 0;
                             uint32 questItem = 0;
@@ -8054,16 +8063,21 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
                                 questItem = 17423;
                                 break;
                             }
+
                             if (rank < 6)
+                            {
                                 if (pVictim->GetTeam() == ALLIANCE)
                                     rankItem = 17326;
                                 else
                                     rankItem = 17502;
+                            }
                             else if (rank < 10)
+                            {
                                 if (pVictim->GetTeam() == ALLIANCE)
                                     rankItem = 17327;
                                 else
                                     rankItem = 17503;
+                            }
                             else if (pVictim->GetTeam() == ALLIANCE)
                                 rankItem = 17328;
                             else
@@ -8071,21 +8085,21 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
 
                             if (raceItem > 0)
                             {
-                                LootStoreItem storeitem = LootStoreItem(raceItem, 100, 0, 0, 1, 1);
+                                LootStoreItem const storeitem = LootStoreItem(raceItem, 100, 0, 0, 1, 1);
                                 bones->loot.AddItem(storeitem);
                             }
                             if (questItem > 0)
                             {
-                                LootStoreItem storeitem = LootStoreItem(questItem, 100, 0, 0, 1, 1);
+                                LootStoreItem const storeitem = LootStoreItem(questItem, 100, 0, 0, 1, 1);
                                 bones->loot.AddItem(storeitem);
                             }
                             if (rankItem > 0)
                             {
-                                LootStoreItem storeitem = LootStoreItem(rankItem, 75, 0, 0, 0, 1);
+                                LootStoreItem const storeitem = LootStoreItem(rankItem, 75, 0, 0, 0, 1);
                                 bones->loot.AddItem(storeitem);
                             }
 
-                            LootStoreItem storeitem = LootStoreItem(17422, 75, 0, 0, 0, 20);
+                            LootStoreItem const storeitem = LootStoreItem(17422, 75, 0, 0, 0, 20);
                             bones->loot.AddItem(storeitem);
                         }
                     }
@@ -8101,7 +8115,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
         {
             Creature* creature = GetMap()->GetCreature(guid);
 
-            // must be in range and creature must be alive for pickpocket and must be dead for another loot
+            // Must be in range and creature must be alive for pickpocket and must be dead for another loot
             if (!creature || creature->IsAlive() != (loot_type == LOOT_PICKPOCKETING) || !creature->IsWithinDistInMap(this, INTERACTION_DISTANCE))
             {
                 SendLootRelease(guid);
@@ -8177,8 +8191,6 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
 
                     if (Group* group = creature->GetGroupLootRecipient())
                     {
-                        //group->UpdateLooterGuid(creature,true);
-
                         switch (group->GetLootMethod())
                         {
                             case GROUP_LOOT:
@@ -8202,7 +8214,7 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
                     }
                 }
 
-                // possible only if creature->lootForBody && loot->empty() at spell cast check
+                // Possible only if creature->lootForBody && loot->empty() at spell cast check
                 if (loot_type == LOOT_SKINNING)
                 {
                     if (!creature->lootForSkin)
@@ -8211,16 +8223,17 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
                         loot->clear();
                         loot->FillLoot(creature->GetCreatureInfo()->skinning_loot_id, LootTemplates_Skinning, this, false);
 
-                        // let reopen skinning loot if will closed.
+                        // Let reopen skinning loot if will closed.
                         if (!loot->empty())
                             creature->SetUInt32Value(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
 
                         permission = OWNER_PERMISSION;
                     }
+
                     if (creature->GetInstanceId())
                         creature->GetMap()->BindToInstanceOrRaid(this, creature->GetRespawnTimeEx(), false);
                 }
-                // set group rights only for loot_type != LOOT_SKINNING
+                // Set group rights only for loot_type != LOOT_SKINNING
                 else
                 {
                     if (Group* group = GetGroup())
@@ -8263,8 +8276,8 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
 
     SetLootGuid(guid);
 
-    // need know for proper finish item loots (internal pre-switch loot type set in different from 3.x code version)
-    // in fact this meaning that it send same loot types for interesting cases like 3.x version code (skip pre-3.x client loot type limitaitons)
+    // Need know for proper finish item loots (internal pre-switch loot type set in different from 3.x code version)
+    // In fact this meaning that it send same loot types for interesting cases like 3.x version code (skip pre-3.x client loot type limitaitons)
     loot->loot_type = loot_type;
 
     // LOOT_SKINNING, LOOT_PROSPECTING, LOOT_INSIGNIA and LOOT_FISHINGHOLE unsupported by client
@@ -8286,13 +8299,13 @@ void Player::SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim)
             break;
     }
 
-    WorldPacket data(SMSG_LOOT_RESPONSE, (9 + 50));         // we guess size
+    WorldPacket data(SMSG_LOOT_RESPONSE, (9 + 50)); // We guess size
     data << ObjectGuid(guid);
     data << uint8(loot_type);
     data << LootView(*loot, this, permission);
     SendDirectMessage(&data);
 
-    // add 'this' player as one of the players that are looting 'loot'
+    // Add 'this' player as one of the players that are looting 'loot'
     if (permission != NONE_PERMISSION)
         loot->AddLooter(GetObjectGuid());
 
@@ -8434,8 +8447,6 @@ static WorldStatePair def_world_states[] =
     { 0x0703, 0x00 },
     { 0x0,    0x0 } // terminator
 };
-
-
 
 void Player::SendInitWorldStates(uint32 zoneid) const
 {
@@ -15426,7 +15437,7 @@ bool Player::IsAllowedToLoot(Creature const* creature)
             return true;
         case MASTER_LOOT:
             // On peut toujours voir ces items.
-            if (loot->hasOverThresholdItem())
+            if (loot->HasOverThresholdItem())
                 return true;
         case ROUND_ROBIN:
             // may only loot if the player is the loot roundrobin player
@@ -15434,7 +15445,7 @@ bool Player::IsAllowedToLoot(Creature const* creature)
             if (loot->roundRobinPlayer == 0 || loot->roundRobinPlayer == GetGUID())
                 return true;
 
-            return loot->hasItemFor(this);
+            return loot->HasItemFor(this);
         case GROUP_LOOT:
         case NEED_BEFORE_GREED:
             // may only loot if the player is the loot roundrobin player
@@ -15443,10 +15454,10 @@ bool Player::IsAllowedToLoot(Creature const* creature)
             if (loot->roundRobinPlayer == 0 || loot->roundRobinPlayer == GetGUID())
                 return true;
 
-            if (loot->hasOverThresholdItem())
+            if (loot->HasOverThresholdItem())
                 return true;
 
-            return loot->hasItemFor(this);
+            return loot->HasItemFor(this);
     }
     return false;
 }

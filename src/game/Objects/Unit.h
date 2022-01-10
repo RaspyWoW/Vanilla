@@ -1119,7 +1119,7 @@ class Unit : public SpellCaster
         uint32 DealDamage(Unit* pVictim, uint32 damage, CleanDamage const* cleanDamage, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellEntry const* spellProto, bool durabilityLoss, Spell* spell = nullptr) final;
 
         // Called after this unit kills someone.
-        void Kill(Unit* pVictim, SpellEntry const* spellProto, bool durabilityLoss = true);
+        void Kill(Unit* pVictim, SpellEntry const* spellProto, const bool durabilityLoss = true);
         void PetOwnerKilledUnit(Unit* pVictim);
         
         bool IsInCombat() const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT); }

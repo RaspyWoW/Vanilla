@@ -19,8 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#pragma once
 
 #include "Common.h"
 #include "Unit.h"
@@ -1223,8 +1222,8 @@ class Player final: public Unit
         ObjectGuid const& GetLootGuid() const { return m_lootGuid; }
         void SetLootGuid(ObjectGuid const& guid) { m_lootGuid = guid; }
         void RemovedInsignia(Player* looterPlr, Corpse* corpse);
-        void SendLoot(ObjectGuid guid, LootType loot_type, Player* pVictim = nullptr);
-        void SendLootRelease(ObjectGuid guid) const;
+        void SendLoot(ObjectGuid const guid, LootType loot_type, Player* pVictim = nullptr);
+        void SendLootRelease(ObjectGuid const guid) const;
         void SendNotifyLootItemRemoved(uint8 lootSlot) const;
         void SendNotifyLootMoneyRemoved() const;
         bool IsAllowedToLoot(Creature const* creature);
@@ -2722,5 +2721,3 @@ template <class T> T Player::ApplySpellMod(uint32 spellId, SpellModOp op, T &bas
     basevalue = T((float)basevalue + diff);
     return T(diff);
 }
-
-#endif
