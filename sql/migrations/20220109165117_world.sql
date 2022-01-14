@@ -3,9 +3,9 @@ delimiter ??
 CREATE PROCEDURE `add_migration`()
 BEGIN
 DECLARE v INT DEFAULT 1;
-SET v = (SELECT COUNT(*) FROM `migrations` WHERE `id`='20220109185117');
+SET v = (SELECT COUNT(*) FROM `migrations` WHERE `id`='20220109165117');
 IF v=0 THEN
-INSERT INTO `migrations` VALUES ('20220109185117');
+INSERT INTO `migrations` VALUES ('20220109165117');
 -- Add your query below.
 
 -- Add priority field to scripts to allow defining order of execution of commands with same delay.
