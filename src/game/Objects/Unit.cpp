@@ -10492,7 +10492,7 @@ void Unit::WritePetSpellsCooldown(WorldPacket& data) const
 {
     // Write cooldown data
     uint32 cdCount = 0;
-    const const size_t cdCountPos = data.wpos();
+    const size_t cdCountPos = data.wpos();
     data << uint16(0);
     const auto currTime = sWorld.GetCurrentClockTime();
 
