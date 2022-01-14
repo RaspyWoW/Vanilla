@@ -2649,55 +2649,46 @@ void Aura::HandleAuraTransform(bool apply, bool Real)
                         switch (target->GetRace())
                         {
                             case RACE_TROLL:
-                                display_id = gender == GENDER_MALE ?
-                                            10135 :
-                                            10134 ;
+                                display_id = gender == GENDER_MALE ? 10135 : 10134;
                                 break;
                             case RACE_TAUREN:
-                                display_id = gender == GENDER_MALE ?
-                                            10136 :
-                                            10147 ;
+                                display_id = gender == GENDER_MALE ? 10136 : 10147;
+                                mod_x = DEFAULT_GNOME_SCALE / target->GetScaleForDisplayId(target->GetNativeDisplayId());
                                 break;
                             case RACE_HUMAN:
-                                display_id = gender == GENDER_MALE ?
-                                            10137 :
-                                            10138 ;
+                                display_id = gender == GENDER_MALE ? 10137 : 10138;
                                 break;
                             case RACE_ORC:
-                                display_id = gender == GENDER_MALE ?
-                                            10139 :
-                                            10140 ;
+                                display_id = gender == GENDER_MALE ? 10139 : 10140;
                                 break;
                             case RACE_DWARF:
-                                display_id = gender == GENDER_MALE ?
-                                            10141 :
-                                            10142 ;
+                                display_id = gender == GENDER_MALE ? 10141 : 10142;
                                 break;
                             case RACE_NIGHTELF:
-                                display_id = gender == GENDER_MALE ?
-                                            10143 :
-                                            10144 ;
+                                display_id = gender == GENDER_MALE ? 10143 : 10144;
                                 break;
                             case RACE_UNDEAD:
-                                display_id = gender == GENDER_MALE ?
-                                            10146 :
-                                            10145 ;
+                                display_id = gender == GENDER_MALE ? 10146 : 10145;
                                 break;
                             case RACE_GNOME:
+                            {
                                 if (gender == GENDER_MALE)
                                 {
                                     display_id = 10148;
-                                    mod_x = DEFAULT_TAUREN_MALE_SCALE;
+                                    mod_x = DEFAULT_TAUREN_MALE_SCALE / target->GetScaleForDisplayId(target->GetNativeDisplayId());
                                 }
                                 else
                                 {
                                     display_id = 10149;
-                                    mod_x = DEFAULT_TAUREN_FEMALE_SCALE;
+                                    mod_x = DEFAULT_TAUREN_FEMALE_SCALE / target->GetScaleForDisplayId(target->GetNativeDisplayId());
                                 }
+
                                 break;
+                            }
                             default:
                                 break;
                         }
+
                         break;
                     }
                     default:
@@ -2741,6 +2732,7 @@ void Aura::HandleAuraTransform(bool apply, bool Real)
             target->SetTransForm(0);
             target->SetDisplayId(target->GetNativeDisplayId());
             target->ResetTransformScale();
+            target->UpdateModelData();
 
             // apply default equipment for creature case
             if (target->GetTypeId() == TYPEID_UNIT)

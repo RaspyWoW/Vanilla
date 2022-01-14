@@ -19,8 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MANGOSSERVER_CREATURE_H
-#define MANGOSSERVER_CREATURE_H
+#pragma once
 
 #include "Common.h"
 #include "SharedDefines.h"
@@ -249,7 +248,6 @@ class Creature : public Unit
         CreatureData const* GetCreatureData() const;
 
         static uint32 ChooseDisplayId(CreatureInfo const* cinfo, CreatureData const* data = nullptr, CreatureDataAddon const* addon = nullptr, GameEventCreatureData const* eventData = nullptr, float* scale = nullptr);
-        static float GetScaleForDisplayId(uint32 displayId);
 
         std::string GetAIName() const;
         std::string GetScriptName() const;
@@ -696,5 +694,3 @@ private:
     Creature& m_owner;
     float m_orientation;
 };
-
-#endif
