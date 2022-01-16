@@ -320,7 +320,7 @@ struct boss_kelthuzadAI : public ScriptedAI
         hasPutInCombat = false;
 
         m_creature->RemoveAurasDueToSpell(SPELL_VISUAL_CHANNEL);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING | UNIT_FLAG_NOT_SELECTABLE);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER | UNIT_FLAG_NOT_SELECTABLE);
 
         EvadeAllGuardians();
 
@@ -362,17 +362,40 @@ struct boss_kelthuzadAI : public ScriptedAI
 
     void AttackStart(Unit* who) override
     {
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
+        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER))
             return;
+
         ScriptedAI::AttackStart(who);
     }
 
     void Aggro(Unit* pWho) override
     {
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
+        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER))
             return;
 
         m_creature->SetInCombatWithZone();
+    }
+
+    bool CheckForEnemyPlayers()
+    {
+        std::list<Player*> players;
+
+        me->GetAlivePlayerListInRange(me, players, 75.0f);
+
+        auto iterator = std::remove_if(players.begin(), players.end(),
+            [](Player* player)
+            { return player->IsGameMaster(); });
+
+        players.erase(iterator, players.end());
+
+        for (auto const& itr : players)
+        {
+            m_creature->AddThreat(itr);
+            m_creature->SetInCombatWith(itr);
+            itr->SetInCombatWith(m_creature);
+        }
+
+        return static_cast<bool>(players.size());
     }
 
     void JustReachedHome() override
@@ -579,16 +602,18 @@ struct boss_kelthuzadAI : public ScriptedAI
                     break;
                 }
                 case EVENT_PHASE_TWO_START:
+                {
                     // engage!
                     events.Reset();
-                    events.ScheduleEvent(EVENT_FROSTBOLT,        Seconds(10));
-                    events.ScheduleEvent(EVENT_SHADOW_FISSURE,   Seconds(14));
-                    events.ScheduleEvent(EVENT_DETONATE_MANA,    Seconds(20));
+                    events.ScheduleEvent(EVENT_FROSTBOLT, Seconds(10));
+                    events.ScheduleEvent(EVENT_SHADOW_FISSURE, Seconds(14));
+                    events.ScheduleEvent(EVENT_DETONATE_MANA, Seconds(20));
                     events.ScheduleEvent(EVENT_FROSTBOLT_VOLLEY, Seconds(30));
-                    events.ScheduleEvent(EVENT_FROST_BLAST,      Seconds(50));
-                    events.ScheduleEvent(EVENT_CHAINS,           Seconds(60));
+                    events.ScheduleEvent(EVENT_FROST_BLAST, Seconds(50));
+                    events.ScheduleEvent(EVENT_CHAINS, Seconds(60));
+
                     m_creature->RemoveAurasDueToSpell(SPELL_VISUAL_CHANNEL);
-                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING | UNIT_FLAG_NOT_SELECTABLE);
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER | UNIT_FLAG_NOT_SELECTABLE);
                     m_creature->InterruptNonMeleeSpells(true);
 
                     DoResetThreat();
@@ -597,6 +622,7 @@ struct boss_kelthuzadAI : public ScriptedAI
                         AttackStart(pUnit);
 
                     break;
+                }
             }
         }
     }
@@ -789,8 +815,11 @@ struct boss_kelthuzadAI : public ScriptedAI
         if (hasPutInCombat)
         {
             // won't have a victim if we are in p1, even if selectHostileTarget returns true, so check that before return
-            if (!m_creature->SelectHostileTarget() || (!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING) && !m_creature->GetVictim()))
-                return;
+            if (!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER) || !CheckForEnemyPlayers())
+            {
+                if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
+                    return;
+            }
         }
 
         if (m_pInstance->GetData(TYPE_KELTHUZAD) != IN_PROGRESS)
@@ -808,12 +837,13 @@ struct boss_kelthuzadAI : public ScriptedAI
 
         events.Update(diff);
 
-        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SPAWNING))
+        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER))
             UpdateP1(diff);
         else
         {
             if (!m_pInstance->HandleEvadeOutOfHome(m_creature))
                 return;
+
             UpdateP2P3(diff);
         }
     }

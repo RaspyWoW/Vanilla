@@ -322,7 +322,7 @@ struct boss_majordomoAI : public ScriptedAI
             }
             case 76:
             {
-                if (Creature const* Ragnaros = m_creature->FindNearestCreature(NPC_RAGNAROS, 100.0f, true))
+                if (Creature* Ragnaros = m_creature->FindNearestCreature(NPC_RAGNAROS, 100.0f, true))
                     Ragnaros->CastSpell(m_creature, SPELL_ELEMENTAL_FIRE, false);  // 20565
                 // Handle rest in Ragnaros script
                 break;
