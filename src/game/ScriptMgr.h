@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _SCRIPTMGR_H
-#define _SCRIPTMGR_H
+#pragma once
 
 #include "Common.h"
 #include "Policies/Singleton.h"
@@ -70,9 +69,9 @@ extern ScriptMapMap sCreatureAIScripts;
 #define TEXT_SOURCE_CUSTOM_START    TEXT_SOURCE_RANGE*2
 #define TEXT_SOURCE_CUSTOM_END      TEXT_SOURCE_RANGE*3 + 1
 
-//Generic scripting functions
-void DoScriptText(int32 textEntry, WorldObject* pSource, Unit* target = nullptr, int32 chatTypeOverride = -1);
-void DoOrSimulateScriptTextForMap(int32 iTextEntry, uint32 uiCreatureEntry, Map* pMap, Creature* pCreatureSource = nullptr, Unit* pTarget = nullptr);
+// Generic scripting functions
+void DoScriptText(int32 textId, WorldObject* pSource, Unit* pTarget = nullptr, int32 chatTypeOverride = -1);
+void DoOrSimulateScriptTextForMap(int32 textId, uint32 creatureId, Map* pMap, Creature* pSource = nullptr, Unit* pTarget = nullptr);
 
 // Returns a target based on the type specified.
 WorldObject* GetTargetByType(WorldObject* pSource, WorldObject* pTarget, Map* pMap, uint8 targetType, uint32 param1 = 0u, uint32 param2 = 0u, SpellEntry const* pSpellEntry = nullptr);
@@ -309,5 +308,3 @@ uint32 GetEventIdScriptId(uint32 eventId);
 uint32 GetScriptId(char const* name);
 char const* GetScriptName(uint32 id);
 uint32 GetScriptIdsCount();
-
-#endif
