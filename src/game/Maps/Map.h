@@ -19,8 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MANGOS_MAP_H
-#define MANGOS_MAP_H
+#pragma once
 
 #include "Common.h"
 #include "Policies/ThreadingModel.h"
@@ -445,11 +444,14 @@ class Map : public GridRefManager<NGridType>
         uint32 GetPlayersCountExceptGMs() const;
         bool ActiveObjectsNearGrid(uint32 x,uint32 y) const;
 
-        // Send a Packet to all players on a map
+        // Send a Packet to all players in the map
         void SendToPlayers(WorldPacket const* data, Team team = TEAM_NONE) const;
-        // Send a Packet to all players in a zone. Return false if no player found
-        bool SendToPlayersInZone(WorldPacket const* data, uint32 zoneId) const;
         void SendDefenseMessage(int32 textId, uint32 zoneId) const;
+        void SendMonsterTextToMap(int32 textId, Language language, ChatMsg chatMsg, uint32 creatureId, WorldObject const* pSource = nullptr, Unit const* pTarget = nullptr);
+
+        // Send a Packet to all players in a zone
+        bool SendToPlayersInZone(WorldPacket const* data, uint32 zoneId) const; // return false if no player found
+        void PlayDirectSoundToMap(uint32 soundId, uint32 zoneId = 0) const;
 
         typedef MapRefManager PlayerList;
         PlayerList const& GetPlayers() const { return m_mapRefManager; }
@@ -540,9 +542,6 @@ class Map : public GridRefManager<NGridType>
         InstanceData* GetInstanceData() { return i_data; }
         InstanceData const* GetInstanceData() const { return i_data; }
         uint32 GetScriptId() const { return i_script_id; }
-
-        void SendMonsterTextToMap(int32 textId, Language language, ChatMsg chatMsg, uint32 creatureId, WorldObject const* pSource = nullptr, Unit const* pTarget = nullptr);
-        void PlayDirectSoundToMap(uint32 soundId, uint32 zoneId = 0) const;
 
         // GameObjectCollision
         float GetHeight(float x, float y, float z, bool vmap = true, float maxSearchDist = DEFAULT_HEIGHT_SEARCH) const;
@@ -1031,4 +1030,3 @@ void Map::Visit(Cell const& cell, TypeContainerVisitor<T, CONTAINER>& visitor)
         getNGrid(x, y)->Visit(cell_x, cell_y, visitor);
     }
 }
-#endif

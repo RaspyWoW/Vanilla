@@ -22,9 +22,6 @@
 #include "Chat.h"
 #include "ObjectMgr.h"
 
-struct CreatureInfo;
-class WorldObject;
-
 namespace MaNGOS
 {
     class MonsterChatBuilderFormat
