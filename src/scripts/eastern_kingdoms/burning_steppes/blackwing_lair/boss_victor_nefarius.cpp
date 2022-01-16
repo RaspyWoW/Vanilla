@@ -26,54 +26,54 @@ EndScriptData */
 
 enum
 {
-    SAY_GAMESBEGIN_1                = -1469004,
-    SAY_GAMESBEGIN_2                = -1469005,
+    SAY_GAMESBEGIN_1 = 9907,
+    SAY_GAMESBEGIN_2 = 9845,
 
-    SAY_SCEPTER_RUN_START           = -1469031,
-    SAY_SCEPTER_TAUNT_0             = -1469038,
-    SAY_SCEPTER_TAUNT_1             = -1469040,
-    SAY_SCEPTER_TAUNT_2             = -1469041,
-    SAY_SCEPTER_TAUNT_3             = -1469042,
-    SAY_SCEPTER_TAUNT_4             = -1469043,
-    MAX_SCEPTER_TAUNTS              = 6,
+    SAY_SCEPTER_RUN_START = 11267,
+    SAY_SCEPTER_TAUNT_0 = 11214,
+    SAY_SCEPTER_TAUNT_1 = 11215,
+    SAY_SCEPTER_TAUNT_2 = 11216,
+    SAY_SCEPTER_TAUNT_3 = 11217,
+    SAY_SCEPTER_TAUNT_4 = 11218,
+    MAX_SCEPTER_TAUNTS = 6,
 
-    SAY_SCEPTER_RUN_LAUGHTER        = -1469039,
+    SAY_SCEPTER_RUN_LAUGHTER = 11230,
 
-    SAY_SCEPTER_FAIL_LAUGHTER       = -1469044,
-    SAY_SCEPTER_FAIL                = -1469045,
+    SAY_SCEPTER_FAIL_LAUGHTER = 11231,
+    SAY_SCEPTER_FAIL = 11219,
 
-    GOSSIP_TEXT_NEFARIUS_1          = 7134,
-    GOSSIP_TEXT_NEFARIUS_2          = 7198,
-    GOSSIP_TEXT_NEFARIUS_3          = 7199,
+    GOSSIP_TEXT_NEFARIUS_1 = 7134,
+    GOSSIP_TEXT_NEFARIUS_2 = 7198,
+    GOSSIP_TEXT_NEFARIUS_3 = 7199,
 
-    MAX_DRAKES                      = 5,
-    MAX_DRAKE_KILLED                = 42,
-    NPC_BRONZE_DRAKANOID            = 14263,
-    NPC_BLUE_DRAKANOID              = 14261,
-    NPC_RED_DRAKANOID               = 14264,
-    NPC_GREEN_DRAKANOID             = 14262,
-    NPC_BLACK_DRAKANOID             = 14265,
-    NPC_CHROMATIC_DRAKANOID         = 14302,
+    MAX_DRAKES = 5,
+    MAX_DRAKE_KILLED = 42,
+    NPC_BRONZE_DRAKANOID = 14263,
+    NPC_BLUE_DRAKANOID = 14261,
+    NPC_RED_DRAKANOID = 14264,
+    NPC_GREEN_DRAKANOID = 14262,
+    NPC_BLACK_DRAKANOID = 14265,
+    NPC_CHROMATIC_DRAKANOID = 14302,
 
-    SPELL_NEFARIUS_BARRIER          = 22663,                // immunity in phase 1
-    SPELL_SHADOWBOLT                = 22677,
-    SPELL_SHADOWBOLT_VOLLEY         = 22665,
-    SPELL_FEAR                      = 22678,
-    SPELL_SILENCE                   = 22666,
-    SPELL_SHADOW_COMMAND            = 22667,                // charm a player
-    SPELL_SHADOW_BLINK              = 22664,                // 22681 ? // teleport around the room, possibly random
-    SPELL_ROOT                      = 17507,
-    SPELL_VISUAL_EFFECT             = 24180,
-    SPELL_HOVER                     = 17131,
+    SPELL_NEFARIUS_BARRIER = 22663, // immunity in phase 1
+    SPELL_SHADOWBOLT = 22677,
+    SPELL_SHADOWBOLT_VOLLEY = 22665,
+    SPELL_FEAR = 22678,
+    SPELL_SILENCE = 22666,
+    SPELL_SHADOW_COMMAND = 22667, // charm a player
+    SPELL_SHADOW_BLINK = 22664, // 22681 ? // teleport around the room, possibly random
+    SPELL_ROOT = 17507,
+    SPELL_VISUAL_EFFECT = 24180,
+    SPELL_HOVER = 17131,
 
-    FACTION_BLACK_DRAGON            = 103,
-    FACTION_FRIENDLY                = 35,
+    FACTION_MONSTER = 14,
+    FACTION_FRIENDLY = 35,
 
-    GO_DRAKONID_BONES               = 179804,
+    GO_DRAKONID_BONES = 179804,
 
-    NPC_NEFARIAN                    = 11583,
+    NPC_NEFARIAN = 11583,
 
-    QUEST_NEFARIUS_CORRUPTION       = 8730
+    QUEST_NEFARIUS_CORRUPTION = 8730
 };
 
 struct SpawnLocation
@@ -336,7 +336,8 @@ struct boss_victor_nefariusAI : ScriptedAI
                         break;
                     case 3:
                         DoCastSpellIfCan(m_creature, SPELL_NEFARIUS_BARRIER);
-                        m_creature->SetFactionTemplateId(FACTION_BLACK_DRAGON);
+                        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER);
+                        m_creature->SetFactionTemplateId(FACTION_MONSTER);
 
                         Map::PlayerList const &liste = m_creature->GetMap()->GetPlayers();
                         for (const auto& i : liste)
