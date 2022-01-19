@@ -750,7 +750,7 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer* data, UpdateMask* u
                     else
                         *data << uint32(m_uint32Values[index]);
                 }
-                // Hide real health value. Send a percent instead. See ShowHealthValues option in mangosd.conf
+                // Hide real health value. Send a percent instead. See ShowHealthValues option in worldserver.conf
                 else if (!ShowHealthValues && (index == UNIT_FIELD_HEALTH || index == UNIT_FIELD_MAXHEALTH))
                 {
                     if (target->CanSeeHealthOf((Unit*)this))

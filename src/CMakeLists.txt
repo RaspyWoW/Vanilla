@@ -24,9 +24,12 @@ endif()
 
 add_subdirectory(shared)
 add_subdirectory(framework)
-add_subdirectory(realmd)
-add_subdirectory(game)
-add_subdirectory(mangosd)
+add_subdirectory(authserver)
+
+if(USE_WORLDSERVER)
+  add_subdirectory(game)
+  add_subdirectory(worldserver)
+endif()
 
 if(USE_SCRIPTS)
   add_subdirectory(scripts)

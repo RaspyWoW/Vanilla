@@ -19,7 +19,7 @@ SDName: Boss_Onyxia
 SD%Complete: 95
 SDComment: The Heated Ground spell has 12 spell Id triggers in total, which trips the 
            default stack overflow protection. Solutions are to either increase
-           MaxSpellCastsInChain in mangosd.conf or break the chain up into two spells by
+           MaxSpellCastsInChain in worldserver.conf or break the chain up into two spells by
            disabling the 6th spell's trigger index in the spell_effect_mod table. This
            script is using the second solution.
            TODO: Implement summon check for areas up on the wall where Onyxia can't reach.

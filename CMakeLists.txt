@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-project(MaNGOS)
+project(RaspyWoW)
 
 # CMake policies
 cmake_minimum_required(VERSION 3.1...3.20)
@@ -36,6 +36,7 @@ option(TBB_DEBUG "Use TBB debug librairies" OFF)
 option(USE_ANTICHEAT "Use anticheat" ON)
 option(USE_ANTIBOT "Use antibot" OFF)
 option(USE_SCRIPTS "Compile scripts" ON)
+option(USE_WORLDSERVER "Compile worldserver" ON)
 option(USE_EXTRACTORS "Compile extractors" OFF)
 option(USE_LIBCURL "Compile with libcurl for email support" OFF)
 
@@ -175,10 +176,10 @@ if(NOT ACE_FOUND)
 endif()
 
 if(NOT USE_STD_MALLOC)
-  unset(TBB_INCLUDE_DIRS            CACHE)
-  unset(TBB_LIBRARIES               CACHE)
-  unset(TBB_LIBRARIES_RELEASE       CACHE)
-  unset(TBB_LIBRARIES_DEBUG         CACHE)
+  unset(TBB_INCLUDE_DIRS CACHE)
+  unset(TBB_LIBRARIES CACHE)
+  unset(TBB_LIBRARIES_RELEASE CACHE)
+  unset(TBB_LIBRARIES_DEBUG CACHE)
 
   set(TBB_USE_DEBUG_BUILD ${TBB_DEBUG})
   find_package(TBB COMPONENTS tbbmalloc)
@@ -223,17 +224,6 @@ if(UNIX)
   find_package(OpenSSL REQUIRED)
   find_package(ZLIB REQUIRED)
 endif()
-
-# Add uninstall script and target
-#configure_file(
-#  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
-#  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-#  IMMEDIATE @ONLY
-#)
-
-#add_custom_target(uninstall
-#  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-#)
 
 # Find core revision
 if(NOT GIT_EXECUTABLE)
@@ -320,10 +310,10 @@ message(STATUS "Detected compiler     : ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "Build type            : ${CMAKE_BUILD_TYPE}")
 
 if(USE_ANTICHEAT)
-  message(STATUS "Use anticheat         : Yes")
+  message(STATUS "Use anticheat         : Yes (default)")
   set(DEFINITIONS ${DEFINITIONS} USE_ANTICHEAT)
 else()
-  message(STATUS "Use anticheat         : No  (default)")
+  message(STATUS "Use anticheat         : No")
 endif()
 
 if(USE_ANTIBOT)
@@ -337,6 +327,12 @@ if(USE_SCRIPTS)
   message(STATUS "Build scripts         : Yes (default)")
 else()
   message(STATUS "Build scripts         : No")
+endif()
+
+if(USE_WORLDSERVER)
+  message(STATUS "Build worldserver     : Yes (default)")
+else()
+  message(STATUS "Build worldserver     : No")
 endif()
 
 if(UNIX)
@@ -484,7 +480,10 @@ message(STATUS "Build flags (RELEASE) : ${CMAKE_CXX_FLAGS_RELEASE}")
 message(STATUS "Build flags (DEBUG)   : ${CMAKE_CXX_FLAGS_DEBUG}")
 
 add_subdirectory(src)
-add_subdirectory(dep)
+
+if(USE_WORLDSERVER)
+  add_subdirectory(dep)
+endif()
 
 if (USE_EXTRACTORS)
     add_subdirectory(contrib)

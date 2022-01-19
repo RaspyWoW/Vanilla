@@ -19,19 +19,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MANGOS_SYSTEMCONFIG_H
-#define MANGOS_SYSTEMCONFIG_H
+#pragma once
 
 #include "Platform/Define.h"
 #include "revision.h"
 
 // Format is YYYYMMDDRR where RR is the change in the conf file
 // for that day.
-#ifndef _MANGOSDCONFVERSION
-# define _MANGOSDCONFVERSION 2010100901
+#ifndef _WORLDSERVERCONFVERSION
+# define _WORLDSERVERCONFVERSION 2010100901
 #endif
-#ifndef _REALMDCONFVERSION
-# define _REALMDCONFVERSION 2020010501
+#ifndef _AUTHSERVERCONFVERSION
+# define _AUTHSERVERCONFVERSION 2020010501
 #endif
 #ifndef _MODSCONFVERSION
 # define _MODSCONFVERSION 2010062001
@@ -55,7 +54,7 @@
 
 // The path to config files
 #ifndef SYSCONFDIR
-#  define SYSCONFDIR        ""
+#  define SYSCONFDIR ""
 #endif
 
 #if PLATFORM == PLATFORM_WINDOWS
@@ -64,9 +63,9 @@
 # else
 #  define _ENDIAN_PLATFORM "Win32 (" _ENDIAN_STRING ")"
 # endif
-# define _MANGOSD_CONFIG  SYSCONFDIR "mangosd.conf"
-# define _REALMD_CONFIG   SYSCONFDIR "realmd.conf"
-# define _MODS_CONFIG     SYSCONFDIR "mods.conf"
+# define _WORLDSERVER_CONFIG SYSCONFDIR "worldserver.conf"
+# define _AUTHSERVER_CONFIG SYSCONFDIR "authserver.conf"
+# define _MODS_CONFIG SYSCONFDIR "mods.conf"
 #else
 # if defined  (__FreeBSD__)
 #  define _ENDIAN_PLATFORM "FreeBSD_" ARCHITECTURE " (" _ENDIAN_STRING ")"
@@ -83,14 +82,13 @@
 # else
 #  define _ENDIAN_PLATFORM "Unix_" ARCHITECTURE " (" _ENDIAN_STRING ")"
 # endif
-# define _MANGOSD_CONFIG  SYSCONFDIR "mangosd.conf"
-# define _REALMD_CONFIG  SYSCONFDIR "realmd.conf"
+# define _WORLDSERVER_CONFIG  SYSCONFDIR "worldserver.conf"
+# define _AUTHSERVER_CONFIG  SYSCONFDIR "authserver.conf"
 # define _MODS_CONFIG  SYSCONFDIR "mods.conf"
 #endif
 
 #define _FULLVERSION REVISION_HASH " / " REVISION_DATE " / " _ENDIAN_PLATFORM
 
-#define DEFAULT_PLAYER_LIMIT 100
-#define DEFAULT_WORLDSERVER_PORT 8085                       //8129
-#define DEFAULT_REALMSERVER_PORT 3724
-#endif
+constexpr auto DEFAULT_PLAYER_LIMIT = 100;
+constexpr auto DEFAULT_WORLDSERVER_PORT = 8085; //8129
+constexpr auto DEFAULT_REALMSERVER_PORT = 3724;

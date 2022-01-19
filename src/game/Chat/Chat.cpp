@@ -206,7 +206,7 @@ ChatCommand * ChatHandler::getCommandTable()
     {
         { "delete",  SEC_CONSOLE,    true,  &ChatHandler::HandleCharacterDeletedDeleteCommand,  "", nullptr }, // Completely deletes all deleted characters which matches the given search string
         { "list",    SEC_GAMEMASTER, true,  nullptr,                   "", characterDeletedListCommandTable },
-        { "restore", SEC_GAMEMASTER, true,  &ChatHandler::HandleCharacterDeletedRestoreCommand, "", nullptr }, // Restores deleted characters. (Only in certain timeframe if set in mangosd.conf)
+        { "restore", SEC_GAMEMASTER, true,  &ChatHandler::HandleCharacterDeletedRestoreCommand, "", nullptr }, // Restores deleted characters. (Only in certain timeframe if set in worldserver.conf)
         { "old",     SEC_CONSOLE,    true,  &ChatHandler::HandleCharacterDeletedOldCommand,     "", nullptr }, // Completely deletes all deleted characters deleted with some days ago
         { nullptr,   0,              false, nullptr,                                            "", nullptr }
     };

@@ -1,0 +1,200 @@
+#################################
+# Authserver Configuration File #
+#################################
+
+[AuthserverConf]
+ConfVersion=2020010501
+
+###################################################################################################################
+# AUTHSERVER SETTINGS
+#
+#    LoginDatabaseInfo
+#        Database connection settings for the realm server.
+
+LoginDatabaseInfo = "127.0.0.1;3306;user;password;auth"
+
+#
+#    LogsDir
+#         If this string is empty, no logs will be stored.
+
+LogsDir = ""
+
+#
+#    PatchesDir
+#         Folder to serve client patches.
+#         (Patches dir must contain mpq files like: <build><lang>.mpq e.g. 65535enGB.mpq)
+
+PatchesDir = "./patches"
+
+#
+#    MaxPingTime
+#         Database ping interval. (Minutes)
+
+MaxPingTime = 30
+
+#
+#    RealmServerPort
+
+RealmServerPort = 3724
+
+#
+#    BindIP
+#        Bind Auth Server to a certain IP-Address.
+#        This option is useful for running multiple worldserver or authserver instances on different IP addresses using default port
+
+BindIP = "0.0.0.0"
+
+#
+#    PidFile
+#        Authserver daemon PID file.
+
+PidFile = ""
+
+#
+#    LogLevel
+#        Server console level of logging.
+#        0 = Minimum; 1 = Error; 2 = Detail; 3 = Full/Debug
+
+LogLevel = 0
+
+#
+#    LogTime
+#        Include time in server console output. [hh:mm:ss]
+
+LogTime = 0
+
+#
+#    LogFile
+#        Logfile name.
+
+LogFile = "authserver.log"
+
+#
+#    LogTimestamp
+#        Logfile with timestamp of server start in name.
+
+LogTimestamp = 0
+
+#
+#    LogFileLevel
+#        Server file level of logging.
+#        0 = Minimum; 1 = Error; 2 = Detail; 3 = Full/Debug
+
+LogFileLevel = 0
+
+#
+#    LogColors
+#        Color for messages. (Format "normal_color details_color debug_color error_color)
+#        Colors: 0 - BLACK, 1 - RED, 2 - GREEN,  3 - BROWN, 4 - BLUE, 5 - MAGENTA, 6 -  CYAN, 7 - GREY,
+#                8 - YELLOW, 9 - LRED, 10 - LGREEN, 11 - LBLUE, 12 - LMAGENTA, 13 - LCYAN, 14 - WHITE
+
+LogColors = ""
+
+#
+#    UseProcessors
+#        Used processors mask for multi-processors system. (Used only at Windows)
+
+UseProcessors = 0
+
+#
+#    ProcessPriority
+#        Process proirity setting. (Used only at Windows)
+
+ProcessPriority = 0
+
+#
+#    WaitAtStartupError
+#        After startup error report console will pause until pressing <Enter> or specified time before continue. (Seconds)
+
+WaitAtStartupError = 0
+
+#
+#    MinRealmListDelay
+#        Minimum amount of time, that must pass before a second realm list request is considered legitimate. (Seconds)
+
+MinRealmListDelay = 1
+
+#
+#    RealmsStateUpdateDelay
+#        Realm list update delay.
+#        Uupdated at realm list request if delay expired.)
+
+RealmsStateUpdateDelay = 20
+
+#
+#    WrongPass.MaxCount
+#        Number of login attemps with wrong password before the account or IP is banned.
+
+WrongPass.MaxCount = 5
+
+#
+#    WrongPass.BanTime
+#        Duration of the ban. (Seconds)
+#        (0 Perma ban)
+
+WrongPass.BanTime = 300
+
+#
+#    WrongPass.BanType
+#        Ban the IP or account on which login is attempted.
+
+WrongPass.BanType = 0
+
+#
+#    ReqEmailVerification
+#        Required that the user has verified their email address before allowing logins.
+
+ReqEmailVerification = 0
+
+#
+#    ReqEmailSince
+#        Require the email verification since the timestamp.
+
+ReqEmailSince = 0
+
+#
+#    GeoLocking
+#        Blocks account logins when a change in geographical location is detected.
+
+GeoLocking = 0
+
+#
+#    StrictVersionCheck
+#        Prevent modified clients from connnecting.
+
+StrictVersionCheck = 1
+
+#
+#    SendMail
+#        Whether the authserver is allowed to send emails.
+#        (The server must have been compiled with -DUSE_SENDGRID.)
+
+SendMail = 0
+
+#
+#    MailFrom
+#        Specify the email address to send mail from.
+
+MailFrom = ""
+
+#
+#    MailCertChecks
+#        Whether to validate the certificates of the mail server.
+
+MailCertChecks = 1
+
+#
+#    SendGridKey
+#        If SendGrid is being used for emailing, specify your API key here.
+#        (This option must be set if SendGrid is enabled.)
+
+SendGridKey = ""
+
+#
+#    GeolockGUID
+#        The SendGrid template GUID for geolocking emails.
+
+GeolockGUID = ""
+
+#
+###################################################################################################################

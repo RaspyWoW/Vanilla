@@ -1209,7 +1209,7 @@ uint32 WardenWin::GetScanFlags() const
 {
     auto const game_build = _session->GetGameBuild();
 
-    constexpr int accepted_versions[] = EXPECTED_MANGOSD_CLIENT_BUILD;
+    constexpr int accepted_versions[] = EXPECTED_WORLDSERVER_CLIENT_BUILD;
     // for some reason these arrays are null terminated
     auto constexpr num_accepted_versions = (sizeof(accepted_versions) / sizeof(accepted_versions[0])) - 1;
 

@@ -186,7 +186,7 @@ AccountOpResult AccountMgr::ChangePassword(uint32 accid, std::string new_passwd,
     OPENSSL_free((void*)s_hex);
     OPENSSL_free((void*)v_hex);
 
-    // also reset s and v to force update at next realmd login
+    // also reset s and v to force update at next authserver login
     if (!update_sv)
         return AOR_DB_INTERNAL_ERROR;                       // unexpected error
 

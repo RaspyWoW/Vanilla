@@ -158,7 +158,7 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
         return -1;
     }
 
-    // Get the account information from the realmd database
+    // Get the account information from the authserver database
     std::string safe_account = account; // Duplicate, else will screw the SHA hash verification below
     LoginDatabase.escape_string(safe_account);
     // No SQL injection, username escaped.
@@ -197,7 +197,7 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     OPENSSL_free((void*) sStr);
     OPENSSL_free((void*) vStr);
 
-    ///- Re-check ip locking (same check as in realmd).
+    ///- Re-check ip locking (same check as in authserver).
     if (fields[4].GetUInt8() == 1)  // if ip is locked
     {
         if (strcmp(fields[3].GetString(), GetRemoteAddress().c_str()))
