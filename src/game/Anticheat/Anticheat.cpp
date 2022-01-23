@@ -73,6 +73,7 @@ Warden* AnticheatManager::CreateWardenFor(WorldSession* client, BigNumber* K)
 
     return nullptr;
 }
+
 #endif
 
 #ifdef USE_ANTIBOT

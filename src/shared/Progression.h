@@ -14,8 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MANGOSSERVER_PROGRESSION_H
-#define MANGOSSERVER_PROGRESSION_H
+#pragma once
 
 // Game client builds.
 #define CLIENT_BUILD_1_2_4 4222
@@ -98,6 +97,4 @@ enum WowPatch
 #define MAX_CONTENT_PATCH 1
 #else
 #define MAX_CONTENT_PATCH 0
-#endif
-
 #endif

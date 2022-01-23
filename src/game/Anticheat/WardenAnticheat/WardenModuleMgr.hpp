@@ -21,8 +21,7 @@
   *
   */
 
-#ifndef __WARDENMODULEMGR_HPP_
-#define __WARDENMODULEMGR_HPP_
+#pragma once
 
 #include "WardenModule.hpp"
 
@@ -40,10 +39,8 @@ private:
 public:
     WardenModuleMgr();
 
-    const WardenModule *GetWindowsModule() const;
-    const WardenModule *GetMacModule() const;
+    const WardenModule* GetWindowsModule() const;
+    const WardenModule* GetMacModule() const;
 };
 
 #define sWardenModuleMgr MaNGOS::Singleton<WardenModuleMgr>::Instance()
-
-#endif /* !__WARDENMODULEMGR_HPP_ */
