@@ -60,7 +60,7 @@ char serviceDescription[] = "Massive Network Game Object Server";
  *  1 - running
  *  2 - paused
  */
-int m_ServiceStatus = -1;
+auto m_ServiceStatus = -1;
 #else
 #include "PosixDaemon.h"
 #endif
@@ -69,11 +69,11 @@ bool StartDB();
 void UnhookSignals();
 void HookSignals();
 
-bool stopEvent = false;                                     ///< Setting it to true stops the server
+bool stopEvent{ false }; // Setting it to true stops the server
 
-DatabaseType LoginDatabase;                                 ///< Accessor to the realm server database
+DatabaseType LoginDatabase; // Accessor to the realm server database
 
-/// Print out the usage string for this program on the console.
+// Print out the usage string for this program on the console.
 void usage(const char *prog)
 {
     sLog.outString("Usage: \n %s [<options>]\n"
@@ -92,13 +92,13 @@ void usage(const char *prog)
         ,prog);
 }
 
-/// Launch the realm server
-extern int main(int argc, char **argv)
+// Launch the realm server
+extern int main(int argc, char** argv)
 {
-    ///- Command line parsing
+    // Command line parsing
     char const* cfg_file = _AUTHSERVER_CONFIG;
 
-    char const *options = ":c:s:";
+    char const* options = ":c:s:";
 
     ACE_Get_Opt cmd_opts(argc, argv, options);
     cmd_opts.long_option("version", 'v');
@@ -110,64 +110,77 @@ extern int main(int argc, char **argv)
     {
         switch (option)
         {
-            case 'c':
-                cfg_file = cmd_opts.opt_arg();
-                break;
-            case 'v':
-                printf("Core revion: %s\n", _FULLVERSION);
-                return 0;
+        case 'c':
+        {
+            cfg_file = cmd_opts.opt_arg();
+            break;
+        }
+        case 'v':
+        {
+            printf("Core revion: %s\n", _FULLVERSION);
+            return 0;
+        }
+        case 's':
+        {
+            const char* mode = cmd_opts.opt_arg();
 
-            case 's':
-            {
-                const char *mode = cmd_opts.opt_arg();
-
-                if (!strcmp(mode, "run"))
-                    serviceDaemonMode = 'r';
+            if (!strcmp(mode, "run"))
+                serviceDaemonMode = 'r';
 #ifdef WIN32
-                else if (!strcmp(mode, "install"))
-                    serviceDaemonMode = 'i';
-                else if (!strcmp(mode, "uninstall"))
-                    serviceDaemonMode = 'u';
+            else if (!strcmp(mode, "install"))
+                serviceDaemonMode = 'i';
+            else if (!strcmp(mode, "uninstall"))
+                serviceDaemonMode = 'u';
 #else
-                else if (!strcmp(mode, "stop"))
-                    serviceDaemonMode = 's';
+            else if (!strcmp(mode, "stop"))
+                serviceDaemonMode = 's';
 #endif
-                else
-                {
-                    sLog.outError("Runtime-Error: -%c unsupported argument %s", cmd_opts.opt_opt(), mode);
-                    usage(argv[0]);
-                    Log::WaitBeforeContinueIfNeed();
-                    return 1;
-                }
-                break;
+            else
+            {
+                sLog.outError("Runtime-Error: -%c unsupported argument %s", cmd_opts.opt_opt(), mode);
+                usage(argv[0]);
+                Log::WaitBeforeContinueIfNeed();
+                return 1;
             }
-            case ':':
-                sLog.outError("Runtime-Error: -%c option requires an input argument", cmd_opts.opt_opt());
-                usage(argv[0]);
-                Log::WaitBeforeContinueIfNeed();
-                return 1;
-            default:
-                sLog.outError("Runtime-Error: bad format of commandline arguments");
-                usage(argv[0]);
-                Log::WaitBeforeContinueIfNeed();
-                return 1;
+            break;
+        }
+        case ':':
+        {
+            sLog.outError("Runtime-Error: -%c option requires an input argument", cmd_opts.opt_opt());
+            usage(argv[0]);
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
+        default:
+        {
+            sLog.outError("Runtime-Error: bad format of commandline arguments");
+            usage(argv[0]);
+            Log::WaitBeforeContinueIfNeed();
+            return 1;
+        }
         }
     }
 
-#ifdef WIN32                                                // windows service command need execute before config read
+#ifdef WIN32 // Windows service command need execute before config read
     switch (serviceDaemonMode)
     {
-        case 'i':
-            if (WinServiceInstall())
-                sLog.outString("Installing service");
-            return 1;
-        case 'u':
-            if (WinServiceUninstall())
-                sLog.outString("Uninstalling service");
-            return 1;
-        case 'r':
-            WinServiceRun();
-            break;
+    case 'i':
+    {
+        if (WinServiceInstall())
+            sLog.outString("Installing service");
+        return 1;
+    }
+    case 'u':
+    {
+        if (WinServiceUninstall())
+            sLog.outString("Uninstalling service");
+        return 1;
+    }
+    case 'r':
+    {
+        WinServiceRun();
+        break;
+    }
     }
 #endif
 
@@ -178,15 +191,19 @@ extern int main(int argc, char **argv)
         return 1;
     }
 
-#ifndef WIN32                                               // posix daemon commands need apply after config read
+#ifndef WIN32 // Posix daemon commands need apply after config read
     switch (serviceDaemonMode)
     {
         case 'r':
+        {
             startDaemon();
             break;
+        }
         case 's':
+        {
             stopDaemon();
             break;
+        }
     }
 #endif
 
@@ -213,8 +230,8 @@ extern int main(int argc, char **argv)
     sLog.outString("RaspyWoW - https://raspywow.org");
     sLog.outString("");
 
-    ///- Check the version of the configuration file
-    uint32 confVersion = sConfig.GetIntDefault("ConfVersion", 0);
+    // Check the version of the configuration file
+    const uint32 confVersion = sConfig.GetIntDefault("ConfVersion", 0);
     if (confVersion < _AUTHSERVERCONFVERSION)
     {
         sLog.outError("*******************************************************************************");
@@ -226,7 +243,7 @@ extern int main(int argc, char **argv)
     }
 
     DETAIL_LOG("%s (Library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
-    if (SSLeay() < 0x009080bfL )
+    if (SSLeay() < 0x009080bfL)
     {
         DETAIL_LOG("WARNING: Outdated version of OpenSSL lib. Logins to server may not work!");
         DETAIL_LOG("WARNING: Minimal required version [OpenSSL 0.9.8k]");
@@ -237,7 +254,7 @@ extern int main(int argc, char **argv)
 #ifdef USE_SENDGRID
     DETAIL_LOG("Using CURL version %s", curl_version());
 
-    // not checking the SendMail config option here to make sure config reloads will work (in the future?)
+    // Not checking the SendMail config option here to make sure config reloads will work (in the future?)
     MailerService mailer;
     MailerService::set_global_mailer(&mailer);
 #endif
@@ -250,12 +267,12 @@ extern int main(int argc, char **argv)
 
     sLog.outBasic("Max allowed open files is %d", ACE::max_handles());
 
-    /// authserver PID file creation
-    std::string pidfile = sConfig.GetStringDefault("PidFile", "");
+    // Authserver PID file creation
+    const std::string pidfile = sConfig.GetStringDefault("PidFile", "");
     if(!pidfile.empty())
     {
-        uint32 pid = CreatePIDFile(pidfile);
-        if( !pid )
+        const uint32 pid = CreatePIDFile(pidfile);
+        if (!pid)
         {
             sLog.outError( "Cannot create PID file %s.\n", pidfile.c_str() );
             Log::WaitBeforeContinueIfNeed();
@@ -265,8 +282,8 @@ extern int main(int argc, char **argv)
         sLog.outString( "Daemon PID: %u\n", pid );
     }
 
-    ///- Initialize the database connection
-    if(!StartDB())
+    // Initialize the database connection
+    if (!StartDB())
     {
         Log::WaitBeforeContinueIfNeed();
         return 1;
@@ -275,7 +292,7 @@ extern int main(int argc, char **argv)
     // Ensure the table used for geolocking has some data in it, if enabled
     if (sConfig.GetBoolDefault("GeoLocking", false))
     {
-        auto result = std::unique_ptr<QueryResult>(LoginDatabase.Query("SELECT 1 FROM `geoip` LIMIT 1"));
+        const auto result = std::unique_ptr<QueryResult>(LoginDatabase.Query("SELECT 1 FROM `geoip` LIMIT 1"));
 
         if (!result)
         {
@@ -284,7 +301,7 @@ extern int main(int argc, char **argv)
         }
     }
 
-    ///- Get the list of realms for the server
+    // Get the list of realms for the server
     sRealmList.Initialize(sConfig.GetIntDefault("RealmsStateUpdateDelay", 20));
     if (sRealmList.size() == 0)
     {
@@ -293,140 +310,149 @@ extern int main(int argc, char **argv)
         return 1;
     }
 
-    // cleanup query
-    // set expired bans to inactive
+    // Cleanup query
+    // Set expired bans to inactive
     LoginDatabase.BeginTransaction();
     LoginDatabase.Execute("UPDATE `account_banned` SET `active` = 0 WHERE `unbandate`<=UNIX_TIMESTAMP() AND `unbandate`<>`bandate`");
     LoginDatabase.Execute("DELETE FROM `ip_banned` WHERE `unbandate`<=UNIX_TIMESTAMP() AND `unbandate`<>`bandate`");
     LoginDatabase.CommitTransaction();
 
-    ///- Launch the listening network socket
+    // Launch the listening network socket
     ACE_Acceptor<AuthSocket, ACE_SOCK_Acceptor> acceptor;
 
-    uint16 rmport = sConfig.GetIntDefault("RealmServerPort", DEFAULT_REALMSERVER_PORT);
-    std::string bind_ip = sConfig.GetStringDefault("BindIP", "0.0.0.0");
+    const uint16 rmport = sConfig.GetIntDefault("RealmServerPort", DEFAULT_REALMSERVER_PORT);
+    const std::string bind_ip = sConfig.GetStringDefault("BindIP", "0.0.0.0");
 
     ACE_INET_Addr bind_addr(rmport, bind_ip.c_str());
 
-    if(acceptor.open(bind_addr, ACE_Reactor::instance(), ACE_NONBLOCK) == -1)
+    if (acceptor.open(bind_addr, ACE_Reactor::instance(), ACE_NONBLOCK) == -1)
     {
         sLog.outError("RaspyWoW authserver can not bind to %s:%d", bind_ip.c_str(), rmport);
         Log::WaitBeforeContinueIfNeed();
         return 1;
     }
 
-    ///- Catch termination signals
+    // Catch termination signals
     HookSignals();
 
-    ///- Handle affinity for multiple processors and process priority on Windows
+    // Handle affinity for multiple processors and process priority on Windows
     #ifdef WIN32
     {
-        HANDLE hProcess = GetCurrentProcess();
+        HANDLE const hProcess = GetCurrentProcess();
 
-        uint32 Aff = sConfig.GetIntDefault("UseProcessors", 0);
-        if(Aff > 0)
+        const uint32 Aff = sConfig.GetIntDefault("UseProcessors", 0);
+        if (Aff > 0)
         {
             ULONG_PTR appAff;
             ULONG_PTR sysAff;
 
-            if(GetProcessAffinityMask(hProcess,&appAff,&sysAff))
+            if (GetProcessAffinityMask(hProcess,&appAff,&sysAff))
             {
-                ULONG_PTR curAff = Aff & appAff;            // remove non accessible processors
+                ULONG_PTR const curAff = Aff & appAff; // Remove non accessible processors
 
-                if(!curAff )
+                if (!curAff)
                 {
                     sLog.outError("Processors marked in UseProcessors bitmask (hex) %x not accessible for authserver. Accessible processors bitmask (hex): %x",Aff,appAff);
                 }
                 else
                 {
-                    if(SetProcessAffinityMask(hProcess,curAff))
+                    if (SetProcessAffinityMask(hProcess,curAff))
                         sLog.outString("Using processors (bitmask, hex): %x", curAff);
                     else
                         sLog.outError("Can't set used processors (hex): %x", curAff);
                 }
             }
+
             sLog.outString();
         }
 
-        bool Prio = sConfig.GetBoolDefault("ProcessPriority", false);
+        const bool Prio = sConfig.GetBoolDefault("ProcessPriority", false);
 
-        if(Prio)
+        if (Prio)
         {
-            if(SetPriorityClass(hProcess,HIGH_PRIORITY_CLASS))
+            if (SetPriorityClass(hProcess,HIGH_PRIORITY_CLASS))
                 sLog.outString("authserver process priority class set to HIGH");
             else
                 sLog.outError("Can't set authserver process priority class.");
+
             sLog.outString();
         }
     }
     #endif
 
-    //server has started up successfully => enable async DB requests
+    // Server has started up successfully => enable async DB requests
     LoginDatabase.AllowAsyncTransactions();
 
-    // maximum counter for next ping
-    uint32 numLoops = (sConfig.GetIntDefault( "MaxPingTime", 30 ) * (MINUTE * 1000000 / 100000));
+    // Maximum counter for next ping
+    const uint32 numLoops = (sConfig.GetIntDefault("MaxPingTime", 30) * (MINUTE * 1000000 / 100000));
     uint32 loopCounter = 0;
 
     #ifndef WIN32
     detachDaemon();
     #endif
-    ///- Wait for termination signal
+    // Wait for termination signal
     while (!stopEvent)
     {
-        // dont move this outside the loop, the reactor will modify it
+        // Dont move this outside the loop, the reactor will modify it
         ACE_Time_Value interval(0, 100000);
 
         if (ACE_Reactor::instance()->run_reactor_event_loop(interval) == -1)
             break;
 
-        if( (++loopCounter) == numLoops )
+        if ((++loopCounter) == numLoops)
         {
             loopCounter = 0;
             DETAIL_LOG("Ping MySQL to keep connection alive");
             LoginDatabase.Ping();
         }
 #ifdef WIN32
-        if (m_ServiceStatus == 0) stopEvent = true;
-        while (m_ServiceStatus == 2) Sleep(1000);
+        if (m_ServiceStatus == 0)
+            stopEvent = true;
+
+        while (m_ServiceStatus == 2)
+            Sleep(1000);
 #endif
     }
 
-    ///- Wait for the delay thread to exit
+    // Wait for the delay thread to exit
     LoginDatabase.HaltDelayThread();
 
-    ///- Remove signal handling before leaving
+    // Remove signal handling before leaving
     UnhookSignals();
 
-    sLog.outString( "Halting process..." );
+    sLog.outString("Halting process...");
     return 0;
 }
 
-/// Handle termination signals
-/** Put the global variable stopEvent to 'true' if a termination signal is caught **/
-void OnSignal(int s)
+// Handle termination signals
+// Put the global variable stopEvent to 'true' if a termination signal is caught
+void OnSignal(const int s)
 {
     switch (s)
     {
         case SIGINT:
         case SIGTERM:
+        {
             stopEvent = true;
             break;
+        }
         #ifdef _WIN32
         case SIGBREAK:
+        {
             stopEvent = true;
             break;
+        }
         #endif
     }
 
     signal(s, OnSignal);
 }
 
-/// Initialize connection to the database
+// Initialize connection to the database
 bool StartDB()
 {
-    std::string dbstring = sConfig.GetStringDefault("LoginDatabaseInfo", "");
-    if(dbstring.empty())
+    const std::string dbstring = sConfig.GetStringDefault("LoginDatabaseInfo", "");
+    if (dbstring.empty())
     {
         sLog.outError("Database not specified");
         return false;
@@ -440,10 +466,10 @@ bool StartDB()
     if (std::count(dbStringLog.begin(), dbStringLog.end(), ';') == 4)
     {
         // Have correct number of tokens, can replace
-        std::string::iterator start = dbStringLog.end(), end = dbStringLog.end();
+        std::string::const_iterator start = dbStringLog.end(), end = dbStringLog.end();
 
-        int occurrence = 0;
-        for (std::string::iterator itr = dbStringLog.begin(); itr != dbStringLog.end(); ++itr)
+        auto occurrence = 0;
+        for (std::string::const_iterator itr = dbStringLog.begin(); itr != dbStringLog.end(); ++itr)
         {
             if (*itr == ';')
                 ++occurrence;
@@ -466,7 +492,7 @@ bool StartDB()
     }
 
     sLog.outString("Database: %s", dbStringLog.c_str() );
-    if(!LoginDatabase.Initialize(dbstring.c_str()))
+    if (!LoginDatabase.Initialize(dbstring.c_str()))
     {
         sLog.outError("Cannot connect to database");
         return false;
@@ -474,7 +500,7 @@ bool StartDB()
 
     if (!LoginDatabase.CheckRequiredMigrations(MIGRATIONS_LOGON))
     {
-        ///- Wait for already started DB delay threads to end
+        // Wait for already started DB delay threads to end
         LoginDatabase.HaltDelayThread();
         return false;
     }
@@ -482,7 +508,7 @@ bool StartDB()
     return true;
 }
 
-/// Define hook 'OnSignal' for all termination signals
+// Define hook 'OnSignal' for all termination signals
 void HookSignals()
 {
     signal(SIGINT, OnSignal);
@@ -492,7 +518,7 @@ void HookSignals()
     #endif
 }
 
-/// Unhook the signals before leaving
+// Unhook the signals before leaving
 void UnhookSignals()
 {
     signal(SIGINT, 0);

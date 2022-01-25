@@ -67,12 +67,11 @@ class PatchCache
         }
 
         void LoadPatchMD5(const char*);
-        bool GetHash(const char * pat, ACE_UINT8 mymd5[MD5_DIGEST_LENGTH]);
+        bool GetHash(const char* pat, ACE_UINT8 mymd5[MD5_DIGEST_LENGTH]);
 
     private:
         void LoadPatchesInfo();
         Patches patches_;
-
 };
 
 class PatchHandler: public ACE_Svc_Handler<ACE_SOCK_STREAM, ACE_NULL_SYNCH>
@@ -81,7 +80,7 @@ class PatchHandler: public ACE_Svc_Handler<ACE_SOCK_STREAM, ACE_NULL_SYNCH>
         typedef ACE_Svc_Handler<ACE_SOCK_STREAM, ACE_NULL_SYNCH> Base;
 
     public:
-        PatchHandler(ACE_HANDLE socket, ACE_HANDLE patch);
+        PatchHandler(ACE_HANDLE const socket, ACE_HANDLE const patch);
         virtual ~PatchHandler();
 
         int open(void* = 0);

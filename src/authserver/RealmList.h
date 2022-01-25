@@ -43,21 +43,21 @@ RealmBuildInfo const* FindBuildInfo(uint16 _build);
 
 typedef std::set<uint32> RealmBuilds;
 
-/// Storage object for a realm
+// Storage object for a realm
 struct Realm
 {
     std::string address;
     uint8 icon;
-    RealmFlags realmflags;                                  // realmflags
+    RealmFlags realmflags; // Realmflags
     uint8 timezone;
     uint32 m_ID;
-    AccountTypes allowedSecurityLevel;                      // current allowed join security level (show as locked for not fit accounts)
+    AccountTypes allowedSecurityLevel; // Current allowed join security level (show as locked for not fit accounts)
     float populationLevel;
-    RealmBuilds realmbuilds;                                // list of supported builds (updated in DB by worldserver)
-    RealmBuildInfo realmBuildInfo;                          // build info for show version in list
+    RealmBuilds realmbuilds; // List of supported builds (updated in DB by worldserver)
+    RealmBuildInfo realmBuildInfo; // Build info for show version in list
 };
 
-/// Storage object for the list of realms on the server
+// Storage object for the list of realms on the server
 class RealmList
 {
     public:
@@ -68,7 +68,7 @@ class RealmList
         RealmList();
         ~RealmList() {}
 
-        void Initialize(uint32 updateInterval);
+        void Initialize(const uint32 updateInterval);
 
         void UpdateIfNeed();
 
@@ -76,10 +76,11 @@ class RealmList
         RealmMap::const_iterator end() const { return m_realms.end(); }
         uint32 size() const { return m_realms.size(); }
     private:
-        void UpdateRealms(bool init);
-        void UpdateRealm(uint32 ID, const std::string& name, const std::string& address, uint32 port, uint8 icon, RealmFlags realmflags, uint8 timezone, AccountTypes allowedSecurityLevel, float popu, uint32 builds);
+        void UpdateRealms(const bool init);
+        void UpdateRealm(const uint32 ID, const std::string& name, const std::string& address, uint32 port, const uint8 icon, RealmFlags const realmflags,
+            const uint8 timezone, AccountTypes const allowedSecurityLevel, const float popu, const uint32 builds);
     private:
-        RealmMap m_realms;                                  ///< Internal map of realms
+        RealmMap m_realms; // Internal map of realms
         uint32   m_UpdateInterval;
         time_t   m_NextUpdateTime;
 };

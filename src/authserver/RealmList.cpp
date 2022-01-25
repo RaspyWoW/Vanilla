@@ -32,7 +32,7 @@
 
 INSTANTIATE_SINGLETON_1(RealmList);
 
-// list sorted from high to low build and first build used as low bound for accepted by default range (any > it will accepted by authserver at least)
+// List sorted from high to low build and first build used as low bound for accepted by default range (any > it will accepted by authserver at least)
 static RealmBuildInfo ExpectedAuthserverClientBuilds[] =
 {
     {12340, 3, 3, 5,  'a',
@@ -52,16 +52,20 @@ static RealmBuildInfo ExpectedAuthserverClientBuilds[] =
 
 RealmBuildInfo const* FindBuildInfo(uint16 _build)
 {
-    // first build is low bound of always accepted range
+    // First build is low bound of always accepted range
     if (_build >= ExpectedAuthserverClientBuilds[0].build)
         return &ExpectedAuthserverClientBuilds[0];
 
-    // continue from 1 with explicit equal check
-    for(int i = 1; ExpectedAuthserverClientBuilds[i].build; ++i)
-        if(_build == ExpectedAuthserverClientBuilds[i].build)
+    // Continue from 1 with explicit equal check
+    for (auto i = 1; ExpectedAuthserverClientBuilds[i].build; ++i)
+    {
+        if (_build == ExpectedAuthserverClientBuilds[i].build)
+        {
             return &ExpectedAuthserverClientBuilds[i];
+        }
+    }
 
-    // none appropriate build
+    // None appropriate build
     return nullptr;
 }
 
@@ -75,18 +79,17 @@ RealmList& sRealmList
     return realmlist;
 }
 
-/// Load the realm list from the database
-void RealmList::Initialize(uint32 updateInterval)
+// Load the realm list from the database
+void RealmList::Initialize(const uint32 updateInterval)
 {
     m_UpdateInterval = updateInterval;
-
-    ///- Get the content of the realmlist table in the database
-    UpdateRealms(true);
+    UpdateRealms(true); // Get the content of the realmlist table in the database
 }
 
-void RealmList::UpdateRealm(uint32 ID, const std::string& name, const std::string& address, uint32 port, uint8 icon, RealmFlags realmflags, uint8 timezone, AccountTypes allowedSecurityLevel, float popu, uint32 builds)
+void RealmList::UpdateRealm(const uint32 ID, const std::string& name, const std::string& address, uint32 port, const uint8 icon, RealmFlags const realmflags,
+    const uint8 timezone, AccountTypes const allowedSecurityLevel, const float popu, const uint32 builds)
 {
-    ///- Create new if not exist or update existed
+    // Create new if not exist or update existed
     Realm& realm = m_realms[name];
 
     realm.m_ID = ID;
@@ -97,7 +100,7 @@ void RealmList::UpdateRealm(uint32 ID, const std::string& name, const std::strin
     realm.populationLevel = popu;
     realm.realmbuilds.insert(builds);
 
-    uint16 first_build = !realm.realmbuilds.empty() ? *realm.realmbuilds.begin() : 0;
+    const uint16 first_build = !realm.realmbuilds.empty() ? *realm.realmbuilds.begin() : 0;
 
     realm.realmBuildInfo.build = first_build;
     realm.realmBuildInfo.major_version = 0;
@@ -106,23 +109,29 @@ void RealmList::UpdateRealm(uint32 ID, const std::string& name, const std::strin
     realm.realmBuildInfo.hotfix_version = ' ';
 
     if (first_build)
+    {
         if (RealmBuildInfo const* bInfo = FindBuildInfo(first_build))
+        {
             if (bInfo->build == first_build)
+            {
                 realm.realmBuildInfo = *bInfo;
+            }
+        }
+    }
 
-    ///- Append port to IP address.
+    // Append port to IP address.
     std::ostringstream ss;
     ss << address << ":" << port;
-    realm.address   = ss.str();
+    realm.address = ss.str();
 }
 
 void RealmList::UpdateIfNeed()
 {
-    // maybe disabled or updated recently
-    if(!m_UpdateInterval || m_NextUpdateTime > time(nullptr))
+    // Maybe disabled or updated recently
+    if (!m_UpdateInterval || (m_NextUpdateTime > time(nullptr)))
         return;
 
-    m_NextUpdateTime = time(nullptr) + m_UpdateInterval;
+    m_NextUpdateTime = (time(nullptr) + m_UpdateInterval);
 
     // Clears Realm list
     m_realms.clear();
@@ -131,43 +140,40 @@ void RealmList::UpdateIfNeed()
     UpdateRealms(false);
 }
 
-void RealmList::UpdateRealms(bool init)
+void RealmList::UpdateRealms(const bool init)
 {
     DETAIL_LOG("Updating Realm List...");
 
-    QueryResult *result = LoginDatabase.Query(
+    const auto result = std::unique_ptr<QueryResult>(LoginDatabase.Query(
         //       0     1       2          3       4       5             6
         "SELECT `id`, `name`, `address`, `port`, `icon`, `realmflags`, `timezone`, "
         // 7                      8             9
         "`allowedSecurityLevel`, `population`, `realmbuilds` FROM `realmlist` "
-        "WHERE (`realmflags` & 1) = 0 ORDER BY `name`");
+        "WHERE (`realmflags` & 1) = 0 ORDER BY `name`"));
 
-    ///- Circle through results and add them to the realm map
-    if(result)
+    // Circle through results and add them to the realm map
+    if (result)
     {
         do
         {
-            Field *fields = result->Fetch();
-
-            uint8 allowedSecurityLevel = fields[7].GetUInt8();
-
+            Field const* fields = result->Fetch();
+            const uint8 allowedSecurityLevel = fields[7].GetUInt8();
             uint8 realmflags = fields[5].GetUInt8();
 
-            if (realmflags & ~(REALM_FLAG_OFFLINE|REALM_FLAG_NEW_PLAYERS|REALM_FLAG_RECOMMENDED|REALM_FLAG_SPECIFYBUILD))
+            if (realmflags & ~(REALM_FLAG_OFFLINE | REALM_FLAG_NEW_PLAYERS | REALM_FLAG_RECOMMENDED | REALM_FLAG_SPECIFYBUILD))
             {
                 sLog.outError("Realm allowed have only OFFLINE Mask 0x2), or NEWPLAYERS (mask 0x20), or RECOMENDED (mask 0x40), or SPECIFICBUILD (mask 0x04) flags in DB");
-                realmflags &= (REALM_FLAG_OFFLINE|REALM_FLAG_NEW_PLAYERS|REALM_FLAG_RECOMMENDED|REALM_FLAG_SPECIFYBUILD);
+                realmflags &= (REALM_FLAG_OFFLINE | REALM_FLAG_NEW_PLAYERS | REALM_FLAG_RECOMMENDED | REALM_FLAG_SPECIFYBUILD);
             }
 
             UpdateRealm(
                 fields[0].GetUInt32(), fields[1].GetCppString(),fields[2].GetCppString(),fields[3].GetUInt32(),
                 fields[4].GetUInt8(), RealmFlags(realmflags), fields[6].GetUInt8(),
-                (allowedSecurityLevel <= SEC_ADMINISTRATOR ? AccountTypes(allowedSecurityLevel) : SEC_ADMINISTRATOR),
+                ((allowedSecurityLevel <= SEC_ADMINISTRATOR) ? AccountTypes(allowedSecurityLevel) : SEC_ADMINISTRATOR),
                 fields[8].GetFloat(), fields[9].GetUInt32());
 
-            if(init)
+            if (init)
                 sLog.outString("Added realm \"%s\"", fields[1].GetString());
-        } while( result->NextRow() );
-        delete result;
+        } while (result->NextRow());
     }
 }

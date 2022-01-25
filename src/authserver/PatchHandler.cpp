@@ -39,7 +39,7 @@
 #include "Policies/ThreadingModel.h"
 
 #ifndef MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
+constexpr auto MSG_NOSIGNAL{ 0 };
 #endif
 
 #if defined( __GNUC__ )
@@ -61,7 +61,7 @@ struct Chunk
 #pragma pack(pop)
 #endif
 
-PatchHandler::PatchHandler(ACE_HANDLE socket, ACE_HANDLE patch)
+PatchHandler::PatchHandler(ACE_HANDLE const socket, ACE_HANDLE const patch)
 {
     reactor(nullptr);
     set_handle(socket);
@@ -70,34 +70,20 @@ PatchHandler::PatchHandler(ACE_HANDLE socket, ACE_HANDLE patch)
 
 PatchHandler::~PatchHandler()
 {
-    if(patch_fd_ != ACE_INVALID_HANDLE)
+    if (patch_fd_ != ACE_INVALID_HANDLE)
         ACE_OS::close(patch_fd_);
 }
 
 int PatchHandler::open(void*)
 {
-    if(get_handle() == ACE_INVALID_HANDLE || patch_fd_ == ACE_INVALID_HANDLE)
+    if (get_handle() == ACE_INVALID_HANDLE || patch_fd_ == ACE_INVALID_HANDLE)
         return -1;
 
-    int nodelay = 0;
-    if (-1 == peer().set_option(ACE_IPPROTO_TCP,
-                TCP_NODELAY,
-                &nodelay,
-                sizeof(nodelay)))
+    auto nodelay = 0;
+    if (-1 == peer().set_option(ACE_IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay)))
     {
         return -1;
     }
-
-#if defined(TCP_CORK)
-    int cork = 1;
-    if (-1 == peer().set_option(ACE_IPPROTO_TCP,
-                TCP_CORK,
-                &cork,
-                sizeof(cork)))
-    {
-        return -1;
-    }
-#endif //TCP_CORK
 
     (void) peer().disable(ACE_NONBLOCK);
 
@@ -110,26 +96,24 @@ int PatchHandler::svc(void)
     // Seems client have problems with too fast sends.
     ACE_OS::sleep(1);
 
-    int flags = MSG_NOSIGNAL;
+    auto flags = MSG_NOSIGNAL;
 
-    Chunk data;
+    Chunk data{};
     data.cmd = CMD_XFER_DATA;
 
     ssize_t r;
 
-    while((r = ACE_OS::read(patch_fd_, data.data, sizeof(data.data))) > 0)
+    while ((r = ACE_OS::read(patch_fd_, data.data, sizeof(data.data))) > 0)
     {
         data.data_size = (ACE_UINT16)r;
 
-        if(peer().send((const char*)&data,
-                    ((size_t) r) + sizeof(data) - sizeof(data.data),
-                    flags) == -1)
+        if (peer().send((const char*)&data, ((size_t) r) + sizeof(data) - sizeof(data.data), flags) == -1)
         {
             return -1;
         }
     }
 
-    if(r == -1)
+    if (r == -1)
     {
         return -1;
     }
@@ -139,7 +123,7 @@ int PatchHandler::svc(void)
 
 PatchCache::~PatchCache()
 {
-    for (Patches::iterator i = patches_.begin (); i != patches_.end (); i++)
+    for (Patches::const_iterator i = patches_.begin (); i != patches_.end (); ++i)
         delete i->second;
 }
 
@@ -147,7 +131,6 @@ PatchCache::PatchCache()
 {
     LoadPatchesInfo();
 }
-
 
 using PatchCacheLock = MaNGOS::ClassLevelLockable<PatchCache, std::mutex>;
 INSTANTIATE_SINGLETON_2(PatchCache, PatchCacheLock);
@@ -161,7 +144,7 @@ PatchCache* PatchCache::instance()
 void PatchCache::LoadPatchMD5(const char* szFileName)
 {
     // Try to open the patch file
-    std::string path = szFileName;
+    const std::string path = szFileName;
     FILE* pPatch = fopen(path.c_str (), "rb");
     DEBUG_LOG("Loading patch info from file %s", path.c_str());
 
@@ -176,9 +159,9 @@ void PatchCache::LoadPatchMD5(const char* szFileName)
 
     ACE_UINT8 buf[check_chunk_size];
 
-    while(!feof (pPatch))
+    while (!feof (pPatch))
     {
-        size_t read = fread(buf, 1, check_chunk_size, pPatch);
+        const size_t read = fread(buf, 1, check_chunk_size, pPatch);
         MD5_Update(&ctx, buf, read);
     }
 
@@ -191,19 +174,21 @@ void PatchCache::LoadPatchMD5(const char* szFileName)
 
 bool PatchCache::GetHash(const char * pat, ACE_UINT8 mymd5[MD5_DIGEST_LENGTH])
 {
-    for (Patches::iterator i = patches_.begin (); i != patches_.end (); i++)
-        if (!stricmp(pat, i->first.c_str ()))
+    for (Patches::const_iterator i = patches_.begin(); i != patches_.end(); ++i)
+    {
+        if (!stricmp(pat, i->first.c_str()))
         {
             memcpy(mymd5, i->second->md5, MD5_DIGEST_LENGTH);
             return true;
         }
+    }
 
     return false;
 }
 
 void PatchCache::LoadPatchesInfo()
 {
-    std::string path = sConfig.GetStringDefault("PatchesDir", "./patches") + "/";
+    const std::string path = sConfig.GetStringDefault("PatchesDir", "./patches") + "/";
     std::string fullpath;
     ACE_DIR* dirp = ACE_OS::opendir(ACE_TEXT(path.c_str()));
     DEBUG_LOG("Loading patch info from folder %s", path.c_str());
@@ -215,7 +200,7 @@ void PatchCache::LoadPatchesInfo()
 
     while ((dp = ACE_OS::readdir(dirp)) != nullptr)
     {
-        int l = strlen(dp->d_name);
+        auto l = strlen(dp->d_name);
         if (l < 8)
             continue;
 
@@ -226,7 +211,7 @@ void PatchCache::LoadPatchesInfo()
         }
     }
 
-    // causes crash on windows
+    // Causes crash on windows
 #ifndef _WIN32
     ACE_OS::closedir(dirp);
 #endif

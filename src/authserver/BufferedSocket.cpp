@@ -30,27 +30,23 @@
 #include <ace/SString.h>
 
 #ifndef MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
+constexpr auto MSG_NOSIGNAL{ 0 };
 #endif
 
-BufferedSocket::BufferedSocket(void):
-    input_buffer_(4096),
-    remote_address_("<unknown>")
-{
-}
+BufferedSocket::BufferedSocket(void): input_buffer_(4096), remote_address_("<unknown>"){}
 
 /*virtual*/ BufferedSocket::~BufferedSocket(void)
 {
 }
 
-/*virtual*/ int BufferedSocket::open(void * arg)
+/*virtual*/ int BufferedSocket::open(void* arg)
 {
-    if(Base::open(arg) == -1)
+    if (Base::open(arg) == -1)
         return -1;
 
     ACE_INET_Addr addr;
 
-    if(peer().get_remote_addr(addr) == -1)
+    if (peer().get_remote_addr(addr) == -1)
         return -1;
 
     char address[1024];
@@ -74,9 +70,9 @@ size_t BufferedSocket::recv_len(void) const
     return this->input_buffer_.length();
 }
 
-bool BufferedSocket::recv_soft(char *buf, size_t len)
+bool BufferedSocket::recv_soft(char *buf, const size_t len)
 {
-    if(this->input_buffer_.length() < len)
+    if (this->input_buffer_.length() < len)
         return false;
 
     ACE_OS::memcpy(buf, this->input_buffer_.rd_ptr(), len);
@@ -84,53 +80,50 @@ bool BufferedSocket::recv_soft(char *buf, size_t len)
     return true;
 }
 
-bool BufferedSocket::recv(char *buf, size_t len)
+bool BufferedSocket::recv(char *buf, const size_t len)
 {
-    bool ret = this->recv_soft(buf, len);
+    const bool ret = this->recv_soft(buf, len);
 
-    if(ret)
+    if (ret)
         this->recv_skip(len);
 
     return ret;
 }
 
-void BufferedSocket::recv_skip(size_t len)
+void BufferedSocket::recv_skip(const size_t len)
 {
     this->input_buffer_.rd_ptr(len);
 }
 
-ssize_t BufferedSocket::noblk_send(ACE_Message_Block &message_block)
+ssize_t BufferedSocket::noblk_send(ACE_Message_Block const& message_block)
 {
     const size_t len = message_block.length();
 
-    if(len == 0)
+    if (len == 0)
         return -1;
 
     // Try to send the message directly.
-    ssize_t n = this->peer().send(message_block.rd_ptr(), len, MSG_NOSIGNAL);
+    const ssize_t n = this->peer().send(message_block.rd_ptr(), len, MSG_NOSIGNAL);
 
-    if(n < 0)
+    if (n < 0)
     {
-        if(errno == EWOULDBLOCK)
-            // Blocking signal
-            return 0;
+        if (errno == EWOULDBLOCK)
+            return 0;// Blocking signal
         else
-            // Error
-            return -1;
+            return -1; // Error
     }
-    else if(n == 0)
+    else if (n == 0)
     {
-        // Can this happen ?
-        return -1;
+        return -1; // Can this happen?
     }
 
-    // return bytes transmitted
+    // Return bytes transmitted
     return n;
 }
 
-bool BufferedSocket::send(const char *buf, size_t len)
+bool BufferedSocket::send(const char *buf, const size_t len)
 {
-    if(buf == nullptr || len == 0)
+    if (buf == nullptr || len == 0)
         return true;
 
     ACE_Data_Block db(
@@ -149,32 +142,32 @@ bool BufferedSocket::send(const char *buf, size_t len)
 
     message_block.wr_ptr(len);
 
-    if(this->msg_queue()->is_empty())
+    if (this->msg_queue()->is_empty())
     {
         // Try to send it directly.
-        ssize_t n = this->noblk_send(message_block);
+        const ssize_t n = this->noblk_send(message_block);
 
-        if(n < 0)
+        if (n < 0)
             return false;
-        else if(n == len)
+        else if (n == len)
             return true;
 
-        // adjust how much bytes we sent
+        // Adjust how much bytes we sent
         message_block.rd_ptr((size_t)n);
 
-        // fall down
+        // Fall down
     }
 
-    // enqueue the message, note: clone is needed cause we cant enqueue stuff on the stack
+    // Enqueue the message, note: clone is needed cause we cant enqueue stuff on the stack
     ACE_Message_Block *mb = message_block.clone();
 
-    if(this->msg_queue()->enqueue_tail(mb, (ACE_Time_Value *) &ACE_Time_Value::zero) == -1)
+    if (this->msg_queue()->enqueue_tail(mb, (ACE_Time_Value *) &ACE_Time_Value::zero) == -1)
     {
         mb->release();
         return false;
     }
 
-    // tell reactor to call handle_output() when we can send more data
+    // Tell reactor to call handle_output() when we can send more data
     return this->reactor()->schedule_wakeup(this, ACE_Event_Handler::WRITE_MASK) != -1;
 }
 
@@ -182,24 +175,24 @@ bool BufferedSocket::send(const char *buf, size_t len)
 {
     ACE_Message_Block *mb = 0;
 
-    if(this->msg_queue()->is_empty())
+    if (this->msg_queue()->is_empty())
     {
-        // if no more data to send, then cancel notification
+        // If no more data to send, then cancel notification
         this->reactor()->cancel_wakeup(this, ACE_Event_Handler::WRITE_MASK);
         return 0;
     }
 
-    if(this->msg_queue()->dequeue_head(mb, (ACE_Time_Value *) &ACE_Time_Value::zero) == -1)
+    if (this->msg_queue()->dequeue_head(mb, (ACE_Time_Value *) &ACE_Time_Value::zero) == -1)
         return -1;
 
-    ssize_t n = this->noblk_send(*mb);
+    const ssize_t n = this->noblk_send(*mb);
 
-    if(n < 0)
+    if (n < 0)
     {
         mb->release();
         return -1;
     }
-    else if(n == mb->length())
+    else if (n == mb->length())
     {
         mb->release();
         return 1;
@@ -208,7 +201,7 @@ bool BufferedSocket::send(const char *buf, size_t len)
     {
         mb->rd_ptr(n);
 
-        if(this->msg_queue()->enqueue_head(mb, (ACE_Time_Value *) &ACE_Time_Value::zero) == -1)
+        if (this->msg_queue()->enqueue_head(mb, (ACE_Time_Value *) &ACE_Time_Value::zero) == -1)
         {
             mb->release();
             return -1;
@@ -224,27 +217,25 @@ bool BufferedSocket::send(const char *buf, size_t len)
 {
     const ssize_t space = this->input_buffer_.space();
 
-    ssize_t n = this->peer().recv(this->input_buffer_.wr_ptr(), space);
+    const ssize_t n = this->peer().recv(this->input_buffer_.wr_ptr(), space);
 
-    if(n < 0)
+    if (n < 0)
     {
-        // blocking signal or error
-        return errno == EWOULDBLOCK ? 0 : -1;
+        return errno == EWOULDBLOCK ? 0 : -1; // Blocking signal or error
     }
-    else if(n == 0)
+    else if (n == 0)
     {
-        // EOF
-        return -1;
+        return -1; // EOF
     }
 
     this->input_buffer_.wr_ptr((size_t)n);
 
     this->OnRead();
 
-    // move data in the buffer to the beginning of the buffer
+    // Move data in the buffer to the beginning of the buffer
     this->input_buffer_.crunch();
 
-    // return 1 in case there might be more data to read from OS
+    // Return 1 in case there might be more data to read from OS
     return n == space ? 1 : 0;
 }
 

@@ -64,7 +64,7 @@ class AuthSocket: public BufferedSocket
         void SendProof(Sha1Hash sha);
         void LoadRealmlist(ByteBuffer &pkt);
         bool VerifyPinData(uint32 pin, const PINData& clientData);
-        uint32 GenerateTotpPin(const std::string& secret, int interval);
+        uint32 GenerateTotpPin(const std::string& secret, const int interval);
 
         bool _HandleLogonChallenge();
         bool _HandleLogonProof();
@@ -88,7 +88,7 @@ class AuthSocket: public BufferedSocket
             STATUS_CLOSED
         };
 
-        bool VerifyVersion(uint8 const* a, int32 aLength, uint8 const* versionProof, bool isReconnect);
+        bool VerifyVersion(uint8 const* a, const int32 aLength, uint8 const* versionProof, const bool isReconnect);
 
         SRP6 srp;
         BigNumber _reconnectProof;
@@ -124,8 +124,8 @@ class AuthSocket: public BufferedSocket
         std::string _localizationName;
         uint16 _build;
 
-        AccountTypes GetSecurityOn(uint32 realmId) const;
-        void LoadAccountSecurityLevels(uint32 accountId);
+        AccountTypes GetSecurityOn(const uint32 realmId) const;
+        void LoadAccountSecurityLevels(const uint32 accountId);
         bool GeographicalLockCheck();
 
         AccountTypes _accountDefaultSecurityLevel;
